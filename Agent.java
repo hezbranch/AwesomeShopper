@@ -1,7 +1,8 @@
 import java.util.Arrays;
+import java.util.ArrayList;
 import com.supermarket.*;
 
-// Edited by Hezekiah Branch
+// Edited by Hezekiah Branch and Michael LoTurco
 
 public class Agent extends SupermarketComponentImpl
 {
@@ -11,11 +12,16 @@ public class Agent extends SupermarketComponentImpl
         super();
         shouldRunExecutionLoop = true;
         log.info("In Agent constructor.");
+        Goal plan = new Goal(PLAN, NOWHERE);
+        goals.add(plan);
     }
+    // Goal States
+    static String PLAN = "plan";
+    static double[] NOWHERE = {-1, -1};
     
     // Author-defined boolean variable
     boolean firsttime = true;
-    
+    ArrayList<Goal> goals = new ArrayList<Goal>();
     // Function: grabCartGoNorth
     // Purpose: Move agent to cart area and bring
     //          it up back north to register area
@@ -54,6 +60,66 @@ public class Agent extends SupermarketComponentImpl
             // Go down to the cart area
             goSouth();
         }
+    }
+
+    protected void planGoals(Observation obs)
+    {
+        if(goals.size() > 0 && goals.get(0).name == PLAN){
+            System.out.println("consider goals");
+
+            // consider basket vs cart
+            // pickup basket or cart
+             addGoal("cart_return", obs.cartReturns[0].position);
+
+            // plan aisle items
+            for(Observation.Shelf shelf: obs.shelves){
+                System.out.println("consider shelf: "+ shelf.food);
+                if(Arrays.asList(obs.players[0].shopping_list).contains(shelf.food)
+                    && !inGoals(shelf.food)
+                ){
+                    addGoal(shelf.food, shelf.position);
+                }
+            }
+            // plan counter items
+            for(Observation.Counter counter: obs.counters){
+                System.out.println("consider shelf: "+ counter.food);
+                if(Arrays.asList(obs.players[0].shopping_list).contains(counter.food)
+                    && !inGoals(counter.food)){
+                    addGoal(counter.food, counter.position);
+                }
+            }
+            // sort these items
+            // sort goals by y,
+            // sort goals by x with inverting each aisle alternatingly
+
+
+            // choose a register
+            Observation.Register chosenRegister = obs.registers[0];
+            // add a register
+            addGoal("register", chosenRegister.position);
+
+            goals.remove(0); // Drop the initial Plan goal
+            nop();
+        } else {
+            System.out.println("already planned goals");
+            goEast(); 
+            nop();
+        }
+    }
+
+    protected void addGoal(String name, double[] position){
+        System.out.println("added Goal " + name);
+        Goal newGoal = new Goal(name, position);
+        goals.add(newGoal);
+    }
+
+    protected boolean inGoals(String foodItem){
+        for(Goal goal: goals){
+            if(goal.name.equals(foodItem)){
+                   return true;
+            }
+        }
+        return false;
     }
 
     // movement layer
@@ -212,25 +278,31 @@ public class Agent extends SupermarketComponentImpl
         // this is called every 100ms
         // put your code in here
         Observation obs = getLastObservation();
-        System.out.println(obs.players.length + " players");
-        System.out.println(obs.carts.length + " carts");
-        System.out.println(obs.shelves.length + " shelves");
-        System.out.println(obs.counters.length + " counters");
-        System.out.println(obs.registers.length + " registers");
-        System.out.println(obs.cartReturns.length + " cartReturns");
+        // System.out.println(obs.players.length + " players");
+        // System.out.println(obs.carts.length + " carts");
+        // System.out.println(obs.shelves.length + " shelves");
+        // System.out.println(obs.counters.length + " counters");
+        // System.out.println(obs.registers.length + " registers");
+        // System.out.println(obs.cartReturns.length + " cartReturns");
 
 
         // print out the shopping list
-        System.out.println("Shoppping list: " + Arrays.toString(obs.players[0].shopping_list));
+        // System.out.println("Shoppping list: " + Arrays.toString(obs.players[0].shopping_list));
         // call function to grab cart and go north
         // grabCartGoNorth(obs);
 
         // move agent to specified goal
         String goalLocation = "apples";
-        goEast();
+
+        System.out.println("goals len:" + goals.size() + "  shopping len: " + obs.players[0].shopping_list.length);
+        // System.out.println("goals" + goals.toString());
+        planGoals(obs);
+        // System.out.println("after plan");
+
         // Check which aisle the agent is closest to
-        int current = getCurrentAisle(obs, 0);
-        System.out.println("Player currently by aisle: " + current);
+        // int current = getCurrentAisle(obs, 0);
+
+        // System.out.println("Player currently by aisle: " + current);
         //goalSearch(obs, goalLocation);
     }
 }
