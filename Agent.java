@@ -21,6 +21,7 @@ public class Agent extends SupermarketComponentImpl
     static String PLAN = "plan";
     static double[] NOWHERE = {-1, -1};
     
+    int movementPhase = 0;
     // Author-defined boolean variable
     boolean firsttime = true;
     ArrayList<Goal> goals = new ArrayList<Goal>();
@@ -245,6 +246,55 @@ public class Agent extends SupermarketComponentImpl
         return false;
     }
 
+    // protected boolean(Observation willCollideWithAnAisle)
+
+    protected void setMovement(Observation obs){
+        if(movementPhase == 0){
+            if(obs.atCartReturn(0)){
+                movementPhase = 1;
+            }
+            else {
+            
+                goSouth();
+            }
+        } if (movementPhase == 1) {
+            if(obs.inAisleHub(0) && obs.players[0].position[0] > 3.8){
+                movementPhase = 2;
+                // System.out.println("POSITION" + obs.players[0].position[0]);
+            } else { 
+                goEast();
+            }
+        } if(movementPhase == 2) {
+            if(obs.belowAisle(0, 6)){
+                movementPhase = 3;
+            } else { 
+                //   System.out.println("POSITION" + obs.players[0].position[0])
+                goSouth();
+            }
+        } if(movementPhase == 3) {
+            // if(obs.besideCounters(0)){
+            //     movementPhase = 4;
+            // } else { 
+            goEast();
+        }
+
+    }
+        // if(movementPhase == 4) {
+        //     if(obs.belowAisle(0, 4)){
+        //         goNorth();
+        //     } else { 
+        //        movementPhase = 5;
+        //     }
+        // }
+        // if(movementPhase == 5) {
+        //     if(obs.inAisleHub(0)){
+        //         movementPhase = 5;
+        //     } else { 
+        //         goWest();
+        //     }
+        }
+    }
+
     // Helper perception function
     // Return objects if interactions possible
     protected boolean objectCheck(Observation obs)
@@ -366,6 +416,7 @@ public class Agent extends SupermarketComponentImpl
     {
         // Inhibit and exhibit layers
         planGoals(obs);
+        setMovement(obs);
         // movement(obs, goal);
         // interact(obs, goal);
     }
