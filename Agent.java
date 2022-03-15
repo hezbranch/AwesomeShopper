@@ -1,6 +1,8 @@
 import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Collections;
 import com.supermarket.*;
+
 
 // Edited by Hezekiah Branch and Michael LoTurco
 
@@ -22,6 +24,7 @@ public class Agent extends SupermarketComponentImpl
     // Author-defined boolean variable
     boolean firsttime = true;
     ArrayList<Goal> goals = new ArrayList<Goal>();
+
     // Function: grabCartGoNorth
     // Purpose: Move agent to cart area and bring
     //          it up back north to register area
@@ -67,10 +70,15 @@ public class Agent extends SupermarketComponentImpl
         if(goals.size() > 0 && goals.get(0).name == PLAN){
             System.out.println("consider goals");
 
+            goals.remove(0); // Drop the initial Plan goal
+
+            if(obs.players[0].shopping_list.length > 6)
+            {
+                addGoal("cart_return", obs.cartReturns[0].position);
+            }
             // consider basket vs cart
             // pickup basket or cart
-             addGoal("cart_return", obs.cartReturns[0].position);
-
+         
             // plan aisle items
             for(Observation.Shelf shelf: obs.shelves){
                 System.out.println("consider shelf: "+ shelf.food);
@@ -88,25 +96,25 @@ public class Agent extends SupermarketComponentImpl
                     addGoal(counter.food, counter.position);
                 }
             }
+
+            Collections.sort(goals);
             // sort these items
             // sort goals by y,
             // sort goals by x with inverting each aisle alternatingly
-
 
             // choose a register
             Observation.Register chosenRegister = obs.registers[0];
             // add a register
             addGoal("register", chosenRegister.position);
 
-            goals.remove(0); // Drop the initial Plan goal
             nop();
         } else {
             System.out.println("already planned goals");
-            goEast(); 
             nop();
         }
     }
 
+    // Note, should only be used to sort goals when only food items (counters and shelves) are in goals
     protected void addGoal(String name, double[] position){
         System.out.println("added Goal " + name);
         Goal newGoal = new Goal(name, position);
@@ -266,8 +274,9 @@ public class Agent extends SupermarketComponentImpl
     protected void goalSearch(Observation obs, String goal) 
     {
         // Inhibit and exhibit layers
-        movement(obs, goal);
-        interact(obs, goal);
+        planGoals(obs);
+        // movement(obs, goal);
+        // interact(obs, goal);
     }
     
     // Author-defined execution loop
@@ -295,14 +304,30 @@ public class Agent extends SupermarketComponentImpl
         String goalLocation = "apples";
 
         System.out.println("goals len:" + goals.size() + "  shopping len: " + obs.players[0].shopping_list.length);
-        // System.out.println("goals" + goals.toString());
-        planGoals(obs);
-        // System.out.println("after plan");
+        // planGoals(obs);
 
+
+        for(Goal goal: goals){
+            System.out.println("goals are:" + goal.name);
+        }
+        
+        System.out.println("cart Returns are:" + obs.cartReturns.length);
+        // System.out.println("basket? Returns are:" + obs.basketReturn.length);
+
+        shouldRunExecutionLoop = false;
+
+        boolean actionChosen = false;
         // Check which aisle the agent is closest to
         // int current = getCurrentAisle(obs, 0);
 
         // System.out.println("Player currently by aisle: " + current);
-        //goalSearch(obs, goalLocation);
+        // actionChosen = 
+        goalSearch(obs, goalLocation);
+        // if(!actionChosen){
+        //     actionChosen = interactWithStuff(obs);
+        // }
+        // if(!actionChosen){
+        //     actionChosen = moveAround(obs);
+        // }
     }
 }
