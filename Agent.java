@@ -65,8 +65,15 @@ public class Agent extends SupermarketComponentImpl
         }
     }
 
-    // Linear time complexity function to avoid colliding into known Interactive Objects
-    // Hezekiah: There's probably a FAR better way of doing this but it is what it is
+    // Function: noCollision
+    // Purpose: Avoid colliding into known 
+    //          Interactive Objects for movement
+    // Input: An observation state (i.e. Observation)
+    // Returns: Boolean
+    // Effect(s): External timing
+    // Complexity: Linear time complexity, constant space
+    // Notes: <Hezekiah> There's probably a FAR better way of doing this 
+    //                   but it is what it is
     protected boolean noCollision(Observation obs) {
         // Set boolean to pass test cases
         boolean success = true;
