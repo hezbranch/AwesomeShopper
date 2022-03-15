@@ -71,13 +71,15 @@ public class Agent extends SupermarketComponentImpl
     // Function: agentInteraction
     // Purpose: Follow the sequence provided below:
     //          Grab the item (if location has any available).
-    //          Add item to cart of basket (if being used).
+    //          Add item to cart (or basket if being used).
     //          Mark location as visited (shelf or counter).
     //          Continue following path.
     // Input: An observation state (i.e. Observation)
+    //        Position X of intended goal InteractiveObject (shelf, counter, etc.)
+    //        Position Y of intended goal InteractiveObject (shelf, counter, etc.)
     // Returns: None (i.e. void)
     // Effect(s): External timing, infinite looping, assumes agent has cart
-    protected void agentInteraction(Observation obs)
+    protected void agentInteraction(Observation obs, double target_x, double target_y)
     {
         // Get the agent's currrent location so we can return
         // back to that spot once we get what we need here
@@ -85,11 +87,17 @@ public class Agent extends SupermarketComponentImpl
         double agent_start_x = obs.players[0].position[0];
         double agent_start_y = obs.players[0].position[1];
 
-        // Handle interacting with food locations for grocery shopping
+        // Get the agent's cart's currrent location so we can return
+        // back to that spot once we get what we need here
+        // and continue along intended path from movement layer
+        double agent_cart_start_x = obs.carts[obs.players[0].curr_cart].position[0];
+        double agent_cart_start_y = obs.carts[obs.players[0].curr_cart].position[1];
+
+        // Handle interacting with cart for grocery shopping
         if (obs.cartReturns[0].canInteract(obs.players[0]) && obs.players[0].curr_cart != 0) {
             // Case where agent has NOT obtained a cart
-            // and needs to interact with shelf/counter to get item
-            // off of the shopping list.
+            // and needs to interact with cart return to get a cart
+            // to begin securing items from the shopping list.
             goNorth();
             nop();
             interactWithObject();
@@ -102,6 +110,15 @@ public class Agent extends SupermarketComponentImpl
             interactWithObject();
             nop();
         }
+
+        // Assuming agent is at the correct shelf/counter/etc. location
+        // and facing the shelf (as implemented by movement layer)
+        interactWithObject(); // Now holding the item in hand.
+
+        // Return to cart location at Line 90 & 91 and place item in cart
+
+        // Return to original start position at Line 84 & 85
+        // to ameliorate movement layer and resume A* path-finding
     }
 
     protected void planGoals(Observation obs)
