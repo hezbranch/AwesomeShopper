@@ -254,7 +254,6 @@ public class Agent extends SupermarketComponentImpl
                 movementPhase = 1;
             }
             else {
-            
                 goSouth();
             }
         } if (movementPhase == 1) {
@@ -272,13 +271,35 @@ public class Agent extends SupermarketComponentImpl
                 goSouth();
             }
         } if(movementPhase == 3) {
-            // if(obs.besideCounters(0)){
-            //     movementPhase = 4;
-            // } else { 
-            goEast();
+            if(obs.inRearAisleHub(0)){
+                movementPhase = 4;
+            } else { 
+                goEast();
+            }
+        }
+          if(movementPhase == 4) {
+            if(obs.belowAisle(0, 5) ){
+                goNorth();
+            } else { 
+                movementPhase = 5;
+            }
+        } if(movementPhase == 5) {
+            if(!obs.inAisleHub(0)){
+                goWest();
+            }
+            else{
+                movementPhase = 8;
+            }
+        } if(movementPhase == 5) {
+            if(!obs.inAisleHub(0)){
+                goWest();
+            }
+            else{
+                movementPhase = 8;
+            }
         }
 
-    }
+
         // if(movementPhase == 4) {
         //     if(obs.belowAisle(0, 4)){
         //         goNorth();
@@ -292,7 +313,7 @@ public class Agent extends SupermarketComponentImpl
         //     } else { 
         //         goWest();
         //     }
-        }
+        
     }
 
     // Helper perception function
@@ -416,9 +437,13 @@ public class Agent extends SupermarketComponentImpl
     {
         // Inhibit and exhibit layers
         planGoals(obs);
-        setMovement(obs);
+
+        boolean actionChosen = false;
+     
         // movement(obs, goal);
         // interact(obs, goal);
+        if
+        setMovement(obs);
     }
     
     // Author-defined execution loop
@@ -453,7 +478,7 @@ public class Agent extends SupermarketComponentImpl
             System.out.println("goals are:" + goal.name);
         }
         
-        System.out.println("cart Returns are:" + obs.cartReturns.length);
+        System.out.println("movePhase:" + movementPhase);
         // System.out.println("basket? Returns are:" + obs.basketReturn.length);
 
         shouldRunExecutionLoop = false;
