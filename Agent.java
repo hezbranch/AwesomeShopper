@@ -72,8 +72,8 @@ public class Agent extends SupermarketComponentImpl
     // Returns: Boolean
     // Effect(s): External timing
     // Complexity: Linear time complexity, constant space
-    // Notes: <Hezekiah> There's probably a FAR better way of doing this 
-    //                   but it is what it is
+    // Notes: <Hezekiah> There's probably a FAR better way of 
+    //                   doing this but it is what it is
     protected boolean noCollision(Observation obs) {
         // Set boolean to pass test cases
         boolean success = true;
