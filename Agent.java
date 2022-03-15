@@ -20,6 +20,7 @@ public class Agent extends SupermarketComponentImpl
     // Goal States
     static String PLAN = "plan";
     static double[] NOWHERE = {-1, -1};
+    int movementPhase = 0;
     
     // Author-defined boolean variable
     boolean firsttime = true;
@@ -112,6 +113,47 @@ public class Agent extends SupermarketComponentImpl
                 return success;
             }
         }
+        return success;
+    }
+
+    protected boolean goalInteractable(Observation obs) {
+        // Set boolean to pass test cases
+        boolean success = false;
+        // Check for shelf collisions
+        for (int i = 0; i < obs.shelves.length; i++) {
+            if (obs.shelves[i].canInteract(obs.players[0]) && obs.shelves[i].food == goals.get(0).name) {
+                success = true;
+                return success;
+            }
+        }
+        // Check for counter collisions
+        for (int i = 0; i < obs.counters.length; i++) {
+            if (obs.counters[i].canInteract(obs.players[0]) && obs.counters[i].food ==  goals.get(0).name) {
+                success = true;
+                return success;
+            }
+        }
+        // Check for register collisions
+        for (int i = 0; i < obs.registers.length; i++) {
+            if (obs.registers[i].canInteract(obs.players[0]) && "register" == goals.get(0).name) {
+                success = true;
+                return success;
+            }
+        }
+        // Check for cart return collisions
+        for (int i = 0; i < obs.cartReturns.length; i++) {
+            if (obs.cartReturns[i].canInteract(obs.players[0]) && "cart_return" == goals.get(0).name) {
+                success = true;
+                return success;
+            }
+        }
+        // Check for cart collisions
+        // for (int i = 0; i < obs.carts.length; i++) {
+        //     if (obs.carts[i].canInteract(obs.players[0])) {
+        //         success = false;
+        //         return success;
+        //     }
+        // }
         return success;
     }
 
@@ -300,6 +342,8 @@ public class Agent extends SupermarketComponentImpl
         return false;
     }
 
+    
+
     // Helper aisle function
     // Return the aisle number that the player is currently in
     protected int getCurrentAisle(Observation obs, int playerIndex) {
@@ -320,8 +364,83 @@ public class Agent extends SupermarketComponentImpl
     {
         // Inhibit and exhibit layers
         planGoals(obs);
+        if(goalInteractable(obs)){
+            // agentInteraction(obs, goals.get(0).position[0], goals.get(0).position[1]);
+            // interactAgent(obs, goal);
+        }
+        else {
+            setMovement(obs);
+        }
         // movement(obs, goal);
         // interact(obs, goal);
+    }
+
+    protected void setMovement(Observation obs){
+        if(movementPhase == 0){
+            if(obs.atCartReturn(0)){
+                movementPhase = 1;
+            }
+            else {
+                goSouth();
+            }
+        } if (movementPhase == 1) {
+            if(obs.inAisleHub(0) && obs.players[0].position[0] > 3.8){
+                movementPhase = 2;
+                // System.out.println("POSITION" + obs.players[0].position[0]);
+            } else { 
+                goEast();
+            }
+        } if(movementPhase == 2) {
+            if(obs.belowAisle(0, 6)){
+                movementPhase = 3;
+            } else { 
+                //   System.out.println("POSITION" + obs.players[0].position[0])
+                goSouth();
+            }
+        } if(movementPhase == 3) {
+            if(obs.inRearAisleHub(0)){
+                movementPhase = 4;
+            } else { 
+                goEast();
+            }
+        }
+          if(movementPhase == 4) {
+            if(obs.belowAisle(0, 5) ){
+                goNorth();
+            } else { 
+                movementPhase = 5;
+            }
+        } if(movementPhase == 5) {
+            if(!obs.inAisleHub(0)){
+                goWest();
+            }
+            else{
+                movementPhase = 8;
+            }
+        } if(movementPhase == 5) {
+            if(!obs.inAisleHub(0)){
+                goWest();
+            }
+            else{
+                movementPhase = 8;
+            }
+        }
+
+
+        // if(movementPhase == 4) {
+        //     if(obs.belowAisle(0, 4)){
+        //         goNorth();
+        //     } else { 
+        //        movementPhase = 5;
+        //     }
+        // }
+        // if(movementPhase == 5) {
+        //     if(obs.inAisleHub(0)){
+        //         movementPhase = 5;
+        //     } else { 
+        //         goWest();
+        //     }
+        
     }
     
     // Author-defined execution loop
