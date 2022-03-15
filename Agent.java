@@ -345,9 +345,6 @@ public class Agent extends SupermarketComponentImpl
         // call function to grab cart and go north
         // grabCartGoNorth(obs);
 
-        // Test out interaction function
-        agentInteraction(obs, 5, 18);
-
         // move agent to specified goal
 
         String goalLocation = "apples";
