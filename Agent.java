@@ -65,6 +65,43 @@ public class Agent extends SupermarketComponentImpl
         }
     }
 
+    
+    // Function: agentInteraction
+    // Purpose: Follow the sequence provided below:
+    //          Grab the item (if location has any available).
+    //          Add item to cart of basket (if being used).
+    //          Mark location as visited (shelf or counter).
+    //          Continue following path.
+    // Input: An observation state (i.e. Observation)
+    // Returns: None (i.e. void)
+    // Effect(s): External timing, infinite looping, assumes agent has cart
+    protected void agentInteraction(Observation obs)
+    {
+        // Get the agent's currrent location so we can return
+        // back to that spot once we get what we need here
+        // and continue along intended path from movement layer
+        double agent_start_x = obs.players[0].position[0];
+        double agent_start_y = obs.players[0].position[1];
+
+        // Handle interacting with food locations for grocery shopping
+        if (obs.cartReturns[0].canInteract(obs.players[0]) && obs.players[0].curr_cart != 0) {
+            // Case where agent has NOT obtained a cart
+            // and needs to interact with shelf/counter to get item
+            // off of the shopping list.
+            goNorth();
+            nop();
+            interactWithObject();
+            nop();
+        } else if (obs.players[0].curr_cart == 0) {
+            // Case where agent has shopping cart in-hand
+            // and needs to let it go to move to the shelf
+            // and interact to get items off shopping list.
+            nop();
+            interactWithObject();
+            nop();
+        }
+    }
+
     protected void planGoals(Observation obs)
     {
         if(goals.size() > 0 && goals.get(0).name == PLAN){
