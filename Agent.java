@@ -1,6 +1,7 @@
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.ArrayUtils;
 import com.supermarket.*;
 
 
@@ -20,6 +21,7 @@ public class Agent extends SupermarketComponentImpl
     // Goal States
     static String PLAN = "plan";
     static double[] NOWHERE = {-1, -1};
+    static int STEP_LENGTH = .15;
     
     // Author-defined boolean variable
     boolean firsttime = true;
@@ -98,9 +100,6 @@ public class Agent extends SupermarketComponentImpl
             }
 
             Collections.sort(goals);
-            // sort these items
-            // sort goals by y,
-            // sort goals by x with inverting each aisle alternatingly
 
             // choose a register
             Observation.Register chosenRegister = obs.registers[0];
@@ -270,6 +269,173 @@ public class Agent extends SupermarketComponentImpl
         }
     }
 
+    protected void movement2(Observation obs){
+        String[] a_star_result = A_Star(obs.players[0].position, goals[0], obs);
+    }
+
+    protected List<String> reconstruct_path(Node node){
+        Node curr = 
+        List<String> steps = new ArrayList<String>();
+        String parentDirection = node.parentDirection;
+
+        while(parentDirection != null){
+            steps.add(parentDirection);
+            parentDirection = 
+        }
+        if(node.parentToThisDir == null){
+            return []
+        }
+        return 
+
+    }
+    total_path := {current}
+    while current in cameFrom.Keys:
+        current := cameFrom[current]
+        total_path.prepend(current)
+    return total_path
+
+    protected double euclideanDistance(double[] a, double[] b){
+        return Math.sqrt(Math.square(a[0] - b[0]) + Math.square(a[1]- b[1]));
+    }
+
+    protected boolean wouldCollide(Node node, Observation obs){
+        Observation.InteractiveObject[] allObs = ArrayUtils.addAll(obs.shelves, obs.registers, obs.counters, obs.cartReturns);
+        for(Observation.InteractiveObject ob: allObs){
+            if(ob.collision(node.position[0], node.position[1])){
+                return true;
+            }
+        }
+        return false
+    }
+
+    protected double hWithCollision(Node node, Goal goal, Observation obs){
+        if (wouldCollide(node, obs) > 0){
+            return Double.POSITIVE_INFINITY;
+        }
+        // Infinity
+        return euclideanDistance(node.position, goal.position);
+    }
+
+    protected Node findOrCreateNeighbor(double[] position, ArrayList<Node> allNodes){
+        for(Node node: allNodes){
+            if(node.position.equals(position)){
+                return node;
+            }
+        }
+        Node newNeighbor = Node(position);
+        allNodes.append(newNeighbor);
+        return newNeighbor;
+    }
+
+    protected boolean atGoal(Node node, Goal goal, Observation obs){
+        Observation.InteractiveObject[] allObs = ArrayUtils.addAll(obs.shelves, obs.registers, obs.counters, obs.cartReturns);
+        Observation.InteractiveObject goalOb;
+        for(Observation.InteractiveObject  object : allObs){
+            if(object.position = goal.position){
+                goalOb = object;
+            }
+        }
+        // figure out if we are within interactive range of the goal 
+        // System.out.println()
+        if(Math.abs(node.position[1] - goalOb.position[1]) < 1){
+            System.out.println('y close ');
+            if(Math.abs(node.position[0] - goalOb.position[0]) < 1){
+                System.out.println('x close ');
+                return true;
+            }
+        }
+
+        return false
+    }
+
+    String[] directions = {"east", "west", "north", "south"};
+    protected neighborInDirection(Node current, String direction, ArrayList<Node> allNodes){
+        if(direction == directions[0]) {
+            double[] newPosition = {current.position[0] + STEP_LENGTH, current.position[1]}
+            return findOrCreateNeighbor(newPosition, allNodes)
+        }
+        if(direction == directions[1]) {
+            double[] newPosition = {current.position[0] - STEP_LENGTH, current.position[1]}
+            return findOrCreateNeighbor(newPosition, allNodes);
+        }
+        if(direction == directions[2]) {
+            double[] newPosition = {current.position[0], current.position[1] - STEP_LENGTH}
+            return findOrCreateNeighbor(newPosition, allNodes)
+        }
+        if(direction == directions[3]) {
+            double[] newPosition = {current.position[0], current.position[1] + STEP_LENGTH}
+            return findOrCreateNeighbor(newPosition, allNodes)
+        }
+        
+    }
+    //Constructed off of Wikipedia pseudocode 
+    // A* finds a path from start to goal.
+    // h is the heuristic function. h(n) estimates the cost to reach goal from node n.
+    protected String[] A_Star(double[] start, Goal goal, Observation obs){
+        // The set of discovered nodes that may need to be (re-)expanded.
+        // Initially, only the start node is known.
+        // This is usually implemented as a min-heap or priority queue rather than a hash-set.
+        // Starts with just start coordinate
+        ArrayList<Node> allNodes = new ArrayList<Node>();
+        ArrayList<Node> openSet = new ArrayList<Node>();
+        Node startNode = new Node(start);
+        allNodes.append(startNode);
+        openSet.append(startNode);
+
+        // {start}
+
+            // For node n, cameFrom[n] is the node immediately preceding it on the cheapest path from start
+        // to n currently known.
+        // cameFrom := an empty map
+        Arraylist<Node> cameFrom = new ArrayList<Node>();
+        // For node n, gScore[n] is the cost of the cheapest path from start to n currently known.
+        // gScore := map with default value of Infinity
+        // gScore[start] := 0
+
+        // For node n, fScore[n] := gScore[n] + h(n). fScore[n] represents our current best guess as to
+        // how short a path from start to finish can be if it goes through n.
+        // fScore := map with default value of Infinity
+        // fScore[start] := h(start)
+       
+        while(openSet.size() > 0) {
+            // This operation can occur in O(Log(N)) time if openSet is a min-heap or a priority queue
+            // current := the node in openSet having the lowest fScore[] value
+            current = openSet.get(0);
+            if(atGoal(current, goal, obs)){ //current.canInteract(goal)
+                return reconstruct_path(current);
+            }
+
+            openSet.remove(0)
+            for(String direction : directions) { 
+                // d(current,neighbor) is the weight of the edge from current to neighbor
+                // tentative_gScore is the distance from start to the neighbor through current
+                tentative_gScore = current.gScore + STEP_LENGTH; // step length
+                Node neighbor = neighborInDirection(direction, allNodes);
+                
+                // d(current, neighbor)
+                if(tentative_gScore < neighbor.gscore){
+                    // cameFrom[neighbor] := current
+                    neighbor.parent = current;
+                    neighbor.parentToThisDir = direction;
+
+                    // gScore[neighbor] := tentative_gScore
+                    neighbor.gScore = tentative_gScore;
+
+                    neighbor.fScore = tentative_gScore + hWithCollision(neighbor, goal, obs)
+                    
+                    // fScore[neighbor] := tentative_gScore + h(neighbor)
+                    if(!openSet.contains(neighbor){
+                        openSet.add(neighbor)
+                        Collections.sort(openSet);
+                    }
+                }
+                // This path to neighbor is better than any previous one. Record it!
+                  
+            }
+        }
+        // Open set is empty but goal was never reached
+        return failure
+
     // subsumption architecture layer
     protected void goalSearch(Observation obs, String goal) 
     {
@@ -318,16 +484,6 @@ public class Agent extends SupermarketComponentImpl
 
         boolean actionChosen = false;
         // Check which aisle the agent is closest to
-        // int current = getCurrentAisle(obs, 0);
-
-        // System.out.println("Player currently by aisle: " + current);
-        // actionChosen = 
         goalSearch(obs, goalLocation);
-        // if(!actionChosen){
-        //     actionChosen = interactWithStuff(obs);
-        // }
-        // if(!actionChosen){
-        //     actionChosen = moveAround(obs);
-        // }
     }
 }
