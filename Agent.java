@@ -32,6 +32,7 @@ public class Agent extends SupermarketComponentImpl
     // Input: An observation state (i.e. Observation)
     // Returns: None (i.e. void)
     // Effect(s): External timing, infinite looping
+    // Author: Branch, H.
     protected void grabCartGoNorth(Observation obs)
     {
         // Stop agent from going south and prevent
@@ -75,6 +76,8 @@ public class Agent extends SupermarketComponentImpl
     // Complexity: Linear time complexity, constant space
     // Notes: <Hezekiah> There's probably a FAR better way of 
     //                   doing this but it is what it is
+    // Author: Branch, H.
+
     protected boolean noCollision(Observation obs) {
         // Set boolean to pass test cases
         boolean success = true;
@@ -169,6 +172,7 @@ public class Agent extends SupermarketComponentImpl
     //        Position Y of intended coordinate (X, Y) as type double
     // Returns: None (i.e. void)
     // Effect(s): External timing, assumes agent does NOT have a cart
+    // Author: Branch, H.
     protected void returnToLocation(Observation obs, double target_x, double target_y) 
     {
         // Check if agent has arrived at intended position
@@ -210,6 +214,7 @@ public class Agent extends SupermarketComponentImpl
     //        Position Y of intended goal InteractiveObject (shelf, counter, etc.)
     // Returns: None (i.e. void)
     // Effect(s): External timing, infinite looping, assumes agent has cart when called
+    // Author: Branch, H.
     protected void agentInteraction(Observation obs, double target_x, double target_y)
     {
         // Get the agent's currrent location so we can return
@@ -248,6 +253,8 @@ public class Agent extends SupermarketComponentImpl
             }
 
             interactWithObject(); // Now holding the item in hand.
+
+            goals.remove(0); // Remove goal from list
 
             // Return to cart location at Line 90 & 91 and place item in cart
             returnToLocation(obs, agent_cart_start_x, agent_cart_start_y);
@@ -353,6 +360,7 @@ public class Agent extends SupermarketComponentImpl
 
     // Helper aisle function
     // Return the aisle number that the player is currently in
+    // Author: Branch, H.
     protected int getCurrentAisle(Observation obs, int playerIndex) {
         int current = -1;
         for (int i = 0; i < obs.shelves.length; i++) {
@@ -371,31 +379,14 @@ public class Agent extends SupermarketComponentImpl
     {
         // Inhibit and exhibit layers
         planGoals(obs);
-<<<<<<< HEAD
-<<<<<<< HEAD
+
         if(goalInteractable(obs)){
             agentInteraction(obs, goals.get(0).position[0], goals.get(0).position[1]);
             setMovement(obs);
         }
         else {
-=======
-        // if(goalInteractable(obs)){
-        //     agentInteraction(obs, goals.get(0).position[0], goals.get(0).position[1]);
-        // }
-        // else {
->>>>>>> b41024389fd9a8171ba5a364709d96c4290e0b20
             setMovement(obs);
-=======
-        if(goalInteractable(obs)){
-            goals.remove(0);
-            // agentInteraction(obs, goals.get(0).position[0], goals.get(0).position[1]);
         }
-        // else {
-        setMovement(obs);
->>>>>>> e5e2fc18947dd0bf4a00de59c4f4115e8545d383
-        // }
-        // movement(obs, goal);
-        // interact(obs, goal);
     }
 
     protected void setMovement(Observation obs){
@@ -560,12 +551,6 @@ public class Agent extends SupermarketComponentImpl
         // System.out.println(obs.counters.length + " counters");
         // System.out.println(obs.registers.length + " registers");
         // System.out.println(obs.cartReturns.length + " cartReturns");
-
-        if (obs.atCartReturn(0)) {
-            System.out.println("GEREFEFFEFEFFEFEFEFEFE");
-        }
-
-
         // print out the shopping list
         // System.out.println("Shoppping list: " + Arrays.toString(obs.players[0].shopping_list));
         // call function to grab cart and go north
