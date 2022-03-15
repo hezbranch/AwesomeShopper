@@ -119,6 +119,11 @@ public class Agent extends SupermarketComponentImpl
     protected boolean goalInteractable(Observation obs) {
         // Set boolean to pass test cases
         boolean success = false;
+        // Edge Case where above cart return
+        if (obs.atCartReturn(0)) {
+            success = true;
+            return success;
+        }
         // Check for shelf collisions
         for (int i = 0; i < obs.shelves.length; i++) {
             if (obs.shelves[i].canInteract(obs.players[0]) && obs.shelves[i].food == goals.get(0).name) {
@@ -213,44 +218,46 @@ public class Agent extends SupermarketComponentImpl
         double agent_start_x = obs.players[0].position[0];
         double agent_start_y = obs.players[0].position[1];
 
-        // Get the agent's cart's currrent location so we can return
-        // back to that spot once we get what we need here
-        // and continue along intended path from movement layer
-        double agent_cart_start_x = obs.carts[obs.players[0].curr_cart].position[0];
-        double agent_cart_start_y = obs.carts[obs.players[0].curr_cart].position[1];
-
         // Handle interacting with cart for grocery shopping
-        if (obs.cartReturns[0].canInteract(obs.players[0]) && obs.players[0].curr_cart != 0) {
+        if (obs.atCartReturn(0)) {
             // Case where path is cart return and agent has NOT obtained a cart
             // and needs to interact with cart return to get a cart
             // to begin securing items from the shopping list.
-            nop();
-            interactWithObject();
-            nop();
-        } else if (obs.players[0].curr_cart >= 0) {
+            grabCartGoNorth(obs);
+            goNorth();
+            return;
+        } else if (obs.players[0].curr_cart == 0 && obs.atCartReturn(0) == false) {
             // Case where agent has shopping cart in-hand
             // and needs to let it go to move to the shelf
             // and interact to get items off shopping list.
+
+            // Get the agent's cart's currrent location so we can return
+            // back to that spot once we get what we need here
+            // and continue along intended path from movement layer
+            double agent_cart_start_x = obs.carts[obs.players[0].curr_cart].position[0];
+            double agent_cart_start_y = obs.carts[obs.players[0].curr_cart].position[1];
+
+            // Unhand the shopping cart
             toggleShoppingCart();
-        }
 
-        // Assuming agent is now at the correct shelf/counter/location
-        // and facing the shelf, move forward toward the shelf
-        goNorth();
-        while (obs.players[0].position[1] < target_y) {
+            // Assuming agent is now at the correct shelf/counter/location
+            // and facing the shelf, move forward toward the shelf
             goNorth();
+            while (obs.players[0].position[1] < target_y) {
+                goNorth();
+            }
+
+            interactWithObject(); // Now holding the item in hand.
+
+            // Return to cart location at Line 90 & 91 and place item in cart
+            returnToLocation(obs, agent_cart_start_x, agent_cart_start_y);
+            interactWithObject(); // Put item from hand into cart
+
+            // Return to original start position at Line 84 & 85
+            // to facilitate movement layer and resume A* path-finding
+            returnToLocation(obs, agent_start_x, agent_start_y);
+            toggleShoppingCart(); //  Grab cart again for more item grabs
         }
-
-        interactWithObject(); // Now holding the item in hand.
-
-        // Return to cart location at Line 90 & 91 and place item in cart
-        returnToLocation(obs, agent_cart_start_x, agent_cart_start_y);
-        interactWithObject(); // Put item from hand into cart
-
-        // Return to original start position at Line 84 & 85
-        // to facilitate movement layer and resume A* path-finding
-        returnToLocation(obs, agent_start_x, agent_start_y);
-        toggleShoppingCart(); //  Grab cart again for more item grabs
     }
 
     protected void planGoals(Observation obs)
@@ -365,8 +372,8 @@ public class Agent extends SupermarketComponentImpl
         // Inhibit and exhibit layers
         planGoals(obs);
         if(goalInteractable(obs)){
-            // agentInteraction(obs, goals.get(0).position[0], goals.get(0).position[1]);
-            // interactAgent(obs, goal);
+            agentInteraction(obs, goals.get(0).position[0], goals.get(0).position[1]);
+            setMovement(obs);
         }
         else {
             setMovement(obs);
@@ -457,6 +464,10 @@ public class Agent extends SupermarketComponentImpl
         // System.out.println(obs.counters.length + " counters");
         // System.out.println(obs.registers.length + " registers");
         // System.out.println(obs.cartReturns.length + " cartReturns");
+
+        if (obs.atCartReturn(0)) {
+            System.out.println("GEREFEFFEFEFFEFEFEFEFE");
+        }
 
 
         // print out the shopping list
