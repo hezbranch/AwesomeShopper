@@ -181,9 +181,6 @@ public class Agent extends SupermarketComponentImpl
         for (int i = 0; i < obs.shelves.length; i++) {
             System.out.println("Food at shelf: " + i + " " + obs.shelves[i].food);
             System.out.println("At position: X: " + obs.shelves[i].position[0] + " , Y: " + obs.shelves[i].position[1]);
-            //if (obs.belowAisle(playerIndex, i) == obs.aboveAisle(playerIndex, i + 1)) {
-                //current = i;
-            //}
         }
         //System.out.println("Food at current shelf: " + obs.shelves[current].food);
         return current;
