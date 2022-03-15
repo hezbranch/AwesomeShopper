@@ -65,6 +65,49 @@ public class Agent extends SupermarketComponentImpl
         }
     }
 
+    // Linear time complexity function to avoid colliding into known Interactive Objects
+    // Hezekiah: There's probably a FAR better way of doing this but it is what it is
+    protected boolean noCollision(Observation obs) {
+        // Set boolean to pass test cases
+        boolean success = true;
+        // Check for shelf collisions
+        for (int i = 0; i < obs.shelves.length; i++) {
+            if (obs.shelves[i].canInteract(obs.players[0])) {
+                success = false;
+                return success;
+            }
+        }
+        // Check for counter collisions
+        for (int i = 0; i < obs.counters.length; i++) {
+            if (obs.counters[i].canInteract(obs.players[0])) {
+                success = false;
+                return success;
+            }
+        }
+        // Check for register collisions
+        for (int i = 0; i < obs.registers.length; i++) {
+            if (obs.registers[i].canInteract(obs.players[0])) {
+                success = false;
+                return success;
+            }
+        }
+        // Check for cart return collisions
+        for (int i = 0; i < obs.cartReturns.length; i++) {
+            if (obs.cartReturns[i].canInteract(obs.players[0])) {
+                success = false;
+                return success;
+            }
+        }
+        // Check for cart collisions
+        for (int i = 0; i < obs.carts.length; i++) {
+            if (obs.carts[i].canInteract(obs.players[0])) {
+                success = false;
+                return success;
+            }
+        }
+        return success;
+    }
+
     // Function: returnToLocation
     // Purpose: Move agent from current location to parametized target (X, Y)
     // Input: An observation state (i.e. Observation)
@@ -79,7 +122,8 @@ public class Agent extends SupermarketComponentImpl
         double agent_current_y_coord = obs.players[0].position[1]; 
         boolean stop = agent_current_x_coord == target_x && agent_current_y_coord == target_y;
 
-        if (stop == false) {
+        // If no collision possible, start returning to location
+        if (stop == false && noCollision(obs) == true) {
             // Move horiztonally toward goal position (2 : east, 3: west)
             if (agent_current_x_coord < target_x) {
                 goWest();
@@ -102,7 +146,7 @@ public class Agent extends SupermarketComponentImpl
 
     
     // Function: agentInteraction
-    // Purpose: Follow the sequence provided below:
+    // Purpose: Interaction Layer (Subsumption Architecture)
     //          Grab the item (if location has any available).
     //          Add item to cart (or basket if being used).
     //          Mark location as visited (shelf or counter).
@@ -128,23 +172,26 @@ public class Agent extends SupermarketComponentImpl
 
         // Handle interacting with cart for grocery shopping
         if (obs.cartReturns[0].canInteract(obs.players[0]) && obs.players[0].curr_cart != 0) {
-            // Case where agent has NOT obtained a cart
+            // Case where path is cart return and agent has NOT obtained a cart
             // and needs to interact with cart return to get a cart
             // to begin securing items from the shopping list.
             nop();
             interactWithObject();
             nop();
-        } else if (obs.players[0].curr_cart == 0) {
+        } else if (obs.players[0].curr_cart >= 0) {
             // Case where agent has shopping cart in-hand
             // and needs to let it go to move to the shelf
             // and interact to get items off shopping list.
-            nop();
-            interactWithObject();
-            nop();
+            toggleShoppingCart();
         }
 
-        // Assuming agent is at the correct shelf/counter/etc. location
-        // and facing the shelf (as implemented by movement layer)
+        // Assuming agent is now at the correct shelf/counter/location
+        // and facing the shelf, move forward toward the shelf
+        goNorth();
+        while (obs.players[0].position[1] < target_y) {
+            goNorth();
+        }
+
         interactWithObject(); // Now holding the item in hand.
 
         // Return to cart location at Line 90 & 91 and place item in cart
@@ -152,8 +199,9 @@ public class Agent extends SupermarketComponentImpl
         interactWithObject(); // Put item from hand into cart
 
         // Return to original start position at Line 84 & 85
-        // to ameliorate movement layer and resume A* path-finding
+        // to facilitate movement layer and resume A* path-finding
         returnToLocation(obs, agent_start_x, agent_start_y);
+        toggleShoppingCart(); //  Grab cart again for more item grabs
     }
 
     protected void planGoals(Observation obs)
@@ -245,27 +293,6 @@ public class Agent extends SupermarketComponentImpl
         return false;
     }
 
-    // Helper perception function
-    // Return objects if interactions possible
-    protected boolean objectCheck(Observation obs)
-    {
-        // Can interact
-        if (obs.cartReturns[0].canInteract(obs.players[0]) && 
-        obs.players[0].curr_cart != 0) {
-            return true;
-        } else if (obs.shelves[0].canInteract(obs.players[0])) {
-            return true;
-        } else if (obs.registers[0].canInteract(obs.players[0])) {
-            return true;
-        } else if (obs.carts[0].canInteract(obs.players[0])) {
-            return true;
-        } else if (obs.counters[0].canInteract(obs.players[0])) {
-            return true;
-        }
-        // Cannot interact
-        return false;
-    }
-
     // Helper aisle function
     // Return the aisle number that the player is currently in
     protected int getCurrentAisle(Observation obs, int playerIndex) {
@@ -279,86 +306,6 @@ public class Agent extends SupermarketComponentImpl
         }
         //System.out.println("Food at current shelf: " + obs.shelves[current].food);
         return current;
-    }
-
-    // Subsumption layer for agent perception (goal-driven)
-    protected boolean perception(Observation obs, String goal) 
-    {
-        // Get original location of player on map
-        double anchor_x = obs.players[0].position[0];
-        double anchor_y = obs.players[0].position[1];
-
-        // Check if object is interactive
-        boolean stop = objectCheck(obs);
-
-        // Check if goal has been found
-        boolean target = false;
-
-        // Check north and south for object
-        if (obs.players[0].direction == 2 || obs.players[0].direction == 3) {
-            while (stop == false) {
-                goNorth();
-                stop = objectCheck(obs);
-            } 
-            // Check if goal object perceived
-            interactWithObject();
-            if (obs.players[0].holding_food == goal) {
-                target = true;
-            } else {
-                cancelInteraction();
-            }
-            // Check otherside
-            while (obs.players[0].position[1] != anchor_y) {
-                goSouth();
-                stop = objectCheck(obs);
-            }
-        }
-        // Check east and west for object
-        if (obs.players[0].direction == 1 || obs.players[0].direction == 4) {
-            while (stop == false) {
-                goEast();
-                stop = objectCheck(obs);
-            }
-            // Check if goal object perceived
-            interactWithObject();
-            if (obs.players[0].holding_food == goal) {
-                target = true;
-            } else {
-                cancelInteraction();
-            }
-            // Check other side
-            while (obs.players[0].position[1] != anchor_x) {
-                goWest();
-                stop = objectCheck(obs);
-            }
-        }
-        // Otherwise
-        return target;
-    }
-
-    // interaction layer
-    protected void interact(Observation obs, String goal) 
-    {
-        // Subsumption layer for goal interaction
-        // Cart return: 1
-        // Counters: 2
-        // Registers: 3
-        // Shelves: 4
-        
-        // Check all six aisles
-        // FIGURE OUT IF WAY TO KNOW # of aisles
-        // COMPUTATIONALLY WITHOUT HARDCODING
-        if (obs.inAisle(0, 0) || obs.inAisle(0, 1)
-        || obs.inAisle(0, 2) || obs.inAisle(0, 3)
-        || obs.inAisle(0, 4) || obs.inAisle(0, 5) 
-        || obs.inAisle(0, 6)) {
-            boolean found = perception(obs, goal);
-            if(found) {
-                System.out.println("Found goal: " + goal);
-            } else {
-                System.out.println("Searching for goal: " + goal);
-            }
-        }
     }
 
     // subsumption architecture layer
@@ -391,7 +338,11 @@ public class Agent extends SupermarketComponentImpl
         // call function to grab cart and go north
         // grabCartGoNorth(obs);
 
+        // Test out interaction function
+        agentInteraction(obs, 5, 18);
+
         // move agent to specified goal
+
         String goalLocation = "apples";
 
         System.out.println("goals len:" + goals.size() + "  shopping len: " + obs.players[0].shopping_list.length);
@@ -408,6 +359,7 @@ public class Agent extends SupermarketComponentImpl
         shouldRunExecutionLoop = false;
 
         boolean actionChosen = false;
+
         // Check which aisle the agent is closest to
         // int current = getCurrentAisle(obs, 0);
 
