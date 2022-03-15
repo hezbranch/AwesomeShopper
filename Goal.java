@@ -6,6 +6,7 @@ public class Goal implements Comparable<Goal>{
         name = nme;
         position = pos;
     }
+    
     String name;
     double[] position;
 
