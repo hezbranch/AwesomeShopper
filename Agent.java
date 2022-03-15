@@ -67,6 +67,41 @@ public class Agent extends SupermarketComponentImpl
         }
     }
 
+    // Function: returnToLocation
+    // Purpose: Move agent from current location to parametized target (X, Y)
+    // Input: An observation state (i.e. Observation)
+    //        Position X of intended coordinate (X, Y) as type double
+    //        Position Y of intended coordinate (X, Y) as type double
+    // Returns: None (i.e. void)
+    // Effect(s): External timing, assumes agent does NOT have a cart
+    protected void returnToLocation(Observation obs, double target_x, double target_y) 
+    {
+        // Check if agent has arrived at intended position
+        double agent_current_x_coord = obs.players[0].position[0]; 
+        double agent_current_y_coord = obs.players[0].position[1]; 
+        boolean stop = agent_current_x_coord == target_x && agent_current_y_coord == target_y;
+
+        if (stop == false) {
+            // Move horiztonally toward goal position (2 : east, 3: west)
+            if (agent_current_x_coord < target_x) {
+                goWest();
+            } else if (agent_current_x_coord > target_x) {
+                goEast();
+            }
+            // Move vertically toward goal position (0: north, 1: south)
+            if (agent_current_y_coord < target_y) 
+            {
+                goNorth();
+            } else if (agent_current_y_coord > target_y) {
+                goSouth();
+            }
+            // Recur until agent arives at target location
+             returnToLocation(obs, target_x, target_y);
+        }
+        // Case where recursion no longer running
+        nop();
+    }
+
     
     // Function: agentInteraction
     // Purpose: Follow the sequence provided below:
@@ -78,7 +113,7 @@ public class Agent extends SupermarketComponentImpl
     //        Position X of intended goal InteractiveObject (shelf, counter, etc.)
     //        Position Y of intended goal InteractiveObject (shelf, counter, etc.)
     // Returns: None (i.e. void)
-    // Effect(s): External timing, infinite looping, assumes agent has cart
+    // Effect(s): External timing, infinite looping, assumes agent has cart when called
     protected void agentInteraction(Observation obs, double target_x, double target_y)
     {
         // Get the agent's currrent location so we can return
@@ -115,9 +150,12 @@ public class Agent extends SupermarketComponentImpl
         interactWithObject(); // Now holding the item in hand.
 
         // Return to cart location at Line 90 & 91 and place item in cart
+        returnToLocation(obs, agent_cart_start_x, agent_cart_start_y);
+        interactWithObject(); // Put item from hand into cart
 
         // Return to original start position at Line 84 & 85
         // to ameliorate movement layer and resume A* path-finding
+        returnToLocation(obs, agent_start_x, agent_start_y);
     }
 
     protected void planGoals(Observation obs)

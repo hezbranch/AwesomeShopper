@@ -1,0 +1,27 @@
+b395d7b - Hezekiah Branch, 6 minutes ago : Merge pull request #8 from hezbranch/interaction-layer-hezekiah
+8d52605 - Hezekiah Branch, 7 minutes ago : Took out broken movement function lol
+699c4fc - Hezekiah Branch, 10 hours ago : Update README.md
+05824e8 - Hezekiah Branch, 10 hours ago : Removing 'Navigation Section'
+2332246 - Hezekiah Branch, 10 hours ago : Merge pull request #7 from hezbranch/interaction-layer-hezekiah
+b68703f - Hezekiah Branch, 10 hours ago : Finish fleshing out interaction layer, still need movement though
+45765e8 - Hezekiah Branch, 11 hours ago : Merge pull request #6 from hezbranch/interaction-layer-hezekiah
+d9ccfe3 - Hezekiah Branch, 11 hours ago : Adding git ignore file
+69d2c2a - Hezekiah Branch, 11 hours ago : Merge pull request #4 from hezbranch/mloturco/navigation
+5bdc2f5 - Hezekiah Branch, 11 hours ago : Pruning artifacts from branch
+762fe6c - Michael LoTurco, 11 hours ago : save agent
+442b1a9 - Hezekiah Branch, 11 hours ago : Removing Java class artifacts
+7ed6d1d - Hezekiah Branch, 11 hours ago : Merge pull request #5 from hezbranch/interaction-layer-hezekiah
+2694115 - Michael LoTurco, 11 hours ago : add Node class and start A Star
+c633039 - Hezekiah Branch, 11 hours ago : Adding interaction functionality assuming agent at location of item on shopping list
+a4eed48 - Hezekiah Branch, 11 hours ago : Update README.md
+22414d4 - Hezekiah Branch, 12 hours ago : Update README.md
+e4ab5de - Hezekiah Branch, 12 hours ago : Merge pull request #3 from hezbranch/mloturco/plan_setter_v2
+da8bed3 - Michael LoTurco, 14 hours ago : update plansetter and agent
+d880ef0 - mattufts, 2 days ago : Update README.md
+cf09fb4 - mattufts, 2 days ago : Update README.md
+40dc550 - Hezekiah Branch, 2 days ago : Merge branch 'mloturco/goal-setting' into main
+74502e3 - Hezekiah Branch, 2 days ago : Merge branch 'main' into mloturco/goal-setting
+ef59951 - Michael LoTurco, 2 days ago : add basic goal setting implimentation
+d691d1b - Hezekiah Branch, 4 days ago : Delete Agent.class
+d515ac1 - Hezekiah Branch, 4 days ago : Adding starter code + Hezekiah code
+c4cf09b - Hezekiah Branch, 4 days ago : Initial commit
