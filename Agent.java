@@ -364,11 +364,12 @@ public class Agent extends SupermarketComponentImpl
     {
         // Inhibit and exhibit layers
         planGoals(obs);
-        // if(goalInteractable(obs)){
-        //     agentInteraction(obs, goals.get(0).position[0], goals.get(0).position[1]);
-        // }
+        if(goalInteractable(obs)){
+            goals.remove(0);
+            // agentInteraction(obs, goals.get(0).position[0], goals.get(0).position[1]);
+        }
         // else {
-            setMovement(obs);
+        setMovement(obs);
         // }
         // movement(obs, goal);
         // interact(obs, goal);
@@ -424,7 +425,8 @@ public class Agent extends SupermarketComponentImpl
                 movementPhase = 7;
             }
         } if(movementPhase == 7) {
-            if(obs.inRearAisleHub(0)){
+            if(obs.players[0].position[0] >= 17.5){
+                // obs.besideCounters(0)){
                 movementPhase = 8;
             } else { 
                 goEast();
@@ -451,7 +453,8 @@ public class Agent extends SupermarketComponentImpl
                 movementPhase = 11;
             }
         } if(movementPhase == 11) {
-            if(obs.inRearAisleHub(0)){
+            if(obs.players[0].position[0] >= 17.5){
+                // obs.besideCounters(0)
                 movementPhase = 12;
             } else { 
                 goEast();
@@ -464,28 +467,30 @@ public class Agent extends SupermarketComponentImpl
                 movementPhase = 13;
             }
         } if(movementPhase == 13) {
-            if(!obs.inAisleHub(0)){
+            if(obs.players[0].position[0] > 3.5){
+                // !obs.inAisleHub(0)
                 goWest();
             }
             else{
                 movementPhase = 14;
             }
         } if(movementPhase == 14) {
-            // if(obs.belowAisle(0, 0)){
-            //     goNorth();
+            if(obs.players[0].position[1] < 7.5){
+                goSouth();
+            }
+            else{
+                movementPhase = 15;
+            }
+        } 
+        if(movementPhase == 15) {
+            // if(!obs.inRearAisleHub(0)){
+            goWest();
             // }
             // else{
-            //     movementPhase = 15;
+            //    movementPhase = 16;
             // }
-        } 
-        // if(movementPhase == 7) {
-        //     if(!obs.inRearAisleHub(0)){
-        //         goEast();
-        //     }
-        //     else{
-        //        movementPhase = 8;
-        //     }
-        // }  if(movementPhase == 8) {
+        }  
+        // if(movementPhase == 8) {
         //     if(obs.belowAisle(0, 4)){
         //         goNorth();
         //     }
@@ -563,7 +568,8 @@ public class Agent extends SupermarketComponentImpl
 
         // System.out.println("Player currently by aisle: " + current);
         // actionChosen = 
-        System.out.println("movePhase"+ movementPhase);
+        System.out.println("movePhase"+ movementPhase+ " , " + obs.players[0].position[0]
+                        + " , " +  obs.players[0].position[1]);
         goalSearch(obs, goalLocation);
         // if(!actionChosen){
         //     actionChosen = interactWithStuff(obs);
