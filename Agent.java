@@ -364,13 +364,12 @@ public class Agent extends SupermarketComponentImpl
     {
         // Inhibit and exhibit layers
         planGoals(obs);
-        if(goalInteractable(obs)){
-            // agentInteraction(obs, goals.get(0).position[0], goals.get(0).position[1]);
-            // interactAgent(obs, goal);
-        }
-        else {
+        // if(goalInteractable(obs)){
+        //     agentInteraction(obs, goals.get(0).position[0], goals.get(0).position[1]);
+        // }
+        // else {
             setMovement(obs);
-        }
+        // }
         // movement(obs, goal);
         // interact(obs, goal);
     }
@@ -415,16 +414,92 @@ public class Agent extends SupermarketComponentImpl
                 goWest();
             }
             else{
-                movementPhase = 8;
+                movementPhase = 6;
             }
-        } if(movementPhase == 5) {
+        } if(movementPhase == 6) {
+            if(obs.belowAisle(0, 4)){
+                goNorth();
+            }
+            else{
+                movementPhase = 7;
+            }
+        } if(movementPhase == 7) {
+            if(obs.inRearAisleHub(0)){
+                movementPhase = 8;
+            } else { 
+                goEast();
+            }
+        }
+          if(movementPhase == 8) {
+            if(obs.belowAisle(0, 3) ){
+                goNorth();
+            } else { 
+                movementPhase = 9;
+            }
+        } if(movementPhase == 9) {
             if(!obs.inAisleHub(0)){
                 goWest();
             }
             else{
-                movementPhase = 8;
+                movementPhase = 10;
+            }
+        } if(movementPhase == 10) {
+            if(obs.belowAisle(0, 2)){
+                goNorth();
+            }
+            else{
+                movementPhase = 11;
+            }
+        } if(movementPhase == 11) {
+            if(obs.inRearAisleHub(0)){
+                movementPhase = 12;
+            } else { 
+                goEast();
             }
         }
+          if(movementPhase == 12) {
+            if(obs.belowAisle(0, 1) ){
+                goNorth();
+            } else { 
+                movementPhase = 13;
+            }
+        } if(movementPhase == 13) {
+            if(!obs.inAisleHub(0)){
+                goWest();
+            }
+            else{
+                movementPhase = 14;
+            }
+        } if(movementPhase == 14) {
+            // if(obs.belowAisle(0, 0)){
+            //     goNorth();
+            // }
+            // else{
+            //     movementPhase = 15;
+            // }
+        } 
+        // if(movementPhase == 7) {
+        //     if(!obs.inRearAisleHub(0)){
+        //         goEast();
+        //     }
+        //     else{
+        //        movementPhase = 8;
+        //     }
+        // }  if(movementPhase == 8) {
+        //     if(obs.belowAisle(0, 4)){
+        //         goNorth();
+        //     }
+        //     else{
+        //         movementPhase = 9;
+        //     }
+        // } if(movementPhase == 9) {
+        //     if(!obs.inRearAisleHub(0)){
+        //         goEast();
+        //     }
+        //     else{
+        //        movementPhase = 10;
+        //     }
+        // }   
 
 
         // if(movementPhase == 4) {
@@ -488,6 +563,7 @@ public class Agent extends SupermarketComponentImpl
 
         // System.out.println("Player currently by aisle: " + current);
         // actionChosen = 
+        System.out.println("movePhase"+ movementPhase);
         goalSearch(obs, goalLocation);
         // if(!actionChosen){
         //     actionChosen = interactWithStuff(obs);
