@@ -1,7 +1,7 @@
 # AwesomeShopper
 Working to create the best simple robot for shopping
 
-#NavigationSection
+## Navigation Section
 
 1. take in coordinate value for item's location
 2. take in coordinate value for players location
