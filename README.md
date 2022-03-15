@@ -8,3 +8,5 @@ Working to create the best simple robot for shopping.
 ## Running Agent Package (Windows OS)
 `java -cp .;DIARC.jar Agent Agent `
   
+## Running Agent Package (macOS)
+`java -cp .:DIARC.jar Agent Agent `
