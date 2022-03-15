@@ -32,7 +32,6 @@ public class Agent extends SupermarketComponentImpl
     // Input: An observation state (i.e. Observation)
     // Returns: None (i.e. void)
     // Effect(s): External timing, infinite looping
-    // Author: Branch, H.
     protected void grabCartGoNorth(Observation obs)
     {
         // Stop agent from going south and prevent
@@ -76,8 +75,6 @@ public class Agent extends SupermarketComponentImpl
     // Complexity: Linear time complexity, constant space
     // Notes: <Hezekiah> There's probably a FAR better way of 
     //                   doing this but it is what it is
-    // Author: Branch, H.
-
     protected boolean noCollision(Observation obs) {
         // Set boolean to pass test cases
         boolean success = true;
@@ -172,7 +169,6 @@ public class Agent extends SupermarketComponentImpl
     //        Position Y of intended coordinate (X, Y) as type double
     // Returns: None (i.e. void)
     // Effect(s): External timing, assumes agent does NOT have a cart
-    // Author: Branch, H.
     protected void returnToLocation(Observation obs, double target_x, double target_y) 
     {
         // Check if agent has arrived at intended position
@@ -214,7 +210,6 @@ public class Agent extends SupermarketComponentImpl
     //        Position Y of intended goal InteractiveObject (shelf, counter, etc.)
     // Returns: None (i.e. void)
     // Effect(s): External timing, infinite looping, assumes agent has cart when called
-    // Author: Branch, H.
     protected void agentInteraction(Observation obs, double target_x, double target_y)
     {
         // Get the agent's currrent location so we can return
@@ -253,8 +248,6 @@ public class Agent extends SupermarketComponentImpl
             }
 
             interactWithObject(); // Now holding the item in hand.
-
-            goals.remove(0); // Remove goal from list
 
             // Return to cart location at Line 90 & 91 and place item in cart
             returnToLocation(obs, agent_cart_start_x, agent_cart_start_y);
@@ -360,7 +353,6 @@ public class Agent extends SupermarketComponentImpl
 
     // Helper aisle function
     // Return the aisle number that the player is currently in
-    // Author: Branch, H.
     protected int getCurrentAisle(Observation obs, int playerIndex) {
         int current = -1;
         for (int i = 0; i < obs.shelves.length; i++) {
@@ -379,14 +371,31 @@ public class Agent extends SupermarketComponentImpl
     {
         // Inhibit and exhibit layers
         planGoals(obs);
-
+<<<<<<< HEAD
+<<<<<<< HEAD
         if(goalInteractable(obs)){
             agentInteraction(obs, goals.get(0).position[0], goals.get(0).position[1]);
             setMovement(obs);
         }
         else {
+=======
+        // if(goalInteractable(obs)){
+        //     agentInteraction(obs, goals.get(0).position[0], goals.get(0).position[1]);
+        // }
+        // else {
+>>>>>>> b41024389fd9a8171ba5a364709d96c4290e0b20
             setMovement(obs);
+=======
+        if(goalInteractable(obs)){
+            goals.remove(0);
+            // agentInteraction(obs, goals.get(0).position[0], goals.get(0).position[1]);
         }
+        // else {
+        setMovement(obs);
+>>>>>>> e5e2fc18947dd0bf4a00de59c4f4115e8545d383
+        // }
+        // movement(obs, goal);
+        // interact(obs, goal);
     }
 
     protected void setMovement(Observation obs){
@@ -400,36 +409,28 @@ public class Agent extends SupermarketComponentImpl
         } if (movementPhase == 1) {
             if(obs.inAisleHub(0) && obs.players[0].position[0] > 3.8){
                 movementPhase = 2;
-            } else {
+                // System.out.println("POSITION" + obs.players[0].position[0]);
+            } else { 
                 goEast();
             }
         } if(movementPhase == 2) {
-            if(  !obs.belowAisle(0, 6)){
-                // obs.players[0].position[1] < obs.aisles
-             
-                goSouth();
-            } else {
-                goNorth();
-                goNorth();
-                goNorth();
-                goNorth();
+            if(obs.belowAisle(0, 6)){
                 movementPhase = 3;
+            } else { 
+                //   System.out.println("POSITION" + obs.players[0].position[0])
+                goSouth();
             }
         } if(movementPhase == 3) {
             if(obs.inRearAisleHub(0)){
                 movementPhase = 4;
-            } else {
+            } else { 
                 goEast();
             }
         }
           if(movementPhase == 4) {
             if(obs.belowAisle(0, 5) ){
                 goNorth();
-            } else {
-                goNorth();
-                goNorth();
-                goNorth();
-             
+            } else { 
                 movementPhase = 5;
             }
         } if(movementPhase == 5) {
@@ -444,31 +445,20 @@ public class Agent extends SupermarketComponentImpl
                 goNorth();
             }
             else{
-                goNorth();
-                goNorth();
-                goNorth();
-                goNorth();
                 movementPhase = 7;
             }
         } if(movementPhase == 7) {
-            // We tried using  beside counters here but it threw a compilation
-            // error, I don't think it was on our side but we replaced it with a
-            // hard coded X value only for that reason
             if(obs.players[0].position[0] >= 17.5){
                 // obs.besideCounters(0)){
                 movementPhase = 8;
-            } else {
+            } else { 
                 goEast();
             }
         }
           if(movementPhase == 8) {
             if(obs.belowAisle(0, 3) ){
                 goNorth();
-            } else {
-                goNorth();
-                goNorth();
-                goNorth();
-                goNorth();
+            } else { 
                 movementPhase = 9;
             }
         } if(movementPhase == 9) {
@@ -483,28 +473,20 @@ public class Agent extends SupermarketComponentImpl
                 goNorth();
             }
             else{
-                goNorth();
-                goNorth();
-                goNorth();
-                goNorth();
                 movementPhase = 11;
             }
         } if(movementPhase == 11) {
             if(obs.players[0].position[0] >= 17.5){
                 // obs.besideCounters(0)
                 movementPhase = 12;
-            } else {
+            } else { 
                 goEast();
             }
         }
           if(movementPhase == 12) {
             if(obs.belowAisle(0, 1) ){
                 goNorth();
-            } else {
-                goNorth();
-                goNorth();
-                goNorth();
-                goNorth();
+            } else { 
                 movementPhase = 13;
             }
         } if(movementPhase == 13) {
@@ -522,10 +504,46 @@ public class Agent extends SupermarketComponentImpl
             else{
                 movementPhase = 15;
             }
-        }
+        } 
         if(movementPhase == 15) {
+            // if(!obs.inRearAisleHub(0)){
             goWest();
-        }       
+            // }
+            // else{
+            //    movementPhase = 16;
+            // }
+        }  
+        // if(movementPhase == 8) {
+        //     if(obs.belowAisle(0, 4)){
+        //         goNorth();
+        //     }
+        //     else{
+        //         movementPhase = 9;
+        //     }
+        // } if(movementPhase == 9) {
+        //     if(!obs.inRearAisleHub(0)){
+        //         goEast();
+        //     }
+        //     else{
+        //        movementPhase = 10;
+        //     }
+        // }   
+
+
+        // if(movementPhase == 4) {
+        //     if(obs.belowAisle(0, 4)){
+        //         goNorth();
+        //     } else { 
+        //        movementPhase = 5;
+        //     }
+        // }
+        // if(movementPhase == 5) {
+        //     if(obs.inAisleHub(0)){
+        //         movementPhase = 5;
+        //     } else { 
+        //         goWest();
+        //     }
+        
     }
     
     // Author-defined execution loop
@@ -542,6 +560,12 @@ public class Agent extends SupermarketComponentImpl
         // System.out.println(obs.counters.length + " counters");
         // System.out.println(obs.registers.length + " registers");
         // System.out.println(obs.cartReturns.length + " cartReturns");
+
+        if (obs.atCartReturn(0)) {
+            System.out.println("GEREFEFFEFEFFEFEFEFEFE");
+        }
+
+
         // print out the shopping list
         // System.out.println("Shoppping list: " + Arrays.toString(obs.players[0].shopping_list));
         // call function to grab cart and go north

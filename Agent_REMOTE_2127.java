@@ -32,7 +32,6 @@ public class Agent extends SupermarketComponentImpl
     // Input: An observation state (i.e. Observation)
     // Returns: None (i.e. void)
     // Effect(s): External timing, infinite looping
-    // Author: Branch, H.
     protected void grabCartGoNorth(Observation obs)
     {
         // Stop agent from going south and prevent
@@ -76,8 +75,6 @@ public class Agent extends SupermarketComponentImpl
     // Complexity: Linear time complexity, constant space
     // Notes: <Hezekiah> There's probably a FAR better way of 
     //                   doing this but it is what it is
-    // Author: Branch, H.
-
     protected boolean noCollision(Observation obs) {
         // Set boolean to pass test cases
         boolean success = true;
@@ -122,11 +119,6 @@ public class Agent extends SupermarketComponentImpl
     protected boolean goalInteractable(Observation obs) {
         // Set boolean to pass test cases
         boolean success = false;
-        // Edge Case where above cart return
-        if (obs.atCartReturn(0)) {
-            success = true;
-            return success;
-        }
         // Check for shelf collisions
         for (int i = 0; i < obs.shelves.length; i++) {
             if (obs.shelves[i].canInteract(obs.players[0]) && obs.shelves[i].food == goals.get(0).name) {
@@ -172,7 +164,6 @@ public class Agent extends SupermarketComponentImpl
     //        Position Y of intended coordinate (X, Y) as type double
     // Returns: None (i.e. void)
     // Effect(s): External timing, assumes agent does NOT have a cart
-    // Author: Branch, H.
     protected void returnToLocation(Observation obs, double target_x, double target_y) 
     {
         // Check if agent has arrived at intended position
@@ -214,7 +205,6 @@ public class Agent extends SupermarketComponentImpl
     //        Position Y of intended goal InteractiveObject (shelf, counter, etc.)
     // Returns: None (i.e. void)
     // Effect(s): External timing, infinite looping, assumes agent has cart when called
-    // Author: Branch, H.
     protected void agentInteraction(Observation obs, double target_x, double target_y)
     {
         // Get the agent's currrent location so we can return
@@ -223,48 +213,44 @@ public class Agent extends SupermarketComponentImpl
         double agent_start_x = obs.players[0].position[0];
         double agent_start_y = obs.players[0].position[1];
 
+        // Get the agent's cart's currrent location so we can return
+        // back to that spot once we get what we need here
+        // and continue along intended path from movement layer
+        double agent_cart_start_x = obs.carts[obs.players[0].curr_cart].position[0];
+        double agent_cart_start_y = obs.carts[obs.players[0].curr_cart].position[1];
+
         // Handle interacting with cart for grocery shopping
-        if (obs.atCartReturn(0)) {
+        if (obs.cartReturns[0].canInteract(obs.players[0]) && obs.players[0].curr_cart != 0) {
             // Case where path is cart return and agent has NOT obtained a cart
             // and needs to interact with cart return to get a cart
             // to begin securing items from the shopping list.
-            grabCartGoNorth(obs);
-            goNorth();
-            return;
-        } else if (obs.players[0].curr_cart == 0 && obs.atCartReturn(0) == false) {
+            nop();
+            interactWithObject();
+            nop();
+        } else if (obs.players[0].curr_cart >= 0) {
             // Case where agent has shopping cart in-hand
             // and needs to let it go to move to the shelf
             // and interact to get items off shopping list.
-
-            // Get the agent's cart's currrent location so we can return
-            // back to that spot once we get what we need here
-            // and continue along intended path from movement layer
-            double agent_cart_start_x = obs.carts[obs.players[0].curr_cart].position[0];
-            double agent_cart_start_y = obs.carts[obs.players[0].curr_cart].position[1];
-
-            // Unhand the shopping cart
             toggleShoppingCart();
-
-            // Assuming agent is now at the correct shelf/counter/location
-            // and facing the shelf, move forward toward the shelf
-            goNorth();
-            while (obs.players[0].position[1] < target_y) {
-                goNorth();
-            }
-
-            interactWithObject(); // Now holding the item in hand.
-
-            goals.remove(0); // Remove goal from list
-
-            // Return to cart location at Line 90 & 91 and place item in cart
-            returnToLocation(obs, agent_cart_start_x, agent_cart_start_y);
-            interactWithObject(); // Put item from hand into cart
-
-            // Return to original start position at Line 84 & 85
-            // to facilitate movement layer and resume A* path-finding
-            returnToLocation(obs, agent_start_x, agent_start_y);
-            toggleShoppingCart(); //  Grab cart again for more item grabs
         }
+
+        // Assuming agent is now at the correct shelf/counter/location
+        // and facing the shelf, move forward toward the shelf
+        goNorth();
+        while (obs.players[0].position[1] < target_y) {
+            goNorth();
+        }
+
+        interactWithObject(); // Now holding the item in hand.
+
+        // Return to cart location at Line 90 & 91 and place item in cart
+        returnToLocation(obs, agent_cart_start_x, agent_cart_start_y);
+        interactWithObject(); // Put item from hand into cart
+
+        // Return to original start position at Line 84 & 85
+        // to facilitate movement layer and resume A* path-finding
+        returnToLocation(obs, agent_start_x, agent_start_y);
+        toggleShoppingCart(); //  Grab cart again for more item grabs
     }
 
     protected void planGoals(Observation obs)
@@ -360,7 +346,6 @@ public class Agent extends SupermarketComponentImpl
 
     // Helper aisle function
     // Return the aisle number that the player is currently in
-    // Author: Branch, H.
     protected int getCurrentAisle(Observation obs, int playerIndex) {
         int current = -1;
         for (int i = 0; i < obs.shelves.length; i++) {
@@ -379,14 +364,15 @@ public class Agent extends SupermarketComponentImpl
     {
         // Inhibit and exhibit layers
         planGoals(obs);
-
         if(goalInteractable(obs)){
-            agentInteraction(obs, goals.get(0).position[0], goals.get(0).position[1]);
-            setMovement(obs);
+            goals.remove(0);
+            // agentInteraction(obs, goals.get(0).position[0], goals.get(0).position[1]);
         }
-        else {
-            setMovement(obs);
-        }
+        // else {
+        setMovement(obs);
+        // }
+        // movement(obs, goal);
+        // interact(obs, goal);
     }
 
     protected void setMovement(Observation obs){
@@ -400,36 +386,28 @@ public class Agent extends SupermarketComponentImpl
         } if (movementPhase == 1) {
             if(obs.inAisleHub(0) && obs.players[0].position[0] > 3.8){
                 movementPhase = 2;
-            } else {
+                // System.out.println("POSITION" + obs.players[0].position[0]);
+            } else { 
                 goEast();
             }
         } if(movementPhase == 2) {
-            if(  !obs.belowAisle(0, 6)){
-                // obs.players[0].position[1] < obs.aisles
-             
-                goSouth();
-            } else {
-                goNorth();
-                goNorth();
-                goNorth();
-                goNorth();
+            if(obs.belowAisle(0, 6)){
                 movementPhase = 3;
+            } else { 
+                //   System.out.println("POSITION" + obs.players[0].position[0])
+                goSouth();
             }
         } if(movementPhase == 3) {
             if(obs.inRearAisleHub(0)){
                 movementPhase = 4;
-            } else {
+            } else { 
                 goEast();
             }
         }
           if(movementPhase == 4) {
             if(obs.belowAisle(0, 5) ){
                 goNorth();
-            } else {
-                goNorth();
-                goNorth();
-                goNorth();
-             
+            } else { 
                 movementPhase = 5;
             }
         } if(movementPhase == 5) {
@@ -444,31 +422,20 @@ public class Agent extends SupermarketComponentImpl
                 goNorth();
             }
             else{
-                goNorth();
-                goNorth();
-                goNorth();
-                goNorth();
                 movementPhase = 7;
             }
         } if(movementPhase == 7) {
-            // We tried using  beside counters here but it threw a compilation
-            // error, I don't think it was on our side but we replaced it with a
-            // hard coded X value only for that reason
             if(obs.players[0].position[0] >= 17.5){
                 // obs.besideCounters(0)){
                 movementPhase = 8;
-            } else {
+            } else { 
                 goEast();
             }
         }
           if(movementPhase == 8) {
             if(obs.belowAisle(0, 3) ){
                 goNorth();
-            } else {
-                goNorth();
-                goNorth();
-                goNorth();
-                goNorth();
+            } else { 
                 movementPhase = 9;
             }
         } if(movementPhase == 9) {
@@ -483,28 +450,20 @@ public class Agent extends SupermarketComponentImpl
                 goNorth();
             }
             else{
-                goNorth();
-                goNorth();
-                goNorth();
-                goNorth();
                 movementPhase = 11;
             }
         } if(movementPhase == 11) {
             if(obs.players[0].position[0] >= 17.5){
                 // obs.besideCounters(0)
                 movementPhase = 12;
-            } else {
+            } else { 
                 goEast();
             }
         }
           if(movementPhase == 12) {
             if(obs.belowAisle(0, 1) ){
                 goNorth();
-            } else {
-                goNorth();
-                goNorth();
-                goNorth();
-                goNorth();
+            } else { 
                 movementPhase = 13;
             }
         } if(movementPhase == 13) {
@@ -522,10 +481,46 @@ public class Agent extends SupermarketComponentImpl
             else{
                 movementPhase = 15;
             }
-        }
+        } 
         if(movementPhase == 15) {
+            // if(!obs.inRearAisleHub(0)){
             goWest();
-        }       
+            // }
+            // else{
+            //    movementPhase = 16;
+            // }
+        }  
+        // if(movementPhase == 8) {
+        //     if(obs.belowAisle(0, 4)){
+        //         goNorth();
+        //     }
+        //     else{
+        //         movementPhase = 9;
+        //     }
+        // } if(movementPhase == 9) {
+        //     if(!obs.inRearAisleHub(0)){
+        //         goEast();
+        //     }
+        //     else{
+        //        movementPhase = 10;
+        //     }
+        // }   
+
+
+        // if(movementPhase == 4) {
+        //     if(obs.belowAisle(0, 4)){
+        //         goNorth();
+        //     } else { 
+        //        movementPhase = 5;
+        //     }
+        // }
+        // if(movementPhase == 5) {
+        //     if(obs.inAisleHub(0)){
+        //         movementPhase = 5;
+        //     } else { 
+        //         goWest();
+        //     }
+        
     }
     
     // Author-defined execution loop
@@ -542,6 +537,8 @@ public class Agent extends SupermarketComponentImpl
         // System.out.println(obs.counters.length + " counters");
         // System.out.println(obs.registers.length + " registers");
         // System.out.println(obs.cartReturns.length + " cartReturns");
+
+
         // print out the shopping list
         // System.out.println("Shoppping list: " + Arrays.toString(obs.players[0].shopping_list));
         // call function to grab cart and go north
