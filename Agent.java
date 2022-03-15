@@ -96,7 +96,6 @@ public class Agent extends SupermarketComponentImpl
             // Case where agent has NOT obtained a cart
             // and needs to interact with cart return to get a cart
             // to begin securing items from the shopping list.
-            goNorth();
             nop();
             interactWithObject();
             nop();
