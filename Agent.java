@@ -1,6 +1,7 @@
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.lang.Math;
 import com.supermarket.*;
 
 
@@ -77,7 +78,6 @@ public class Agent extends SupermarketComponentImpl
     // Notes: <Hezekiah> There's probably a FAR better way of 
     //                   doing this but it is what it is
     // Author: Branch, H.
-
     protected boolean noCollision(Observation obs) {
         // Set boolean to pass test cases
         boolean success = true;
@@ -175,33 +175,43 @@ public class Agent extends SupermarketComponentImpl
     // Author: Branch, H.
     protected void returnToLocation(Observation obs, double target_x, double target_y) 
     {
-        // Check if agent has arrived at intended position
+        // Initialze starter variables for movement
         double agent_current_x_coord = obs.players[0].position[0]; 
         double agent_current_y_coord = obs.players[0].position[1]; 
-        boolean stop = agent_current_x_coord == target_x && agent_current_y_coord == target_y;
-
-        // If no collision possible, start returning to location
-        if (stop == false && noCollision(obs) == true) {
-            // Move horiztonally toward goal position (2 : east, 3: west)
-            if (agent_current_x_coord < target_x) {
-                goWest();
-            } else if (agent_current_x_coord > target_x) {
-                goEast();
-            }
-            // Move vertically toward goal position (0: north, 1: south)
-            if (agent_current_y_coord < target_y) 
-            {
-                goNorth();
-            } else if (agent_current_y_coord > target_y) {
-                goSouth();
-            }
-            // Recur until agent arives at target location
-             returnToLocation(obs, target_x, target_y);
+        double relative_error = 0.3;
+        
+        // Check if agent has arrived at intended position
+        if (Math.abs(agent_current_x_coord - target_x) < relative_error
+        && Math.abs(agent_current_y_coord - target_y) < relative_error) {
+            System.out.println("Agent returned to target location.");
+            return;
         }
-        // Case where recursion no longer running
-        nop();
-    }
 
+        // Otherwise, return agent to location
+
+        // If object between current position and vertical position of target,
+        // (e.g. aisle or cart blocking path to target coordinate)
+        // move to open area, move to Y target, and adjust on X
+        double x_stop = Math.abs(obs.players[0].position[0] - target_x);
+
+        // If no collision possible on the X-axis, start returning to location
+        if (x_stop > relative_error) {
+            // Move horiztonally toward goal position (2 : east, 3: west)
+            System.out.println("Distance Error: " + x_stop);
+            if (agent_current_x_coord < target_x) {
+                goEast();
+            } else if (agent_current_x_coord > target_x) {
+                goWest();
+            }
+        }
+
+        // Move vertically toward target coordinate
+        // Check if any obstacles are blocking path on Y-axis
+        double y_stop = Math.abs(agent_current_y_coord - target_y);
+
+        // If no collision possible in the Y-axis, start returning to location
+        // Move vertically toward goal position (0: north, 1: south)
+    }
     
     // Function: agentInteraction
     // Purpose: Interaction Layer (Subsumption Architecture)
@@ -557,37 +567,8 @@ public class Agent extends SupermarketComponentImpl
         // grabCartGoNorth(obs);
 
         // move agent to specified goal
+        System.out.println("Player currently at coordinate (X,Y): (" + obs.players[0].position[0] + " , "  + obs.players[0].position[1] + ")");
 
-        String goalLocation = "apples";
-
-        System.out.println("goals len:" + goals.size() + "  shopping len: " + obs.players[0].shopping_list.length);
-        // planGoals(obs);
-
-
-        for(Goal goal: goals){
-            System.out.println("goals are:" + goal.name);
-        }
-        
-        System.out.println("cart Returns are:" + obs.cartReturns.length);
-        // System.out.println("basket? Returns are:" + obs.basketReturn.length);
-
-        shouldRunExecutionLoop = false;
-
-        boolean actionChosen = false;
-
-        // Check which aisle the agent is closest to
-        // int current = getCurrentAisle(obs, 0);
-
-        // System.out.println("Player currently by aisle: " + current);
-        // actionChosen = 
-        System.out.println("movePhase"+ movementPhase+ " , " + obs.players[0].position[0]
-                        + " , " +  obs.players[0].position[1]);
-        goalSearch(obs, goalLocation);
-        // if(!actionChosen){
-        //     actionChosen = interactWithStuff(obs);
-        // }
-        // if(!actionChosen){
-        //     actionChosen = moveAround(obs);
-        // }
+        returnToLocation(obs, 13.05, 15.6);
     }
 }
