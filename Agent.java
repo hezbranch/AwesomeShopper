@@ -165,7 +165,7 @@ public class Agent extends SupermarketComponentImpl
         return success;
     }
 
-    // Function: returnToLocation
+    // Function: returnToXY
     // Purpose: Move agent from current location to parametized target (X, Y)
     // Input: An observation state (i.e. Observation)
     //        Position X of intended coordinate (X, Y) as type double
@@ -173,7 +173,7 @@ public class Agent extends SupermarketComponentImpl
     // Returns: Boolean
     // Effect(s): External timing, assumes agent does NOT have a cart
     // Author: Branch, H.
-    protected boolean returnToLocation(Observation obs, double target_x, double target_y) 
+    protected boolean returnToXY(Observation obs, double target_x, double target_y) 
     {
         // Initialze starter variables for movement
         double agent_current_x_coord = obs.players[0].position[0]; 
@@ -193,6 +193,13 @@ public class Agent extends SupermarketComponentImpl
         // Move vertically toward target coordinate
         // Check if any obstacles are blocking path on Y-axis
         double y_stop = Math.abs(agent_current_y_coord - target_y);
+
+        // Orient agent to face the correct Y-axis direction before moving
+        if (agent_current_y_coord > target_y && obs.players[0].direction == 1) {
+            goNorth(); return false;
+        } else if (agent_current_y_coord < target_y && obs.players[0].direction == 0) {
+            goSouth(); return false;
+        }
 
         // If no collision possible in the Y-axis, start returning to location
         // Move vertically toward goal position (0: north, 1: south)
@@ -235,6 +242,7 @@ public class Agent extends SupermarketComponentImpl
         // and 'return false' is at the end of the function call
         // since this function is being called in a time loop
         // and we want to return to multiple locations in a queue.
+        System.out.println("Agent still traveling to target location.");
         return false;   
     }
     
@@ -292,12 +300,12 @@ public class Agent extends SupermarketComponentImpl
             goals.remove(0); // Remove goal from list
 
             // Return to cart location at Line 90 & 91 and place item in cart
-            returnToLocation(obs, agent_cart_start_x, agent_cart_start_y);
+            returnToXY(obs, target_x, target_y);
             interactWithObject(); // Put item from hand into cart
 
             // Return to original start position at Line 84 & 85
             // to facilitate movement layer and resume A* path-finding
-            returnToLocation(obs, agent_start_x, agent_start_y);
+            returnToXY(obs, agent_start_x, agent_start_y);
             toggleShoppingCart(); //  Grab cart again for more item grabs
         }
     }
@@ -594,6 +602,6 @@ public class Agent extends SupermarketComponentImpl
         // move agent to specified goal
         System.out.println("Player currently at coordinate (X,Y): (" + obs.players[0].position[0] + " , "  + obs.players[0].position[1] + ")");
 
-        returnToLocation(obs, 13.05, 8.6);
+        returnToXY(obs, 13.05, 8.6);
     }
 }
