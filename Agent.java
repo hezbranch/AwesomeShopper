@@ -170,10 +170,10 @@ public class Agent extends SupermarketComponentImpl
     // Input: An observation state (i.e. Observation)
     //        Position X of intended coordinate (X, Y) as type double
     //        Position Y of intended coordinate (X, Y) as type double
-    // Returns: None (i.e. void)
+    // Returns: Boolean
     // Effect(s): External timing, assumes agent does NOT have a cart
     // Author: Branch, H.
-    protected void returnToLocation(Observation obs, double target_x, double target_y) 
+    protected bool returnToLocation(Observation obs, double target_x, double target_y) 
     {
         // Initialze starter variables for movement
         double agent_current_x_coord = obs.players[0].position[0]; 
@@ -185,7 +185,7 @@ public class Agent extends SupermarketComponentImpl
         && Math.abs(agent_current_y_coord - target_y) < relative_error) {
             nop();
             System.out.println("Agent returned to target location.");
-            return;
+            return true;
         }
 
         // Otherwise, return agent to location
@@ -230,7 +230,12 @@ public class Agent extends SupermarketComponentImpl
                     goWest();
                 }
             }
-        }   
+        }
+        // Will return false if agent not currently at target location
+        // and 'return false' is at the end of the function call
+        // since this function is being called in a time loop
+        // and we want to return to multiple locations in a queue.
+        return false;   
     }
     
     // Function: agentInteraction
@@ -589,6 +594,6 @@ public class Agent extends SupermarketComponentImpl
         // move agent to specified goal
         System.out.println("Player currently at coordinate (X,Y): (" + obs.players[0].position[0] + " , "  + obs.players[0].position[1] + ")");
 
-        returnToLocation(obs, 13.05, 15.6);
+        returnToLocation(obs, 13.05, 8.6);
     }
 }
