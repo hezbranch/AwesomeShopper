@@ -183,27 +183,12 @@ public class Agent extends SupermarketComponentImpl
         // Check if agent has arrived at intended position
         if (Math.abs(agent_current_x_coord - target_x) < relative_error
         && Math.abs(agent_current_y_coord - target_y) < relative_error) {
+            nop();
             System.out.println("Agent returned to target location.");
             return;
         }
 
         // Otherwise, return agent to location
-
-        // If object between current position and vertical position of target,
-        // (e.g. aisle or cart blocking path to target coordinate)
-        // move to open area, move to Y target, and adjust on X
-        double x_stop = Math.abs(obs.players[0].position[0] - target_x);
-
-        // If no collision possible on the X-axis, start returning to location
-        if (x_stop > relative_error) {
-            // Move horiztonally toward goal position (2 : east, 3: west)
-            System.out.println("Distance Error: " + x_stop);
-            if (agent_current_x_coord < target_x) {
-                goEast();
-            } else if (agent_current_x_coord > target_x) {
-                goWest();
-            }
-        }
 
         // Move vertically toward target coordinate
         // Check if any obstacles are blocking path on Y-axis
@@ -211,6 +196,41 @@ public class Agent extends SupermarketComponentImpl
 
         // If no collision possible in the Y-axis, start returning to location
         // Move vertically toward goal position (0: north, 1: south)
+        if (y_stop > relative_error && obs.players[0].direction == 3) {
+            // Ensure movement adjustment doesn't run endlessly
+            // by bringing agent to the outside LEFT of the aisle
+            if (agent_current_x_coord > 4.3) {
+                goWest();
+            }
+        } else if (y_stop > relative_error && obs.players[0].direction == 4) {
+            // Ensure movement adjustment doesn't run endlessly
+            // by bringing agent to the outside RIGHT of the aisle
+            if (agent_current_x_coord < 15) {
+                goEast();
+            }
+        } else if (y_stop > relative_error && obs.players[0].direction == 0){
+            // Send agent north toward goal if goal is in the north direction
+            goNorth();
+        } else if (y_stop > relative_error && obs.players[0].direction == 1) {
+            // Send agent south toward goal if goal is in the south direction
+            goSouth();
+        } else {
+            // If object between current position and vertical position of target,
+            // (e.g. aisle or cart blocking path to target coordinate)
+            // move to open area, move to Y target, and adjust on X
+            double x_stop = Math.abs(obs.players[0].position[0] - target_x);
+
+            // If no collision possible on the X-axis, start returning to location
+            if (x_stop > relative_error) {
+                // Move horiztonally toward goal position (2 : east, 3: west)
+                System.out.println("Distance Error: " + x_stop);
+                if (agent_current_x_coord < target_x) {
+                    goEast();
+                } else if (agent_current_x_coord > target_x) {
+                    goWest();
+                }
+            }
+        }   
     }
     
     // Function: agentInteraction
