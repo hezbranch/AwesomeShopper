@@ -173,7 +173,7 @@ public class Agent extends SupermarketComponentImpl
     // Returns: Boolean
     // Effect(s): External timing, assumes agent does NOT have a cart
     // Author: Branch, H.
-    protected bool returnToLocation(Observation obs, double target_x, double target_y) 
+    protected boolean returnToLocation(Observation obs, double target_x, double target_y) 
     {
         // Initialze starter variables for movement
         double agent_current_x_coord = obs.players[0].position[0]; 
