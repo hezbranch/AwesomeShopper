@@ -615,6 +615,6 @@ public class Agent extends SupermarketComponentImpl
         // move agent to specified goal
         System.out.println("Player currently at coordinate (X,Y): (" + obs.players[0].position[0] + ", "  + obs.players[0].position[1] + ").");
 
-        returnToXY(obs, 13.05, 8.6);
+        returnToXY(obs, 11.05, 4.6);
     }
 }
