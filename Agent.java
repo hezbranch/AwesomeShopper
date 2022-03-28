@@ -178,8 +178,10 @@ public class Agent extends SupermarketComponentImpl
         // Initialze starter variables for movement
         double agent_current_x_coord = obs.players[0].position[0]; 
         double agent_current_y_coord = obs.players[0].position[1]; 
-        double relative_error = 0.3;
-        
+        final double relative_error = 0.2;
+        final double x_lower_bound = 4.3;
+        final double x_upper_bound = 15;
+
         // Check if agent has arrived at intended position
         if (Math.abs(agent_current_x_coord - target_x) < relative_error
         && Math.abs(agent_current_y_coord - target_y) < relative_error) {
@@ -189,6 +191,16 @@ public class Agent extends SupermarketComponentImpl
         }
 
         // Otherwise, return agent to location
+
+        // Case where agent starting at entrance side.
+        // Personally, I hate the way that this works lol
+        // Could use some help getting around this edge case
+        if (agent_current_x_coord < x_lower_bound) {
+            goEast();
+            goEast();
+            goNorth();
+            return false;
+        }
 
         // Move vertically toward target coordinate
         // Check if any obstacles are blocking path on Y-axis
@@ -206,13 +218,13 @@ public class Agent extends SupermarketComponentImpl
         if (y_stop > relative_error && obs.players[0].direction == 3) {
             // Ensure movement adjustment doesn't run endlessly
             // by bringing agent to the outside LEFT of the aisle
-            if (agent_current_x_coord > 4.3) {
+            if (agent_current_x_coord > x_lower_bound) {
                 goWest();
             }
         } else if (y_stop > relative_error && obs.players[0].direction == 4) {
             // Ensure movement adjustment doesn't run endlessly
             // by bringing agent to the outside RIGHT of the aisle
-            if (agent_current_x_coord < 15) {
+            if (agent_current_x_coord < x_upper_bound) {
                 goEast();
             }
         } else if (y_stop > relative_error && obs.players[0].direction == 0){
