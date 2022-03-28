@@ -186,7 +186,8 @@ public class Agent extends SupermarketComponentImpl
         if (Math.abs(agent_current_x_coord - target_x) < relative_error
         && Math.abs(agent_current_y_coord - target_y) < relative_error) {
             nop();
-            System.out.println("Agent returned to target location.");
+            System.out.println("Agent returned to target location (X, Y): " 
+                              + "(" + target_x  + ", " + target_y + ").");
             return true;
         }
 
@@ -612,7 +613,7 @@ public class Agent extends SupermarketComponentImpl
         // grabCartGoNorth(obs);
 
         // move agent to specified goal
-        System.out.println("Player currently at coordinate (X,Y): (" + obs.players[0].position[0] + " , "  + obs.players[0].position[1] + ")");
+        System.out.println("Player currently at coordinate (X,Y): (" + obs.players[0].position[0] + ", "  + obs.players[0].position[1] + ").");
 
         returnToXY(obs, 13.05, 8.6);
     }
