@@ -165,52 +165,98 @@ public class Agent extends SupermarketComponentImpl
         return success;
     }
 
-    // Function: returnToLocation
+    // Function: returnToXY
     // Purpose: Move agent from current location to parametized target (X, Y)
     // Input: An observation state (i.e. Observation)
     //        Position X of intended coordinate (X, Y) as type double
     //        Position Y of intended coordinate (X, Y) as type double
-    // Returns: None (i.e. void)
+    // Returns: Boolean
     // Effect(s): External timing, assumes agent does NOT have a cart
     // Author: Branch, H.
-    protected void returnToLocation(Observation obs, double target_x, double target_y) 
+    protected boolean returnToXY(Observation obs, double target_x, double target_y) 
     {
         // Initialze starter variables for movement
         double agent_current_x_coord = obs.players[0].position[0]; 
         double agent_current_y_coord = obs.players[0].position[1]; 
-        double relative_error = 0.3;
-        
+        final double relative_error = 0.2;
+        final double x_lower_bound = 4.3;
+        final double x_upper_bound = 15;
+
         // Check if agent has arrived at intended position
         if (Math.abs(agent_current_x_coord - target_x) < relative_error
         && Math.abs(agent_current_y_coord - target_y) < relative_error) {
-            System.out.println("Agent returned to target location.");
-            return;
+            nop();
+            System.out.println("Agent returned to target location (X, Y): " 
+                              + "(" + target_x  + ", " + target_y + ").");
+            return true;
         }
 
         // Otherwise, return agent to location
 
-        // If object between current position and vertical position of target,
-        // (e.g. aisle or cart blocking path to target coordinate)
-        // move to open area, move to Y target, and adjust on X
-        double x_stop = Math.abs(obs.players[0].position[0] - target_x);
-
-        // If no collision possible on the X-axis, start returning to location
-        if (x_stop > relative_error) {
-            // Move horiztonally toward goal position (2 : east, 3: west)
-            System.out.println("Distance Error: " + x_stop);
-            if (agent_current_x_coord < target_x) {
-                goEast();
-            } else if (agent_current_x_coord > target_x) {
-                goWest();
-            }
+        // Case where agent starting at entrance side.
+        // Personally, I hate the way that this works lol
+        // Could use some help getting around this edge case
+        if (agent_current_x_coord < x_lower_bound) {
+            goEast();
+            goEast();
+            goNorth();
+            return false;
         }
 
         // Move vertically toward target coordinate
         // Check if any obstacles are blocking path on Y-axis
         double y_stop = Math.abs(agent_current_y_coord - target_y);
 
+        // Orient agent to face the correct Y-axis direction before moving
+        if (agent_current_y_coord > target_y && obs.players[0].direction == 1) {
+            goNorth(); return false;
+        } else if (agent_current_y_coord < target_y && obs.players[0].direction == 0) {
+            goSouth(); return false;
+        }
+
         // If no collision possible in the Y-axis, start returning to location
         // Move vertically toward goal position (0: north, 1: south)
+        if (y_stop > relative_error && obs.players[0].direction == 3) {
+            // Ensure movement adjustment doesn't run endlessly
+            // by bringing agent to the outside LEFT of the aisle
+            if (agent_current_x_coord > x_lower_bound) {
+                goWest();
+            }
+        } else if (y_stop > relative_error && obs.players[0].direction == 4) {
+            // Ensure movement adjustment doesn't run endlessly
+            // by bringing agent to the outside RIGHT of the aisle
+            if (agent_current_x_coord < x_upper_bound) {
+                goEast();
+            }
+        } else if (y_stop > relative_error && obs.players[0].direction == 0){
+            // Send agent north toward goal if goal is in the north direction
+            goNorth();
+        } else if (y_stop > relative_error && obs.players[0].direction == 1) {
+            // Send agent south toward goal if goal is in the south direction
+            goSouth();
+        } else {
+            // If object between current position and vertical position of target,
+            // (e.g. aisle or cart blocking path to target coordinate)
+            // move to open area, move to Y target, and adjust on X
+            double x_stop = Math.abs(obs.players[0].position[0] - target_x);
+
+            // If no collision possible on the X-axis, start returning to location
+            if (x_stop > relative_error) {
+                // Move horiztonally toward goal position (2 : east, 3: west)
+                System.out.println("Distance Error: " + x_stop);
+                if (agent_current_x_coord < target_x) {
+                    goEast();
+                } else if (agent_current_x_coord > target_x) {
+                    goWest();
+                }
+            }
+        }
+        // Will return false if agent not currently at target location
+        // and 'return false' is at the end of the function call
+        // since this function is being called in a time loop
+        // and we want to return to multiple locations in a queue.
+        System.out.println("Agent still traveling to target location.");
+        return false;   
     }
     
     // Function: agentInteraction
@@ -267,12 +313,12 @@ public class Agent extends SupermarketComponentImpl
             goals.remove(0); // Remove goal from list
 
             // Return to cart location at Line 90 & 91 and place item in cart
-            returnToLocation(obs, agent_cart_start_x, agent_cart_start_y);
+            returnToXY(obs, target_x, target_y);
             interactWithObject(); // Put item from hand into cart
 
             // Return to original start position at Line 84 & 85
             // to facilitate movement layer and resume A* path-finding
-            returnToLocation(obs, agent_start_x, agent_start_y);
+            returnToXY(obs, agent_start_x, agent_start_y);
             toggleShoppingCart(); //  Grab cart again for more item grabs
         }
     }
@@ -567,8 +613,8 @@ public class Agent extends SupermarketComponentImpl
         // grabCartGoNorth(obs);
 
         // move agent to specified goal
-        System.out.println("Player currently at coordinate (X,Y): (" + obs.players[0].position[0] + " , "  + obs.players[0].position[1] + ")");
+        System.out.println("Player currently at coordinate (X,Y): (" + obs.players[0].position[0] + ", "  + obs.players[0].position[1] + ").");
 
-        returnToLocation(obs, 13.05, 15.6);
+        returnToXY(obs, 11.05, 4.6);
     }
 }
