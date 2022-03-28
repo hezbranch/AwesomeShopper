@@ -10,3 +10,11 @@ Working to create the best simple robot for shopping.
   
 ## Running Agent Package (macOS)
 `java -cp .:DIARC.jar Agent Agent `
+<br/>
+<br/>
+<br/>
+All code outside of our group's Agent and Goal class is attributed to:
+
+https://github.com/teahmarkstone/Supermarket-Environment
+
+developed by Teah Markstone and Daniel Kasenberg
