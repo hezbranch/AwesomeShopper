@@ -3,9 +3,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.lang.Math;
 import com.supermarket.*;
+import Goal.Goal;
 
 
-// Edited by Hezekiah Branch and Michael LoTurco
+
+// Edited by Hezekiah Branch, Michael LoTurco, and Matthew Ebisu
+//FLAG: UNEDITED ORIGINAL: REVERT TO THIS VERSION IF NOT WORKING 
 
 public class Agent extends SupermarketComponentImpl
 {

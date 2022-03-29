@@ -1,4 +1,4 @@
-
+package Goal;
 
 public class Goal implements Comparable<Goal>{
     public Goal(String nme, double[] pos){
@@ -6,8 +6,8 @@ public class Goal implements Comparable<Goal>{
         name = nme;
         position = pos;
     }
-    String name;
-    double[] position;
+    public String name;
+    public double[] position;
 
     @Override
     public String toString(){
