@@ -7,7 +7,7 @@ import com.supermarket.*;
 
 
 // Edited by Hezekiah Branch, Michael LoTurco, and Matthew Ebisu
-//FLAG: UNEDITED ORIGINAL: REVERT TO THIS VERSION IF NOT WORKING 
+// 4:24 Code Refactor
 
 public class Agent extends SupermarketComponentImpl
 {
@@ -29,6 +29,7 @@ public class Agent extends SupermarketComponentImpl
     boolean firsttime = true;
     ArrayList<Goal> goals = new ArrayList<Goal>();
 
+    /*
     // Function: grabCartGoNorth
     // Purpose: Move agent to cart area and bring
     //          it up back north to register area
@@ -69,6 +70,7 @@ public class Agent extends SupermarketComponentImpl
             goSouth();
         }
     }
+    */
 
     // Function: noCollision
     // Purpose: Avoid colliding into known 
@@ -79,7 +81,7 @@ public class Agent extends SupermarketComponentImpl
     // Complexity: Linear time complexity, constant space
     // Notes: <Hezekiah> There's probably a FAR better way of 
     //                   doing this but it is what it is
-    // Author: Branch, H.
+    // Author: Branch, H. 
     protected boolean noCollision(Observation obs) {
         // Set boolean to pass test cases
         boolean success = true;
@@ -198,12 +200,20 @@ public class Agent extends SupermarketComponentImpl
         // Case where agent starting at entrance side.
         // Personally, I hate the way that this works lol
         // Could use some help getting around this edge case
+
+        /*
         if (agent_current_x_coord < x_lower_bound) {
-            goEast();
-            goEast();
-            goNorth();
+                goSouth();
+                if (!obs.cartReturns[0].canInteract(obs.players[0])){
+                }
+                else {
+                   interactWithObject();
+                    goNorth();
+                System.out.println ("m agent_current_x_coord: "+ agent_current_x_coord);
             return false;
-        }
+            }
+        } 
+        */
 
         // Move vertically toward target coordinate
         // Check if any obstacles are blocking path on Y-axis
@@ -213,7 +223,8 @@ public class Agent extends SupermarketComponentImpl
         if (agent_current_y_coord > target_y && obs.players[0].direction == 1) {
             goNorth(); return false;
         } else if (agent_current_y_coord < target_y && obs.players[0].direction == 0) {
-            goSouth(); return false;
+            goSouth(); 
+            return false;
         }
 
         // If no collision possible in the Y-axis, start returning to location
@@ -243,11 +254,42 @@ public class Agent extends SupermarketComponentImpl
             double x_stop = Math.abs(obs.players[0].position[0] - target_x);
 
             // If no collision possible on the X-axis, start returning to location
+            //Matt's Edit: This behavior is called repeatedly. 
             if (x_stop > relative_error) {
                 // Move horiztonally toward goal position (2 : east, 3: west)
                 System.out.println("Distance Error: " + x_stop);
                 if (agent_current_x_coord < target_x) {
-                    goEast();
+                    //NOTE: The agent wasn't grabbing a cart in the beginning, so I wrote a fast
+                    //behavior for it to grab a cart.  This can be edited out and changed  if
+                    //movement is meant to run in the beginning.
+                    if (obs.players[0].curr_cart<0){ 
+                        goSouth();
+                        goSouth();
+                        goSouth();
+                        goSouth();
+                        goSouth();
+                        goSouth();
+                        goSouth();
+                        goSouth();
+                        goSouth();
+                        goSouth();
+                        goSouth();
+                        goSouth();
+                        goSouth();
+                        goSouth();
+                        goSouth();
+                        goSouth();
+                        goSouth();
+                        goSouth();
+                        goSouth();
+                        goSouth();
+                        interactWithObject();  //NOTE: I tried a version where it called grabCartGoNorth() but the agent didn't grab the car or   move upwards
+                        nop();
+                    }
+                    else{
+                        goEast();
+                        System.out.println("Flag3");
+                    }
                 } else if (agent_current_x_coord > target_x) {
                     goWest();
                 }
@@ -260,6 +302,7 @@ public class Agent extends SupermarketComponentImpl
         System.out.println("Agent still traveling to target location.");
         return false;   
     }
+    
     
     // Function: agentInteraction
     // Purpose: Interaction Layer (Subsumption Architecture)
@@ -461,6 +504,7 @@ public class Agent extends SupermarketComponentImpl
                 // System.out.println("POSITION" + obs.players[0].position[0]);
             } else { 
                 goEast();
+                System.out.println("Flag4");
             }
         } if(movementPhase == 2) {
             if(obs.belowAisle(0, 6)){
@@ -474,6 +518,7 @@ public class Agent extends SupermarketComponentImpl
                 movementPhase = 4;
             } else { 
                 goEast();
+                System.out.println("Flag5");
             }
         }
           if(movementPhase == 4) {
@@ -502,6 +547,7 @@ public class Agent extends SupermarketComponentImpl
                 movementPhase = 8;
             } else { 
                 goEast();
+                System.out.println("Flag5");
             }
         }
           if(movementPhase == 8) {
@@ -530,6 +576,7 @@ public class Agent extends SupermarketComponentImpl
                 movementPhase = 12;
             } else { 
                 goEast();
+                System.out.println("Flag6");
             }
         }
           if(movementPhase == 12) {
