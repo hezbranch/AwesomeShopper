@@ -2,9 +2,7 @@ import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.lang.Math;
-import com.supermarket.*;
-
-
+import com.supermarket.*;s
 
 // Edited by Hezekiah Branch, Michael LoTurco, and Matthew Ebisu
 // 4:24 Code Refactor
@@ -29,7 +27,6 @@ public class Agent extends SupermarketComponentImpl
     boolean firsttime = true;
     ArrayList<Goal> goals = new ArrayList<Goal>();
 
-    /*
     // Function: grabCartGoNorth
     // Purpose: Move agent to cart area and bring
     //          it up back north to register area
@@ -58,7 +55,7 @@ public class Agent extends SupermarketComponentImpl
             //  movement infinitely like this :( *
             if (obs.players[0].position[1] < 13) {
                 while (true) {
-                    nop(); // Stop agent movement
+                   nop(); // Stop agent movement
                 }
             }
             // Go up to the register
@@ -66,11 +63,10 @@ public class Agent extends SupermarketComponentImpl
             // Case where agent has no cart
             // Starting point of agent movement
         } else {
-            // Go down to the cart area
+            // Go down to the cart areas
             goSouth();
         }
     }
-    */
 
     // Function: noCollision
     // Purpose: Avoid colliding into known 
