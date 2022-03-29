@@ -3,7 +3,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.lang.Math;
 import com.supermarket.*;
-import Goal.Goal;
 
 
 
