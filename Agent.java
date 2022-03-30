@@ -5,7 +5,7 @@ import java.lang.Math;
 import com.supermarket.*;
 
 
-// Edited by Hezekiah Branch and Michael LoTurco
+// Edited by Hezekiah Branch, Matthew Ebisu, and Michael LoTurco
 
 public class Agent extends SupermarketComponentImpl
 {
@@ -197,9 +197,19 @@ public class Agent extends SupermarketComponentImpl
         // Personally, I hate the way that this works lol
         // Could use some help getting around this edge case
         if (agent_current_x_coord < x_lower_bound) {
-            goEast();
-            goEast();
-            goNorth();
+            if (obs.players[0].curr_cart<0){
+               goSouth();
+               goSouth();
+               goSouth();
+               goSouth();
+               goSouth();
+               goSouth();
+               goSouth();
+               goSouth(); 
+               interactWithObject();
+               goNorth();
+               nop();
+            }
             return false;
         }
 
