@@ -43,7 +43,7 @@ public class Agent extends SupermarketComponentImpl
     //first function --> Stop the player at specific (x,y) cooridate on map near register
     //second function --> Check that we currently have everything on our shopping list
     //Third function --> Record last known location (with shopping cart) and toggle shopping cart
-    //Fourth function --> Walk up to register and pay for items (interact with object)
+    //Fourth function --> Pay for items at register (InteractWithObject)
     //Fifth function --> walk back down to cart and grab it.
 
     //Do I have all of my items?  If so, go to the register.
@@ -56,14 +56,22 @@ public class Agent extends SupermarketComponentImpl
 
     //Send Agent to the register with cart in hand
     public void goToRegisters(Observation obs){    
-        //have agent walk to register 
-        // 
+        //go to specific (xy) coordinate near register
+        //Use Michael's script for recording last known location
+            //toggle shopping cart
+        //GoNorth towardsregister 
+        //return cart last location (x, y)
+        //call payForItems()
     }
 
-    public static int cartsLastLocation(int x, int y){
-        int x_coord_value;
-        int y_coord_value; 
-        //saves coordinates of la
+    public void payForItems(Observation obs){
+        //Agent interacts with register, pays for items 
+        //interactWithObject()
+    }
+    public void leaveWithCart (Observation obs){
+        //agent then returns to (xy) coordinate of cart
+        //agent grabs cart with toggleShoppingCart()
+        //agent leaves through exit
     }
     
 
