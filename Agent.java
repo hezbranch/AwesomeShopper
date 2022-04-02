@@ -27,6 +27,46 @@ public class Agent extends SupermarketComponentImpl
     boolean firsttime = true;
     ArrayList<Goal> goals = new ArrayList<Goal>();
 
+    //Function PayForItems
+    //In its most basic form, the only thing you need to do after collecting all your items
+    //is [ interactWithObject() ].  As long as you have all the items inside of your 
+    //cart at the time, you can pay for all your itmes at once.
+    //Pre-Requisites: 
+        //Player must be facing the counter at the time
+        //Player must have previously dropped his cart
+        //Player needs  to have cart dropped off
+    //Notes;
+        //Player can pay for all items at once
+        //Player just needs to be at counter in order to pay
+        //Player will also end up paying for items that aren't on the shopping list
+    
+    //first function --> Stop the player at specific (x,y) cooridate on map near register
+    //second function --> Check that we currently have everything on our shopping list
+    //Third function --> Record last known location (with shopping cart) and toggle shopping cart
+    //Fourth function --> Walk up to register and pay for items (interact with object)
+    //Fifth function --> walk back down to cart and grab it.
+
+    //Do I have all of my items?  If so, go to the register.
+    public boolean GotAllItems(Observation obs) {
+        //compare the items on the shopping list to items on the arraylist
+        //check that alll items exist within the array --> for loop?  string contains?
+        //return a True statement if it does, return a false statement if it doesn't
+        //use a variable called AllIn
+    }
+
+    //Send Agent to the register with cart in hand
+    public void goToRegisters(Observation obs){    
+        //have agent walk to register 
+        // 
+    }
+
+    public static int cartsLastLocation(int x, int y){
+        int x_coord_value;
+        int y_coord_value; 
+        //saves coordinates of la
+    }
+    
+
     // Function: grabCartGoNorth
     // Purpose: Move agent to cart area and bring
     //          it up back north to register area
@@ -119,6 +159,7 @@ public class Agent extends SupermarketComponentImpl
         return success;
     }
 
+    //Function PayForItems
     protected boolean goalInteractable(Observation obs) {
         // Set boolean to pass test cases
         boolean success = false;
