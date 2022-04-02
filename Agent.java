@@ -48,12 +48,22 @@ public class Agent extends SupermarketComponentImpl
     //Fourth function --> Pay for items at register (InteractWithObject)
     //Fifth function --> walk back down to cart and grab it.
 
+
+
     //Do I have all of my items?  If so, go to the register.
+    public void TestPrintFood (Obseravtion obs){
+        //Flag: check collision with Shelf
+        for (int i = 0; i < obs.shelves.length, i++){
+            if (obs.shelves[i].canInteract(obs.players[0]){
+                System.Out.println 
+            }
+        }
+    }
     public void GotAllItems(Observation obs) {
         //compare the items on the shopping list to items on the arraylist
         //check that alll items exist within the array --> for loop?  string contains?
         //return a True statement if it does, return a false statement if it doesn't
-        //use a variable called AllIn
+        //use a variable called AllI
     }
 
     //Send Agent to the register with cart in hand
@@ -84,6 +94,7 @@ public class Agent extends SupermarketComponentImpl
     // Returns: None (i.e. void)
     // Effect(s): External timing, infinite looping
     // Author: Branch, H.
+
     protected void grabCartGoNorth(Observation obs)
     {
         // Stop agent from going south and prevent
@@ -117,6 +128,8 @@ public class Agent extends SupermarketComponentImpl
             goSouth();
         }
     }
+
+    /*    DELETE THIS
 
     // Function: noCollision
     // Purpose: Avoid colliding into known 
@@ -168,8 +181,6 @@ public class Agent extends SupermarketComponentImpl
         }
         return success;
     }
-
-    //Function PayForItems
     protected boolean goalInteractable(Observation obs) {
         // Set boolean to pass test cases
         boolean success = false;
@@ -216,6 +227,7 @@ public class Agent extends SupermarketComponentImpl
         return success;
     }
 
+
     // Function: returnToXY
     // Purpose: Move agent from current location to parametized target (X, Y)
     // Input: An observation state (i.e. Observation)
@@ -245,21 +257,19 @@ public class Agent extends SupermarketComponentImpl
         // Otherwise, return agent to location
         //Matt's Edit: This executes first in the program.  
         //I changed part of it so that it favors 
-        /*
+
         if (agent_current_x_coord < x_lower_bound){
             goEast();
             goEast();
             goNorth();
             returnFalse();
         }
-        */
+   
         if (agent_current_x_coord < x_lower_bound) {
             if (obs.players[0].curr_cart<0){
                goEast(); 
                goEast();
                goNorth();
-               System.out.println("Agent's (X, Y) value: "               //DELETE THIS 
-                              + "(" + target_x  + ", " + target_y + ").");
             }
             return false;
         }
@@ -267,8 +277,6 @@ public class Agent extends SupermarketComponentImpl
         // Move vertically toward target coordinate
         // Check if any obstacles are blocking path on Y-axis
         double y_stop = Math.abs(agent_current_y_coord - target_y);
-        System.out.println("Agent's (X, Y) value: "                     //DELETE THIS
-                              + "(" + target_x  + ", " + target_y + ").");
 
         // Orient agent to face the correct Y-axis direction before moving
         if (agent_current_y_coord > target_y && obs.players[0].direction == 1) {
@@ -655,7 +663,9 @@ public class Agent extends SupermarketComponentImpl
         //     }
         
     }
-    
+
+    */    //DELET THIS
+
     // Author-defined execution loop
     // Modifies agent state every 100ms
     @Override
