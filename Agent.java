@@ -243,16 +243,6 @@ public class Agent extends SupermarketComponentImpl
         }
 
         // Otherwise, return agent to location
-        //Matt's Edit: This executes first in the program.  
-        //I changed part of it so that it favors 
-        /*
-        if (agent_current_x_coord < x_lower_bound){
-            goEast();
-            goEast();
-            goNorth();
-            returnFalse();
-        }
-        */
         if (agent_current_x_coord < x_lower_bound) {
             if (obs.players[0].curr_cart<0){
                goEast(); 
