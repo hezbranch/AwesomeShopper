@@ -39,6 +39,8 @@ public class Agent extends SupermarketComponentImpl
         //Player can pay for all items at once
         //Player just needs to be at counter in order to pay
         //Player will also end up paying for items that aren't on the shopping list
+        //How do I execute one program after another?  Should I have a global flag for checking if items are paidFor
+            //inList, atRegister, etc.(?)
     
     //first function --> Stop the player at specific (x,y) cooridate on map near register
     //second function --> Check that we currently have everything on our shopping list
@@ -47,7 +49,7 @@ public class Agent extends SupermarketComponentImpl
     //Fifth function --> walk back down to cart and grab it.
 
     //Do I have all of my items?  If so, go to the register.
-    public boolean GotAllItems(Observation obs) {
+    public void GotAllItems(Observation obs) {
         //compare the items on the shopping list to items on the arraylist
         //check that alll items exist within the array --> for loop?  string contains?
         //return a True statement if it does, return a false statement if it doesn't
@@ -92,7 +94,7 @@ public class Agent extends SupermarketComponentImpl
         //            Executed every 100ms externally.
         if (obs.cartReturns[0].canInteract(obs.players[0]) && obs.players[0].curr_cart != 0) {
             nop();
-            interactWithObject();
+            toggleShoppingCart();       //changed from interactWithObject()
             nop();
             // Case where agent has obtained a cart
             // and needs to go north
@@ -253,17 +255,11 @@ public class Agent extends SupermarketComponentImpl
         */
         if (agent_current_x_coord < x_lower_bound) {
             if (obs.players[0].curr_cart<0){
-               goSouth();
-               goSouth();
-               goSouth();
-               goSouth();
-               goSouth();
-               goSouth();
-               goSouth();
-               goSouth(); 
-               interactWithObject();
+               goEast(); 
+               goEast();
                goNorth();
-               nop();
+               System.out.println("Agent's (X, Y) value: "               //DELETE THIS 
+                              + "(" + target_x  + ", " + target_y + ").");
             }
             return false;
         }
@@ -271,6 +267,8 @@ public class Agent extends SupermarketComponentImpl
         // Move vertically toward target coordinate
         // Check if any obstacles are blocking path on Y-axis
         double y_stop = Math.abs(agent_current_y_coord - target_y);
+        System.out.println("Agent's (X, Y) value: "                     //DELETE THIS
+                              + "(" + target_x  + ", " + target_y + ").");
 
         // Orient agent to face the correct Y-axis direction before moving
         if (agent_current_y_coord > target_y && obs.players[0].direction == 1) {
@@ -678,7 +676,7 @@ public class Agent extends SupermarketComponentImpl
         // grabCartGoNorth(obs);
 
         // move agent to specified goal
-        System.out.println("Player currently at coordinate (X,Y): (" + obs.players[0].position[0] + ", "  + obs.players[0].position[1] + ").");
+        //System.out.println("Player currently at coordinate (X,Y): (" + obs.players[0].position[0] + ", "  + obs.players[0].position[1] + ").");
 
         returnToXY(obs, 11.05, 4.6);
     }
