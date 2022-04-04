@@ -21,6 +21,9 @@ public class Agent extends SupermarketComponentImpl
     // Goal States
     static String PLAN = "plan";
     static double[] NOWHERE = {-1, -1};
+    double[] drop_location = NOWHERE;
+    int drop_direction = -1;
+    int my_cart_index = -1;
     int movementPhase = 0;
     
     // Author-defined boolean variable
@@ -491,159 +494,183 @@ public class Agent extends SupermarketComponentImpl
 
         if(goalInteractable(obs)){
             agentInteraction(obs, goals.get(0).position[0], goals.get(0).position[1]);
-            setMovement(obs);
+            // setMovement(obs);
         }
         else {
-            setMovement(obs);
+            // setMovement(obs);
         }
     }
 
-    protected void setMovement(Observation obs){
-        if(movementPhase == 0){
-            if(obs.atCartReturn(0)){
-                movementPhase = 1;
-            }
-            else {
-                goSouth();
-            }
-        } if (movementPhase == 1) {
-            if(obs.inAisleHub(0) && obs.players[0].position[0] > 3.8){
-                movementPhase = 2;
-                // System.out.println("POSITION" + obs.players[0].position[0]);
-            } else { 
-                goEast();
-            }
-        } if(movementPhase == 2) {
-            if(obs.belowAisle(0, 6)){
-                movementPhase = 3;
-            } else { 
-                //   System.out.println("POSITION" + obs.players[0].position[0])
-                goSouth();
-            }
-        } if(movementPhase == 3) {
-            if(obs.inRearAisleHub(0)){
-                movementPhase = 4;
-            } else { 
-                goEast();
+    protected int findShelf(Observation obs){
+        for(int i = 0; i < obs.shelves.length; i++){
+            System.out.println("checking shelf i" + i + " " + obs.shelves[i].food.equals(goals.get(0).name));
+            // System.out.println(obs.shelves[i].position[0].equals(goals.get(0).position)+ " " 
+            //     + obs.shelves[i].position[0] + " " + obs.shelves[i].position[1]
+            //     + goals.get(0).position[0] + " " + goals.get(0).position[1]);
+            //+ " " + obs.shelves[i].position.equals(goals.get(0).position));
+            if(obs.shelves[i].food.equals(goals.get(0).name)
+                && obs.shelves[i].position[0] == goals.get(0).position[0]
+                && obs.shelves[i].position[1] == goals.get(0).position[1]){
+                    System.out.println("found i " + i);
+                    return i;
             }
         }
-          if(movementPhase == 4) {
-            if(obs.belowAisle(0, 5) ){
-                goNorth();
-            } else { 
-                movementPhase = 5;
-            }
-        } if(movementPhase == 5) {
-            if(!obs.inAisleHub(0)){
-                goWest();
-            }
-            else{
-                movementPhase = 6;
-            }
-        } if(movementPhase == 6) {
-            if(obs.belowAisle(0, 4)){
-                goNorth();
-            }
-            else{
-                movementPhase = 7;
-            }
-        } if(movementPhase == 7) {
-            if(obs.players[0].position[0] >= 17.5){
-                // obs.besideCounters(0)){
-                movementPhase = 8;
-            } else { 
-                goEast();
-            }
-        }
-          if(movementPhase == 8) {
-            if(obs.belowAisle(0, 3) ){
-                goNorth();
-            } else { 
-                movementPhase = 9;
-            }
-        } if(movementPhase == 9) {
-            if(!obs.inAisleHub(0)){
-                goWest();
-            }
-            else{
-                movementPhase = 10;
-            }
-        } if(movementPhase == 10) {
-            if(obs.belowAisle(0, 2)){
-                goNorth();
-            }
-            else{
-                movementPhase = 11;
-            }
-        } if(movementPhase == 11) {
-            if(obs.players[0].position[0] >= 17.5){
-                // obs.besideCounters(0)
-                movementPhase = 12;
-            } else { 
-                goEast();
-            }
-        }
-          if(movementPhase == 12) {
-            if(obs.belowAisle(0, 1) ){
-                goNorth();
-            } else { 
-                movementPhase = 13;
-            }
-        } if(movementPhase == 13) {
-            if(obs.players[0].position[0] > 3.5){
-                // !obs.inAisleHub(0)
-                goWest();
-            }
-            else{
-                movementPhase = 14;
-            }
-        } if(movementPhase == 14) {
-            if(obs.players[0].position[1] < 7.5){
-                goSouth();
-            }
-            else{
-                movementPhase = 15;
-            }
-        } 
-        if(movementPhase == 15) {
-            // if(!obs.inRearAisleHub(0)){
-            goWest();
-            // }
-            // else{
-            //    movementPhase = 16;
-            // }
-        }  
-        // if(movementPhase == 8) {
-        //     if(obs.belowAisle(0, 4)){
-        //         goNorth();
-        //     }
-        //     else{
-        //         movementPhase = 9;
-        //     }
-        // } if(movementPhase == 9) {
-        //     if(!obs.inRearAisleHub(0)){
-        //         goEast();
-        //     }
-        //     else{
-        //        movementPhase = 10;
-        //     }
-        // }   
+        System.out.println("didnt find");
+        return -1;
+    }
 
+    protected boolean interactWithShelf(Observation obs){
+        // System.out.println("starting IWS");
+        Boolean holding_cart = obs.players[0].curr_cart != -1;
+        Boolean holding_food = obs.players[0].holding_food != null;
+        int shelf_index = findShelf(obs);
+        Boolean can_interact_with_proper_shelf = obs.shelves[shelf_index].canInteract(obs.players[0]);
+  
+        // System.out.println("IWS cart: " + holding_cart + "  food: " + holding_food + "  can inter: "+ can_interact_with_proper_shelf);
+        if(holding_cart){
+            // System.out.println("toggle " + obs.players[0].curr_cart);
+            my_cart_index = obs.players[0].curr_cart;
+            // Let go of cart
+            drop_location[0] = obs.players[0].position[0];
+            drop_location[1] = obs.players[0].position[1];
+            drop_direction = obs.players[0].direction;
+            toggleShoppingCart();
+            return true;
+        }
+        // can interact with shelf and not holding food and 
+        if( can_interact_with_proper_shelf && !holding_food){
+            //  System.out.println("toggle");
+            //  interact with shelf and take food
+            interactWithObject();
+            return true;
+        } else if(!holding_food){
+            //   System.out.println("not holding food");
+              goNorth();
+            // returnToXY(obs, obs.shelves[shelf_index].position[0], obs.shelves[shelf_index].position[1]);
+            return true;
+        } else {
+            // System.out.println("holding food");
+            if(obs.players[0].position[0] == drop_location[0] 
+                && obs.players[0].position[1] == drop_location[1]){
+                if(drop_direction == 2){
+                    drop_direction = -1;
+                    goEast();
+                }
+                if(drop_direction == 3){
+                    drop_direction = -1;
+                    goWest();
+                }
+                // System.out.println("   interact");
+                interactWithObject();
+                interactWithObject();
+                // System.out.println("   toggle");
+                toggleShoppingCart();
+                goals.remove(0);
+                return true;
+                
+            }
+            else{
+                // System.out.println("holding food going to cart");
+                goSouth();
+                // returnToXY(obs, drop_location[0], drop_location[1]);
+                return true;
+            }
+        }
+        //      
+     
+        // if holding food 
+        //    if at cart
+        //        
+                // toggleShoppingCart()
+                // return true
+        //     else not at cart
+        //        returnToXY(drop location)
+    }
 
-        // if(movementPhase == 4) {
-        //     if(obs.belowAisle(0, 4)){
-        //         goNorth();
-        //     } else { 
-        //        movementPhase = 5;
-        //     }
-        // }
-        // if(movementPhase == 5) {
-        //     if(obs.inAisleHub(0)){
-        //         movementPhase = 5;
-        //     } else { 
-        //         goWest();
-        //     }
-        
+    protected int findCounter(Observation obs){
+        for(int i = 0; i < obs.counters.length; i++){
+            System.out.println("checking counter i" + i + " " + obs.shelves[i].food.equals(goals.get(0).name));
+            // System.out.println(obs.shelves[i].position[0].equals(goals.get(0).position)+ " " 
+            //     + obs.shelves[i].position[0] + " " + obs.shelves[i].position[1]
+            //     + goals.get(0).position[0] + " " + goals.get(0).position[1]);
+            //+ " " + obs.shelves[i].position.equals(goals.get(0).position));
+            if(obs.shelves[i].food.equals(goals.get(0).name)
+                && obs.shelves[i].position[0] == goals.get(0).position[0]
+                && obs.shelves[i].position[1] == goals.get(0).position[1]){
+                    System.out.println("found i " + i);
+                    return i;
+            }
+        }
+        System.out.println("didnt find");
+        return -1;
+    }
+
+    protected boolean interactWithCounter(Observation obs){
+        // System.out.println("starting IWS");
+        Boolean holding_cart = obs.players[0].curr_cart != -1;
+        Boolean holding_food = obs.players[0].holding_food != null;
+        int counter_index = findCounter(obs);
+        Boolean can_interact_with_proper_counter = obs.counters[counter_index].canInteract(obs.players[0]);
+  
+        // System.out.println("IWS cart: " + holding_cart + "  food: " + holding_food + "  can inter: "+ can_interact_with_proper_shelf);
+        if(holding_cart){
+            // System.out.println("toggle " + obs.players[0].curr_cart);
+            my_cart_index = obs.players[0].curr_cart;
+            // Let go of cart
+            drop_location[0] = obs.players[0].position[0];
+            drop_location[1] = obs.players[0].position[1];
+            drop_direction = obs.players[0].direction;
+            toggleShoppingCart();
+            return true;
+        }
+        // can interact with shelf and not holding food and 
+        if( can_interact_with_proper_counter && !holding_food){
+            //  System.out.println("toggle");
+            //  interact with shelf and take food
+            interactWithObject();
+            return true;
+        } else if(!holding_food){
+            //   System.out.println("not holding food");
+              goNorth();
+            // returnToXY(obs, obs.shelves[shelf_index].position[0], obs.shelves[shelf_index].position[1]);
+            return true;
+        } else {
+            // System.out.println("holding food");
+            if(obs.players[0].position[0] == drop_location[0] 
+                && obs.players[0].position[1] == drop_location[1]){
+                if(drop_direction == 0){
+                    drop_direction = -1;
+                    goNorth();
+                }
+                if(drop_direction == 1){
+                    drop_direction = -1;
+                    goSouth();
+                }
+                // System.out.println("   interact");
+                interactWithObject();
+                interactWithObject();
+                // System.out.println("   toggle");
+                toggleShoppingCart();
+                goals.remove(0);
+                return true;
+                
+            }
+            else{
+                // System.out.println("holding food going to cart");
+                goSouth();
+                // returnToXY(obs, drop_location[0], drop_location[1]);
+                return true;
+            }
+        }
+        //      
+     
+        // if holding food 
+        //    if at cart
+        //        
+                // toggleShoppingCart()
+                // return true
+        //     else not at cart
+        //        returnToXY(drop location)
     }
     
     // Author-defined execution loop
@@ -666,8 +693,23 @@ public class Agent extends SupermarketComponentImpl
         // grabCartGoNorth(obs);
 
         // move agent to specified goal
-        //System.out.println("Player currently at coordinate (X,Y): (" + obs.players[0].position[0] + ", "  + obs.players[0].position[1] + ").");
+        System.out.println("Player currently at coordinate (X,Y): (" + obs.players[0].position[0] + ", "  + obs.players[0].position[1] + ").");
+        // grabCartGoNorth(obs)
+        // returnToXY(obs, 22.0, 6.0);
+        if(firsttime){
+            planGoals(obs);
+            System.out.println(goals.get(1).name+" "+goals.get(1).position[0]+ " " + goals.get(1).position[1]);
+        }
+        // if(firsttime){
+        //     goals.remove(0);
+        //     double[] shelf_test_pos = {5.5, 21.5};
+        //     Goal shelf_test = new Goal("avocado", shelf_test_pos);
+        //     goals.add(shelf_test);
+        //     System.out.println("topgoal"+ goals.get(0).name);
+        // }
+    
 
-        returnToXY(obs, 11.05, 4.6);
+        // interactWithShelf(obs);
+        firsttime = false;
     }
 }
