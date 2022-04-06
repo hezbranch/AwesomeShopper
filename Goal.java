@@ -1,13 +1,15 @@
 
 
 public class Goal implements Comparable<Goal>{
-    public Goal(String nme, double[] pos){
+    public Goal(String nme, double[] pos, String typ){
         super();
         name = nme;
         position = pos;
+        type = typ;
     }
     String name;
     double[] position;
+    String type;
 
     @Override
     public String toString(){

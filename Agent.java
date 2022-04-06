@@ -15,7 +15,7 @@ public class Agent extends SupermarketComponentImpl
         super();
         shouldRunExecutionLoop = true;
         log.info("In Agent constructor.");
-        Goal plan = new Goal(PLAN, NOWHERE);
+        Goal plan = new Goal(PLAN, NOWHERE, PLAN);
         goals.add(plan);
     }
     // Goal States
@@ -87,7 +87,7 @@ public class Agent extends SupermarketComponentImpl
     // Returns: None (i.e. void)
     // Effect(s): External timing, infinite looping
     // Author: Branch, H.
-    protected void grabCartGoNorth(Observation obs)
+    protected Boolean grabCartGoNorth(Observation obs)
     {
         // Stop agent from going south and prevent
         // a possible collision due to cases where:
@@ -95,29 +95,39 @@ public class Agent extends SupermarketComponentImpl
         // 2. Player does not have a cart
         // Effect(s): If #2 is not checked, endless #1.
         //            Executed every 100ms externally.
+        if(!goals.get(0).name.equals("cart_return")){
+            return false;
+        }
         if (obs.cartReturns[0].canInteract(obs.players[0]) && obs.players[0].curr_cart != 0) {
-            nop();
-            toggleShoppingCart();       //changed from interactWithObject()
-            nop();
+            // nop();
+            // toggleShoppingCart();   
+            interactWithObject();    //changed from interactWithObject()
+            goals.remove(0);
+            my_cart_index = obs.players[0].curr_cart;
+
+            // nop();
+            return true;
             // Case where agent has obtained a cart
             // and needs to go north
-        } else if (obs.players[0].curr_cart == 0) {
-            // Prevent endless collisions with an
-            // infinite loop of no movement here
-            // * Feels unethical to stop agent
-            //  movement infinitely like this :( *
-            if (obs.players[0].position[1] < 13) {
-                while (true) {
-                    nop(); // Stop agent movement
-                }
-            }
-            // Go up to the register
-            goNorth();
-            // Case where agent has no cart
-            // Starting point of agent movement
+        // } else if (obs.players[0].curr_cart != -1) {
+        //     // Prevent endless collisions with an
+        //     // infinite loop of no movement here
+        //     // * Feels unethical to stop agent
+        //     //  movement infinitely like this :( *
+        //     // if (obs.players[0].position[1] < 13) {
+        //     //     while (true) {
+        //     //         nop(); // Stop agent movement
+        //     //     }
+        //     // }
+        //     // // Go up to the register
+        //     // goNorth();
+        //     return false;
+        //     // Case where agent has no cart
+        //     // Starting point of agent movement
         } else {
             // Go down to the cart area
             goSouth();
+            return true;
         }
     }
 
@@ -219,6 +229,18 @@ public class Agent extends SupermarketComponentImpl
         return success;
     }
 
+    protected boolean withinMarginOfLocation(double[] player_pos, double loc_x, double loc_y){
+        final double relative_error = 0.2;
+
+        if (Math.abs(player_pos[0] - loc_x) < relative_error
+            && Math.abs(player_pos[1] - loc_y) < relative_error) {
+            System.out.println("Agent within margin of target location (X, Y): " 
+                              + "(" + loc_x  + ", " + loc_y + ").");
+            return true;
+        }
+        return false;
+    }
+
     // Function: returnToXY
     // Purpose: Move agent from current location to parametized target (X, Y)
     // Input: An observation state (i.e. Observation)
@@ -233,12 +255,13 @@ public class Agent extends SupermarketComponentImpl
         double agent_current_x_coord = obs.players[0].position[0]; 
         double agent_current_y_coord = obs.players[0].position[1]; 
         final double relative_error = 0.2;
-        final double x_lower_bound = 4.3;
+        final double x_lower_bound = 3.9;
         final double x_upper_bound = 15;
 
         // Check if agent has arrived at intended position
-        if (Math.abs(agent_current_x_coord - target_x) < relative_error
-        && Math.abs(agent_current_y_coord - target_y) < relative_error) {
+        // if (Math.abs(agent_current_x_coord - target_x) < relative_error
+        // && Math.abs(agent_current_y_coord - target_y) < relative_error) {
+        if(withinMarginOfLocation(obs.players[0].position, target_x, target_y)){
             nop();
             System.out.println("Agent returned to target location (X, Y): " 
                               + "(" + target_x  + ", " + target_y + ").");
@@ -247,21 +270,16 @@ public class Agent extends SupermarketComponentImpl
 
         // Otherwise, return agent to location
         if (agent_current_x_coord < x_lower_bound) {
-            if (obs.players[0].curr_cart<0){
-               goEast(); 
-               goEast();
-               goNorth();
-               System.out.println("Agent's (X, Y) value: "               //DELETE THIS 
-                              + "(" + target_x  + ", " + target_y + ").");
-            }
+            System.out.println("In edgecase");
+            goEast(); 
+            //    goEast();
+            //    goNorth();
             return false;
         }
 
         // Move vertically toward target coordinate
         // Check if any obstacles are blocking path on Y-axis
         double y_stop = Math.abs(agent_current_y_coord - target_y);
-        System.out.println("Agent's (X, Y) value: "                     //DELETE THIS
-                              + "(" + target_x  + ", " + target_y + ").");
 
         // Orient agent to face the correct Y-axis direction before moving
         if (agent_current_y_coord > target_y && obs.players[0].direction == 1) {
@@ -386,10 +404,10 @@ public class Agent extends SupermarketComponentImpl
 
             goals.remove(0); // Drop the initial Plan goal
 
-            if(obs.players[0].shopping_list.length > 6)
-            {
-                addGoal("cart_return", obs.cartReturns[0].position);
-            }
+            // if(obs.players[0].shopping_list.length > 6)
+            // {
+            addGoal("cart_return", obs.cartReturns[0].position, "cart_return");
+            // }
             // consider basket vs cart
             // pickup basket or cart
          
@@ -399,7 +417,7 @@ public class Agent extends SupermarketComponentImpl
                 if(Arrays.asList(obs.players[0].shopping_list).contains(shelf.food)
                     && !inGoals(shelf.food)
                 ){
-                    addGoal(shelf.food, shelf.position);
+                    addGoal(shelf.food, shelf.position, "shelf");
                 }
             }
             // plan counter items
@@ -407,7 +425,7 @@ public class Agent extends SupermarketComponentImpl
                 System.out.println("consider shelf: "+ counter.food);
                 if(Arrays.asList(obs.players[0].shopping_list).contains(counter.food)
                     && !inGoals(counter.food)){
-                    addGoal(counter.food, counter.position);
+                    addGoal(counter.food, counter.position, "counter");
                 }
             }
 
@@ -419,19 +437,20 @@ public class Agent extends SupermarketComponentImpl
             // choose a register
             Observation.Register chosenRegister = obs.registers[0];
             // add a register
-            addGoal("register", chosenRegister.position);
+            addGoal("register", chosenRegister.position, "register");
 
-            nop();
-        } else {
-            System.out.println("already planned goals");
-            nop();
+            // nop();
         }
+        //  else {
+        //     // System.out.println("already planned goals");
+        //     nop();
+        // }
     }
 
     // Note, should only be used to sort goals when only food items (counters and shelves) are in goals
-    protected void addGoal(String name, double[] position){
+    protected void addGoal(String name, double[] position, String type){
         System.out.println("added Goal " + name);
-        Goal newGoal = new Goal(name, position);
+        Goal newGoal = new Goal(name, position, type);
         goals.add(newGoal);
     }
 
@@ -487,18 +506,47 @@ public class Agent extends SupermarketComponentImpl
     }
 
     // subsumption architecture layer
-    protected void goalSearch(Observation obs, String goal) 
+    protected void subsumption(Observation obs) 
     {
+        Boolean actionChosen = false;
         // Inhibit and exhibit layers
         planGoals(obs);
+        System.out.println("Current Goal: " + goals.get(0).name + " " + goals.get(0).position[0] + " " + goals.get(0).position[1]);
 
-        if(goalInteractable(obs)){
-            agentInteraction(obs, goals.get(0).position[0], goals.get(0).position[1]);
-            // setMovement(obs);
+
+        actionChosen = interactWithGoal(obs);
+        if(!actionChosen){
+            System.out.println("Grabbing cart going north");
+            actionChosen = grabCartGoNorth(obs);
         }
-        else {
-            // setMovement(obs);
+        if(!actionChosen){
+            System.out.println("Return to xy " + goals.get(0).name + " " + goals.get(0).position[0] + " " + goals.get(0).position[1]);
+            actionChosen = returnToXY(obs, goals.get(0).position[0], goals.get(0).position[1]);
         }
+    }
+
+
+    protected boolean interactWithGoal(Observation obs){
+        Goal goal = goals.get(0);
+        if(withinMarginOfLocation(obs.players[0].position, goal.position[0], goal.position[1])){
+            System.out.println("Interacting with goal");
+            if(goal.type.equals("shelf")){
+                return interactWithShelf(obs);
+            }
+            if(goal.type.equals("counter")){
+                return interactWithCounter(obs);
+            }
+            if(goal.type.equals("register")){
+                return interactWithRegister(obs);
+            }
+        }
+        System.out.println("Not interacting with goal");
+        return false;
+    }
+
+    protected boolean interactWithRegister(Observation obs){
+        System.out.println("ready to interact with register");
+        return false;
     }
 
     protected int findShelf(Observation obs){
@@ -515,7 +563,7 @@ public class Agent extends SupermarketComponentImpl
                     return i;
             }
         }
-        System.out.println("didnt find");
+        System.out.println("shelf not found");
         return -1;
     }
 
@@ -572,19 +620,9 @@ public class Agent extends SupermarketComponentImpl
             else{
                 // System.out.println("holding food going to cart");
                 goSouth();
-                // returnToXY(obs, drop_location[0], drop_location[1]);
                 return true;
             }
         }
-        //      
-     
-        // if holding food 
-        //    if at cart
-        //        
-                // toggleShoppingCart()
-                // return true
-        //     else not at cart
-        //        returnToXY(drop location)
     }
 
     protected int findCounter(Observation obs){
@@ -696,10 +734,10 @@ public class Agent extends SupermarketComponentImpl
         System.out.println("Player currently at coordinate (X,Y): (" + obs.players[0].position[0] + ", "  + obs.players[0].position[1] + ").");
         // grabCartGoNorth(obs)
         // returnToXY(obs, 22.0, 6.0);
-        if(firsttime){
-            planGoals(obs);
-            System.out.println(goals.get(1).name+" "+goals.get(1).position[0]+ " " + goals.get(1).position[1]);
-        }
+        // if(firsttime){
+        //     planGoals(obs);
+        //     System.out.println(goals.get(1).name+" "+goals.get(1).position[0]+ " " + goals.get(1).position[1]);
+        // }
         // if(firsttime){
         //     goals.remove(0);
         //     double[] shelf_test_pos = {5.5, 21.5};
@@ -707,6 +745,7 @@ public class Agent extends SupermarketComponentImpl
         //     goals.add(shelf_test);
         //     System.out.println("topgoal"+ goals.get(0).name);
         // }
+        subsumption(obs);
     
 
         // interactWithShelf(obs);
