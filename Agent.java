@@ -44,6 +44,8 @@ public class Agent extends SupermarketComponentImpl
         //How do I execute one program after another?  Should I have a global flag for checking if items are paidFor
             //inList, atRegister, etc.(?)
     
+<<<<<<< HEAD
+<<<<<<< HEAD
     public static int compareCartToList(Observation obs){
        //System.out.println(Arrays.toString(obs.players[0].shopping_list)); 
        //System.out.println(Arrays.toString(obs.carts[0].contents));
@@ -65,6 +67,57 @@ public class Agent extends SupermarketComponentImpl
 
        
 /*    <--DELETE THIS
+=======
+=======
+>>>>>>> parent of e907249 (Update Agent.java)
+    //first function --> Stop the player at specific (x,y) cooridate on map near register
+    //second function --> Check that we currently have everything on our shopping list
+    //Third function --> Record last known location (with shopping cart) and toggle shopping cart
+    //Fourth function --> Pay for items at register (InteractWithObject)
+    //Fifth function --> walk back down to cart and grab it.
+
+
+
+    //Do I have all of my items?  If so, go to the register.
+    public void TestPrintFood (Obseravtion obs){
+        //Flag: check collision with Shelf
+        for (int i = 0; i < obs.shelves.length, i++){
+            if (obs.shelves[i].canInteract(obs.players[0]){
+                System.Out.println 
+            }
+        }
+    }
+    public void GotAllItems(Observation obs) {
+        //compare the items on the shopping list to items on the arraylist
+        //check that alll items exist within the array --> for loop?  string contains?
+        //return a True statement if it does, return a false statement if it doesn't
+        //use a variable called AllI
+    }
+
+    //Send Agent to the register with cart in hand
+    public void goToRegisters(Observation obs){    
+        //go to specific (xy) coordinate near register
+        //Use Michael's script for recording last known location
+            //toggle shopping cart
+        //GoNorth towardsregister 
+        //return cart last location (x, y)
+        //call payForItems()
+    }
+
+    public void payForItems(Observation obs){
+        //Agent interacts with register, pays for items 
+        //interactWithObject()
+    }
+    public void leaveWithCart (Observation obs){
+        //agent then returns to (xy) coordinate of cart
+        //agent grabs cart with toggleShoppingCart()
+        //agent leaves through exit
+    }
+    
+<<<<<<< HEAD
+>>>>>>> parent of e907249 (Update Agent.java)
+=======
+>>>>>>> parent of e907249 (Update Agent.java)
 
     // Function: grabCartGoNorth
     // Purpose: Move agent to cart area and bring
@@ -108,7 +161,7 @@ public class Agent extends SupermarketComponentImpl
         }
     }
 
-
+    /*    DELETE THIS
 
     // Function: noCollision
     // Purpose: Avoid colliding into known 
@@ -643,7 +696,7 @@ public class Agent extends SupermarketComponentImpl
         
     }
 
-    */  //<---DELETE THIS
+    */    //DELET THIS
 
     // Author-defined execution loop
     // Modifies agent state every 100ms
@@ -666,6 +719,13 @@ public class Agent extends SupermarketComponentImpl
         // grabCartGoNorth(obs);
 
         // move agent to specified goal
+
         payAtRegister(obs);
+
+        //System.out.println("Player currently at coordinate (X,Y): (" + obs.players[0].position[0] + ", "  + obs.players[0].position[1] + ").");
+
+
+        //System.out.println("Player currently at coordinate (X,Y): (" + obs.players[0].position[0] + ", "  + obs.players[0].position[1] + ").");
+
     }
 }
