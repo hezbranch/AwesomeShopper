@@ -45,8 +45,11 @@ public class Agent extends SupermarketComponentImpl
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     public static int compareCartToList(Observation obs){
 =======
+=======
+>>>>>>> parent of 46cadd9 (Update Agent.java)
     //FORMAT Pre-Reqs as sequential statements, triggered by IF statement
     //IF: total items in shopping cart match items in shopping list:
         //1. Make player head to specific (x,y) cooridate on map near register
@@ -55,6 +58,9 @@ public class Agent extends SupermarketComponentImpl
         //4. Walk back down to cart and grab it.
 
     public void payAtRegister(Observation obs){
+<<<<<<< HEAD
+>>>>>>> parent of 46cadd9 (Update Agent.java)
+=======
 >>>>>>> parent of 46cadd9 (Update Agent.java)
        //System.out.println(Arrays.toString(obs.players[0].shopping_list)); 
        //System.out.println(Arrays.toString(obs.carts[0].contents));
@@ -723,7 +729,12 @@ public class Agent extends SupermarketComponentImpl
 
         // move agent to specified goal
 <<<<<<< HEAD
+<<<<<<< HEAD
 
+=======
+        //System.out.println("Player currently at coordinate (X,Y): (" + obs.players[0].position[0] + ", "  + obs.players[0].position[1] + ").");
+        giveMeXY(obs);
+>>>>>>> parent of 46cadd9 (Update Agent.java)
 =======
         //System.out.println("Player currently at coordinate (X,Y): (" + obs.players[0].position[0] + ", "  + obs.players[0].position[1] + ").");
         giveMeXY(obs);
