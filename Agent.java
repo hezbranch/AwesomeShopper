@@ -17,8 +17,6 @@ public class Agent extends SupermarketComponentImpl
         log.info("In Agent constructor.");
         Goal plan = new Goal(PLAN, NOWHERE);
         goals.add(plan);
-        double x_location;
-        double y_location;
     }
     // Goal States
     static String PLAN = "plan";
@@ -46,26 +44,32 @@ public class Agent extends SupermarketComponentImpl
     
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     public static int compareCartToList(Observation obs){
+=======
+    //FORMAT Pre-Reqs as sequential statements, triggered by IF statement
+    //IF: total items in shopping cart match items in shopping list:
+        //1. Make player head to specific (x,y) cooridate on map near register
+        //2. Record last known location (with shopping cart) and toggle shopping cart
+        //3. Pay for items at register (InteractWithObject)
+        //4. Walk back down to cart and grab it.
+
+    public void payAtRegister(Observation obs){
+>>>>>>> parent of 46cadd9 (Update Agent.java)
        //System.out.println(Arrays.toString(obs.players[0].shopping_list)); 
        //System.out.println(Arrays.toString(obs.carts[0].contents));
-        //IF:if items in shopping cart match items in shopping list:
-
-        //boolean returnVal1 = Arrays.equals((obs.players[0].shopping_list), (obs.carts[0].contents));
-        //System.out.println("Do I have everything on my shopping list: " + returnVal1); 
-
-                //1. Make player head to specific (x,y) cooridate on map near register
-                //2. Record last known location (with shopping cart) and toggle shopping cart
-                //3. Pay for items at register (InteractWithObject)
-                //4. Walk back down to cart and grab it.
-               
+       //if (obs.players[0].shopping_list == obs.carts[0].contents){
         //Make agent go to a specific location     
        //}
-
+       //else {
        }
     //}
-
-       
+   public void giveMeXY (Observation obs){
+        double x = obs.players[0].position[0];
+        double y = obs.players[0].position[1];
+        System.out.println ("Player is currrently at: " + x + ", " + y);
+   }
+    
 /*    <--DELETE THIS
 =======
 =======
@@ -713,13 +717,17 @@ public class Agent extends SupermarketComponentImpl
         // System.out.println(obs.registers.length + " registers");
         // System.out.println(obs.cartReturns.length + " cartReturns");
         // print out the shopping list
-         System.out.println("Shoppping list: " + Arrays.toString(obs.players[0].shopping_list));
-         System.out.println("cart contents; " + Arrays.toString(obs.carts[0].contents));
+        // System.out.println("Shoppping list: " + Arrays.toString(obs.players[0].shopping_list));
         // call function to grab cart and go north
         // grabCartGoNorth(obs);
 
         // move agent to specified goal
+<<<<<<< HEAD
 
+=======
+        //System.out.println("Player currently at coordinate (X,Y): (" + obs.players[0].position[0] + ", "  + obs.players[0].position[1] + ").");
+        giveMeXY(obs);
+>>>>>>> parent of 46cadd9 (Update Agent.java)
         payAtRegister(obs);
 
         //System.out.println("Player currently at coordinate (X,Y): (" + obs.players[0].position[0] + ", "  + obs.players[0].position[1] + ").");
