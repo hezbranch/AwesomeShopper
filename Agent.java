@@ -46,8 +46,11 @@ public class Agent extends SupermarketComponentImpl
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     public static int compareCartToList(Observation obs){
 =======
+=======
+>>>>>>> parent of 46cadd9 (Update Agent.java)
 =======
 >>>>>>> parent of 46cadd9 (Update Agent.java)
     //FORMAT Pre-Reqs as sequential statements, triggered by IF statement
@@ -59,6 +62,9 @@ public class Agent extends SupermarketComponentImpl
 
     public void payAtRegister(Observation obs){
 <<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> parent of 46cadd9 (Update Agent.java)
+=======
 >>>>>>> parent of 46cadd9 (Update Agent.java)
 =======
 >>>>>>> parent of 46cadd9 (Update Agent.java)
@@ -728,17 +734,15 @@ public class Agent extends SupermarketComponentImpl
         // grabCartGoNorth(obs);
 
         // move agent to specified goal
-<<<<<<< HEAD
-<<<<<<< HEAD
 
-=======
         //System.out.println("Player currently at coordinate (X,Y): (" + obs.players[0].position[0] + ", "  + obs.players[0].position[1] + ").");
         giveMeXY(obs);
->>>>>>> parent of 46cadd9 (Update Agent.java)
-=======
         //System.out.println("Player currently at coordinate (X,Y): (" + obs.players[0].position[0] + ", "  + obs.players[0].position[1] + ").");
         giveMeXY(obs);
->>>>>>> parent of 46cadd9 (Update Agent.java)
+
+        //System.out.println("Player currently at coordinate (X,Y): (" + obs.players[0].position[0] + ", "  + obs.players[0].position[1] + ").");
+        giveMeXY(obs);
+
         payAtRegister(obs);
 
         //System.out.println("Player currently at coordinate (X,Y): (" + obs.players[0].position[0] + ", "  + obs.players[0].position[1] + ").");
