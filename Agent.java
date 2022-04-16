@@ -45,6 +45,79 @@ public class Agent extends SupermarketComponentImpl
         //How do I execute one program after another?  Should I have a global flag for checking if items are paidFor
             //inList, atRegister, etc.(?)
     
+<<<<<<< Updated upstream
+=======
+    //public static int compareCartToList(Observation obs){
+    //FORMAT Pre-Reqs as sequential statements, triggered by IF statement
+    //IF: total items in shopping cart match items in shopping list:
+        //1. Make player head to specific (x,y) cooridate on map near register
+        //2. Record last known location (with shopping cart) and toggle shopping cart
+        //3. Pay for items at register (InteractWithObject)
+        //4. Walk back down to cart and grab it.
+        //int x = 1;
+        //return x; 
+    //}
+    
+    public void cartTheftNorm (Observation obs){
+       //System.out.println(Arrays.toString(obs.carts[1].contents_quant));
+       if(obs.players[0].curr_cart == -1){
+        goSouth();
+        System.out.println("My current cart state is: " + obs.players[0].curr_cart);
+       }
+        //System.out.println(Obs.)
+      //System.out.println(Arrays.toString(obs.carts[0].capacity)101);
+    
+    }
+
+    public void ShopliftingNorm (Observation obs){
+    }
+
+    public void WrongShelfNorm(Observation obs){   
+    }
+
+    public void ObjectCollisionNorm(Observation obs){
+    }
+
+    public void WallCollisionNorm(Observation obs){
+    }
+
+    public void BlockingExitNorm (Observation obs){  
+    }
+
+    public void EntranceOnlyNorm (Observation obs){
+    }
+
+    public void UnattendedCarNorm(Observation obs){
+    }
+
+    public void OnlyOneCartNorm(Observation obs){
+    }
+
+    public void PersonalSpaceNorm(Observation obs){
+    }
+
+    public void InteractionCancellationNorm(Observation obs){
+    }
+    //public void payAtRegister(Observation obs){
+       //System.out.println(Arrays.toString(obs.players[0].shopping_list)); 
+       //System.out.println(Arrays.toString(obs.carts[0].contents));
+       //if (obs.players[0].shopping_list == obs.carts[0].contents){
+        //Make agent go to a specific location     
+       //}
+       //else {
+       //}
+    //}
+   //public void giveMeXY (Observation obs){
+   //     double x = obs.players[0].position[0];
+   //     double y = obs.players[0].position[1];
+    //    System.out.println ("Player is currrently at: " + x + ", " + y);
+   //}
+    
+/*    <--DELETE THIS
+=======
+=======
+>>>>>>> parent of e907249 (Update Agent.java)
+>>>>>>> Stashed changes
     //first function --> Stop the player at specific (x,y) cooridate on map near register
     //second function --> Check that we currently have everything on our shopping list
     //Third function --> Record last known location (with shopping cart) and toggle shopping cart
@@ -79,7 +152,10 @@ public class Agent extends SupermarketComponentImpl
         //agent leaves through exit
     }
     
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
     // Function: grabCartGoNorth
     // Purpose: Move agent to cart area and bring
     //          it up back north to register area
@@ -748,7 +824,20 @@ public class Agent extends SupermarketComponentImpl
         subsumption(obs);
     
 
+<<<<<<< Updated upstream
         // interactWithShelf(obs);
         firsttime = false;
+=======
+        //giveMeXY(obs);
+
+       //payAtRegister(obs);
+       cartTheftNorm(obs);
+
+        //System.out.println("Player currently at coordinate (X,Y): (" + obs.players[0].position[0] + ", "  + obs.players[0].position[1] + ").");
+
+
+        //System.out.println("Player currently at coordinate (X,Y): (" + obs.players[0].position[0] + ", "  + obs.players[0].position[1] + ").");
+
+>>>>>>> Stashed changes
     }
 }
