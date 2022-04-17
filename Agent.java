@@ -289,10 +289,25 @@ public class Agent extends SupermarketComponentImpl
         final double x_lower_bound = 3.9;
         final double x_upper_bound = 15;
 
+        // Collision check to avoid collisions
+        // If about go collide, go in the opposite direction
+        int collision_check = noCollision(obs);
+        if (collision_check != -1) {
+            if (collision_check == 0) {
+                goSouth();
+            } else if (collision_check == 1) {
+                goNorth();
+            } else if (collision_check == 2) {
+                goWest();
+            } else {
+                goEast();
+            }
+        }
+
         // Check if agent has arrived at intended position
         // if (Math.abs(agent_current_x_coord - target_x) < relative_error
         // && Math.abs(agent_current_y_coord - target_y) < relative_error) {
-        if(withinMarginOfLocation(obs.players[0].position, target_x, target_y)){
+        if (withinMarginOfLocation(obs.players[0].position, target_x, target_y)){
             nop();
             System.out.println("Agent returned to target location (X, Y): " 
                               + "(" + target_x  + ", " + target_y + ").");
