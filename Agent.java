@@ -155,7 +155,7 @@ public class Agent extends SupermarketComponentImpl
             if ( obs.players[0].collision(obs.counters[i], obs.counters[i].position[0] + 1, obs.counters[i].position[1]) 
             || obs.players[0].collision(obs.counters[i], obs.counters[i].position[0] - 1, obs.counters[i].position[1])) {
                 System.out.println("COLLISION FUNCTION WORKS on X AS EXPECTED!!!");
-                return obs.players[0].direction;;
+                return obs.players[0].direction;
             }
         }
         // Check for register collisions
@@ -163,12 +163,12 @@ public class Agent extends SupermarketComponentImpl
             if ( obs.players[0].collision(obs.registers[i], obs.registers[i].position[0], obs.registers[i].position[1] - 1) 
             || obs.players[0].collision(obs.registers[i], obs.registers[i].position[0], obs.registers[i].position[1] + 1)) {
                 System.out.println("COLLISION FUNCTION WORKS on Y AS EXPECTED!!!");
-                return obs.players[0].direction;;
+                return obs.players[0].direction;
             }
             if ( obs.players[0].collision(obs.registers[i], obs.registers[i].position[0] + 1, obs.registers[i].position[1]) 
             || obs.players[0].collision(obs.registers[i], obs.registers[i].position[0] - 1, obs.registers[i].position[1])) {
                 System.out.println("COLLISION FUNCTION WORKS on X AS EXPECTED!!!");
-                return obs.players[0].direction;;
+                return obs.players[0].direction;
             }
         }
         // Check for cart return collisions
@@ -176,12 +176,12 @@ public class Agent extends SupermarketComponentImpl
             if ( obs.players[0].collision(obs.cartReturns[i], obs.cartReturns[i].position[0], obs.cartReturns[i].position[1] - 1) 
             || obs.players[0].collision(obs.cartReturns[i], obs.cartReturns[i].position[0], obs.cartReturns[i].position[1] + 1)) {
                 System.out.println("COLLISION FUNCTION WORKS on Y AS EXPECTED!!!");
-                return obs.players[0].direction;;
+                return obs.players[0].direction;
             }
             if ( obs.players[0].collision(obs.cartReturns[i], obs.cartReturns[i].position[0] + 1, obs.cartReturns[i].position[1]) 
             || obs.players[0].collision(obs.cartReturns[i], obs.cartReturns[i].position[0] - 1, obs.cartReturns[i].position[1])) {
                 System.out.println("COLLISION FUNCTION WORKS on X AS EXPECTED!!!");
-                return obs.players[0].direction;;
+                return obs.players[0].direction;
             }
         }
         // Check for cart collisions
@@ -189,12 +189,12 @@ public class Agent extends SupermarketComponentImpl
             if ( obs.players[0].collision(obs.carts[i], obs.carts[i].position[0], obs.carts[i].position[1] - 1) 
             || obs.players[0].collision(obs.carts[i], obs.shelves[i].position[0], obs.carts[i].position[1] + 1)) {
                 System.out.println("COLLISION FUNCTION WORKS on Y AS EXPECTED!!!");
-                return obs.players[0].direction;;
+                return obs.players[0].direction;
             }
             if ( obs.players[0].collision(obs.carts[i], obs.carts[i].position[0] + 1, obs.carts[i].position[1]) 
             || obs.players[0].collision(obs.carts[i], obs.carts[i].position[0] - 1, obs.carts[i].position[1])) {
                 System.out.println("COLLISION FUNCTION WORKS on X AS EXPECTED!!!");
-                return obs.players[0].direction;;
+                return obs.players[0].direction;
             }
         }
         // Check for shelf collisions
@@ -202,12 +202,12 @@ public class Agent extends SupermarketComponentImpl
             if ( obs.players[0].collision(obs.shelves[i], obs.shelves[i].position[0], obs.shelves[i].position[1] - 1) 
             || obs.players[0].collision(obs.shelves[i], obs.shelves[i].position[0], obs.shelves[i].position[1] + 1)) {
                 System.out.println("COLLISION FUNCTION WORKS on Y AS EXPECTED!!!");
-                return obs.players[0].direction;;
+                return obs.players[0].direction;
             }
             if ( obs.players[0].collision(obs.shelves[i], obs.shelves[i].position[0] + 1, obs.shelves[i].position[1]) 
             || obs.players[0].collision(obs.shelves[i], obs.shelves[i].position[0] - 1, obs.shelves[i].position[1])) {
                 System.out.println("COLLISION FUNCTION WORKS on X AS EXPECTED!!!");
-                return obs.players[0].direction;;
+                return obs.players[0].direction;
             }
         }
         return success;
@@ -777,13 +777,13 @@ public class Agent extends SupermarketComponentImpl
         //     System.out.println("topgoal"+ goals.get(0).name);
         // }
         subsumption(obs);
-        string output = "";
+        String collision_check = "";
         if (noCollision(obs) == -1) {
-            output += "No collision detected.";
+            collision_check += "No collision detected.";
         } else {
-            output += "Collision detected.";
+            collision_check += "Collision detected.";
         }
-        System.out.println("COLLISION CHECK? " + noCollision(obs));
+        System.out.println("COLLISION CHECK? " + collision_check);
     
 
         // interactWithShelf(obs);
