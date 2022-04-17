@@ -307,7 +307,7 @@ public class Agent extends SupermarketComponentImpl
         int collision_check = noCollision(obs);
         if (collision_check != -1) {
             nop();
-            System.out.println("Avoiding collisions by NOT moving.");
+            System.out.println("To avoid a predicted collision, agent is NOT moving.");
             return false;
         }
 
