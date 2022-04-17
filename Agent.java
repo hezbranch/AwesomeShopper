@@ -301,11 +301,13 @@ public class Agent extends SupermarketComponentImpl
         }
 
         // Collision check to avoid collisions
-        // If about go collide, go in the opposite direction
+        // If about to collide, go in the opposite direction
+        // CURRENTLY FAR TOO CONSERVATIVE ON DETECTING COLLISIONS
+        // CAUSING ERROR ON MOVEMENT
         int collision_check = noCollision(obs);
         if (collision_check != -1) {
             nop();
-            goNorth();
+            System.out.println("Avoiding collisions by NOT moving.");
             return false;
         }
 
