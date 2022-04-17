@@ -136,8 +136,9 @@ public class Agent extends SupermarketComponentImpl
     // Purpose: Avoid colliding into known 
     //          Interactive Objects for movement
     // Input: An observation state (i.e. Observation)
-    // Returns: Boolean
-    // Effect(s): External timing
+    // Returns: Integer if collision imminent (user's current direction),
+    // otherwise returns -1 if no collision detected.
+    // Effect(s): External timing, no movement involved
     // Complexity: Linear time complexity, constant space
     // Notes: <Hezekiah> There's probably a FAR better way of 
     //                   doing this but it is what it is
@@ -145,54 +146,56 @@ public class Agent extends SupermarketComponentImpl
     protected int noCollision(Observation obs) {
         // Set boolean to pass test cases
         int success = -1;
+        double tail = 0.0; // Upper Bound of Distance to Potential Collision
+        double lower = 0.0; // Lower Bound of Distance to Potential Collision
         // Check for counter collisions
         for (int i = 0; i < obs.counters.length; i++) {
-            if ( obs.players[0].collision(obs.counters[i], obs.counters[i].position[0], obs.counters[i].position[1] - 1) 
-            || obs.players[0].collision(obs.counters[i], obs.counters[i].position[0], obs.counters[i].position[1] + 1)) {
+            if ( obs.players[0].collision(obs.counters[i], obs.counters[i].position[0], obs.counters[i].position[1] - tail) 
+            || obs.players[0].collision(obs.counters[i], obs.counters[i].position[0], obs.counters[i].position[1] + lower)) {
                 System.out.println("COLLISION FUNCTION WORKS on Y AS EXPECTED!!!");
                 return obs.players[0].direction;
             }
-            if ( obs.players[0].collision(obs.counters[i], obs.counters[i].position[0] + 1, obs.counters[i].position[1]) 
-            || obs.players[0].collision(obs.counters[i], obs.counters[i].position[0] - 1, obs.counters[i].position[1])) {
+            if ( obs.players[0].collision(obs.counters[i], obs.counters[i].position[0] - tail, obs.counters[i].position[1]) 
+            || obs.players[0].collision(obs.counters[i], obs.counters[i].position[0] + lower, obs.counters[i].position[1])) {
                 System.out.println("COLLISION FUNCTION WORKS on X AS EXPECTED!!!");
                 return obs.players[0].direction;
             }
         }
         // Check for register collisions
         for (int i = 0; i < obs.registers.length; i++) {
-            if ( obs.players[0].collision(obs.registers[i], obs.registers[i].position[0], obs.registers[i].position[1] - 1) 
-            || obs.players[0].collision(obs.registers[i], obs.registers[i].position[0], obs.registers[i].position[1] + 1)) {
+            if ( obs.players[0].collision(obs.registers[i], obs.registers[i].position[0], obs.registers[i].position[1] - tail) 
+            || obs.players[0].collision(obs.registers[i], obs.registers[i].position[0], obs.registers[i].position[1] + lower)) {
                 System.out.println("COLLISION FUNCTION WORKS on Y AS EXPECTED!!!");
                 return obs.players[0].direction;
             }
-            if ( obs.players[0].collision(obs.registers[i], obs.registers[i].position[0] + 1, obs.registers[i].position[1]) 
-            || obs.players[0].collision(obs.registers[i], obs.registers[i].position[0] - 1, obs.registers[i].position[1])) {
+            if ( obs.players[0].collision(obs.registers[i], obs.registers[i].position[0] + lower, obs.registers[i].position[1]) 
+            || obs.players[0].collision(obs.registers[i], obs.registers[i].position[0] - tail, obs.registers[i].position[1])) {
                 System.out.println("COLLISION FUNCTION WORKS on X AS EXPECTED!!!");
                 return obs.players[0].direction;
             }
         }
         // Check for cart return collisions
         for (int i = 0; i < obs.cartReturns.length; i++) {
-            if ( obs.players[0].collision(obs.cartReturns[i], obs.cartReturns[i].position[0], obs.cartReturns[i].position[1] - 1) 
-            || obs.players[0].collision(obs.cartReturns[i], obs.cartReturns[i].position[0], obs.cartReturns[i].position[1] + 1)) {
+            if ( obs.players[0].collision(obs.cartReturns[i], obs.cartReturns[i].position[0], obs.cartReturns[i].position[1] - tail) 
+            || obs.players[0].collision(obs.cartReturns[i], obs.cartReturns[i].position[0], obs.cartReturns[i].position[1] + lower)) {
                 System.out.println("COLLISION FUNCTION WORKS on Y AS EXPECTED!!!");
                 return obs.players[0].direction;
             }
-            if ( obs.players[0].collision(obs.cartReturns[i], obs.cartReturns[i].position[0] + 1, obs.cartReturns[i].position[1]) 
-            || obs.players[0].collision(obs.cartReturns[i], obs.cartReturns[i].position[0] - 1, obs.cartReturns[i].position[1])) {
+            if ( obs.players[0].collision(obs.cartReturns[i], obs.cartReturns[i].position[0] + lower, obs.cartReturns[i].position[1]) 
+            || obs.players[0].collision(obs.cartReturns[i], obs.cartReturns[i].position[0] - tail, obs.cartReturns[i].position[1])) {
                 System.out.println("COLLISION FUNCTION WORKS on X AS EXPECTED!!!");
                 return obs.players[0].direction;
             }
         }
         // Check for cart collisions
         for (int i = 0; i < obs.carts.length; i++) {
-            if ( obs.players[0].collision(obs.carts[i], obs.carts[i].position[0], obs.carts[i].position[1] - 1) 
-            || obs.players[0].collision(obs.carts[i], obs.shelves[i].position[0], obs.carts[i].position[1] + 1)) {
+            if ( obs.players[0].collision(obs.carts[i], obs.carts[i].position[0], obs.carts[i].position[1] - tail) 
+            || obs.players[0].collision(obs.carts[i], obs.shelves[i].position[0], obs.carts[i].position[1] + lower)) {
                 System.out.println("COLLISION FUNCTION WORKS on Y AS EXPECTED!!!");
                 return obs.players[0].direction;
             }
-            if ( obs.players[0].collision(obs.carts[i], obs.carts[i].position[0] + 1, obs.carts[i].position[1]) 
-            || obs.players[0].collision(obs.carts[i], obs.carts[i].position[0] - 1, obs.carts[i].position[1])) {
+            if ( obs.players[0].collision(obs.carts[i], obs.carts[i].position[0] + lower, obs.carts[i].position[1]) 
+            || obs.players[0].collision(obs.carts[i], obs.carts[i].position[0] - tail, obs.carts[i].position[1])) {
                 System.out.println("COLLISION FUNCTION WORKS on X AS EXPECTED!!!");
                 return obs.players[0].direction;
             }
@@ -293,15 +296,9 @@ public class Agent extends SupermarketComponentImpl
         // If about go collide, go in the opposite direction
         int collision_check = noCollision(obs);
         if (collision_check != -1) {
-            if (collision_check == 0) {
-                goSouth();
-            } else if (collision_check == 1) {
-                goNorth();
-            } else if (collision_check == 2) {
-                goWest();
-            } else {
-                goEast();
-            }
+            nop();
+            goNorth();
+            return false;
         }
 
         // Check if agent has arrived at intended position
