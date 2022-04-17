@@ -29,57 +29,6 @@ public class Agent extends SupermarketComponentImpl
     // Author-defined boolean variable
     boolean firsttime = true;
     ArrayList<Goal> goals = new ArrayList<Goal>();
-
-    //Function PayForItems
-    //In its most basic form, the only thing you need to do after collecting all your items
-    //is [ interactWithObject() ].  As long as you have all the items inside of your 
-    //cart at the time, you can pay for all your itmes at once.
-    //Pre-Requisites: 
-        //Player must be facing the counter at the time
-        //Player must have previously dropped his cart
-        //Player needs  to have cart dropped off
-    //Notes;
-        //Player can pay for all items at once
-        //Player just needs to be at counter in order to pay
-        //Player will also end up paying for items that aren't on the shopping list
-        //How do I execute one program after another?  Should I have a global flag for checking if items are paidFor
-            //inList, atRegister, etc.(?)
-    
-    //first function --> Stop the player at specific (x,y) cooridate on map near register
-    //second function --> Check that we currently have everything on our shopping list
-    //Third function --> Record last known location (with shopping cart) and toggle shopping cart
-    //Fourth function --> Pay for items at register (InteractWithObject)
-    //Fifth function --> walk back down to cart and grab it.
-
-    //Do I have all of my items?  If so, go to the register.
-    public void GotAllItems(Observation obs) {
-        //compare the items on the shopping list to items on the arraylist
-        //check that alll items exist within the array --> for loop?  string contains?
-        //return a True statement if it does, return a false statement if it doesn't
-        //use a variable called AllIn
-    }
-
-    //Send Agent to the register with cart in hand
-    public void goToRegisters(Observation obs){    
-        //go to specific (xy) coordinate near register
-        //Use Michael's script for recording last known location
-            //toggle shopping cart
-        //GoNorth towardsregister 
-        //return cart last location (x, y)
-        //call payForItems()
-    }
-
-    public void payForItems(Observation obs){
-        //Agent interacts with register, pays for items 
-        //interactWithObject()
-    }
-    public void leaveWithCart (Observation obs){
-        //agent then returns to (xy) coordinate of cart
-        //agent grabs cart with toggleShoppingCart()
-        //agent leaves through exit
-    }
-    
-
     // Function: grabCartGoNorth
     // Purpose: Move agent to cart area and bring
     //          it up back north to register area
@@ -683,7 +632,49 @@ public class Agent extends SupermarketComponentImpl
     }
 
     protected boolean interactWithRegister(Observation obs){
-        System.out.println("ready to interact with register");
+        //System.out.println("ready to interact with register");
+        //System.out.pritnln(obs.registers.)
+        //In it's basic form, interactWithRegister needs do the following:
+        //1. toggleShoppingCart()  //Drop shopping cart 
+        //2. goNorth()             //Go up to where register is
+        //3. interactWithObject()  //interact with object is all that is needed in order to interact with register to pay for all items at once
+        //4. returnToXY()          //Return to cart location      
+        //5. toggleShoppingCart()  //Repick up Cart     
+        //The function assumes that the goals are 
+        // System.out.println("starting IWR");
+        //MOVEMENT: Agent and Cart need to be right next to counter in order to pay
+        Boolean holding_cart = obs.players[0].curr_cart != -1;
+        Boolean can_interact_with_register = obs.registers[1].canInteract(obs.players[0]); //register's index is currently hardcoded 
+        Boolean dropped_cart = false;
+        Boolean has_paid = false;
+
+        if(holding_cart){
+            //System.out.println("Am I holding a shopping cart" + holding_cart);
+            // System.out.println("toggle " + obs.players[0].curr_cart);
+            my_cart_index = obs.players[0].curr_cart;
+            // Let go of cart and save location
+            drop_location[0] = obs.players[0].position[0];
+            drop_location[1] = obs.players[0].position[1];
+            drop_direction = obs.players[0].direction;            
+            toggleShoppingCart();
+            System.out.println("I haved dropped cart");
+            dropped_cart = true;
+        }
+        // can interact with register (register is interactable and cart has been dropped)
+        while(dropped_cart & (!has_paid)){
+            //  System.out.println("toggle");
+            //  interact with shelf and take food
+            System.out.println("I have to purhcase some items");
+            goNorth();
+            interactWithObject();
+            has_paid = true;
+            }
+        if (has_paid){
+            System.out.println("I have purhcased everything");
+            goWest();
+            toggleShoppingCart();
+            goWest();
+        }
         return false;
     }
 
