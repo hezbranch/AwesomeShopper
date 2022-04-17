@@ -259,25 +259,13 @@ public class Agent extends SupermarketComponentImpl
         return false;
     }
 
-    // Function: moveToXY
-    // Purpose: Move Agent from current location to target location (target_x, target_y)
-    // Input: Current Observation, target x, target y
-    // Effects: chooses and moves in a direction (unless movement not possible/valid)
-    // Returns: if a movement option has been chosen
-    protected boolean moveToGoal(Observation obs, Goal goal){
+    protected boolean moveToShelf(Observation obs, Goal goal){
         double curr_x = obs.players[0].position[0];
         double curr_y = obs.players[0].position[1];
         double goal_x = goal.position[0];
         double goal_y = goal.position[1];
         double x_offset = 1;
         double y_offset = 2;
-
-        System.out.println("Coords: " + curr_x + " " + curr_y + " " + goal_x + " " + goal_y);
-
-        //  TODO?
-        // Check if we in 'range' if so return false   This might not be needed if interact comes first?
-
-         // Check if are in correct aisle if so go east/west based on x
         if(inAisle(obs, goal)){
             if(curr_x < (goal_x + x_offset)){
                 goEast();
@@ -302,6 +290,69 @@ public class Agent extends SupermarketComponentImpl
                 return true;
             }
         }
+    }
+
+    protected boolean moveToCounter(Observation obs, Goal goal){
+        double curr_x = obs.players[0].position[0];
+        double curr_y = obs.players[0].position[1];
+        double goal_x = goal.position[0];
+        double goal_y = goal.position[1];
+        double x_offset = 1;
+        double y_offset = 1;
+        // if(inAisle(obs, goal)){
+        //     if(curr_x < (goal_x - x_offset)){
+        //         goEast();
+        //         return true;
+        //     } else {
+        //         goWest();
+        //         return true;
+        //     }
+        // } else {// We are not in correct aisle
+            // If we are in a hub we can move to correct Y
+        if((obs.inAisleHub(0) && curr_x > 4.0 ) || obs.inRearAisleHub(0)){
+            if(curr_y < goal_y + y_offset){
+                goSouth();
+                return true;
+            } else {
+                goNorth();
+                return true;
+            }
+        } else {
+            // Not in an aisle hub and not in correct aisle just go east (towards the back hub)
+            goEast();
+            return true;
+        }
+        // }
+    }
+
+    // Function: moveToXY
+    // Purpose: Move Agent from current location to target location (target_x, target_y)
+    // Input: Current Observation, target x, target y
+    // Effects: chooses and moves in a direction (unless movement not possible/valid)
+    // Returns: if a movement option has been chosen
+    protected boolean moveToGoal(Observation obs, Goal goal){
+        double curr_x = obs.players[0].position[0];
+        double curr_y = obs.players[0].position[1];
+        double goal_x = goal.position[0];
+        double goal_y = goal.position[1];
+        double x_offset = 1;
+        double y_offset = 2;
+
+        System.out.println("Coords: " + curr_x + " " + curr_y + " " + goal_x + " " + goal_y);
+
+        //  TODO?
+        // Check if we in 'range' if so return false   This might not be needed if interact comes first?
+        if(goal.type.equals("shelf")){
+            return moveToShelf(obs, goal);
+        } else if (goal.type.equals("counter")){
+            return moveToCounter(obs, goal);
+        } else if (goal.type.equals("register")){
+            System.out.println("Move To Register");
+            return false;
+            // return moveToRegister(obs, goal);
+        }
+         // Check if are in correct aisle if so go east/west based on x
+       return false;
     }
 
     // Function: returnToXY
@@ -487,6 +538,10 @@ public class Agent extends SupermarketComponentImpl
                 }
             }
 
+            // TESTING VERSION THE FOLLOWING LINE CAN BE UNCOMMENTED TO FORCE AGENT TO 
+            // PICKUP SOMETHING FOR A COUNTER FOR TESTING
+            // addGoal(obs.counters[0].food, obs.counters[0].position, "counter");
+
             // sort goals, comparison of goals for sorting handled by Goal.java comparison. 
             Collections.sort(goals);
            
@@ -594,8 +649,12 @@ public class Agent extends SupermarketComponentImpl
             curr_x > (goal_x + offset - margin) && 
             curr_x < (goal_x + offset + margin) && 
             inAisle(obs, goal)){
-                
             System.out.println("inInteract " );
+            return true;
+        } else if(goal.type.equals("counter") && 
+            curr_y > (goal_y + offset - margin) && 
+            curr_y < (goal_y + offset + margin)){
+            System.out.println("inInteractCounter " );
             return true;
         }
 
@@ -706,14 +765,14 @@ public class Agent extends SupermarketComponentImpl
 
     protected int findCounter(Observation obs){
         for(int i = 0; i < obs.counters.length; i++){
-            System.out.println("checking counter i" + i + " " + obs.shelves[i].food.equals(goals.get(0).name));
+            System.out.println("checking counter i" + i + " " + obs.counters[i].food.equals(goals.get(0).name));
             // System.out.println(obs.shelves[i].position[0].equals(goals.get(0).position)+ " " 
             //     + obs.shelves[i].position[0] + " " + obs.shelves[i].position[1]
             //     + goals.get(0).position[0] + " " + goals.get(0).position[1]);
             //+ " " + obs.shelves[i].position.equals(goals.get(0).position));
-            if(obs.shelves[i].food.equals(goals.get(0).name)
-                && obs.shelves[i].position[0] == goals.get(0).position[0]
-                && obs.shelves[i].position[1] == goals.get(0).position[1]){
+            if(obs.counters[i].food.equals(goals.get(0).name)
+                && obs.counters[i].position[0] == goals.get(0).position[0]
+                && obs.counters[i].position[1] == goals.get(0).position[1]){
                     System.out.println("found i " + i);
                     return i;
             }
@@ -741,14 +800,14 @@ public class Agent extends SupermarketComponentImpl
             return true;
         }
         // can interact with shelf and not holding food and 
-        if( can_interact_with_proper_counter && !holding_food){
+        if(can_interact_with_proper_counter && !holding_food){
             //  System.out.println("toggle");
             //  interact with shelf and take food
             interactWithObject();
             return true;
         } else if(!holding_food){
             //   System.out.println("not holding food");
-              goNorth();
+            goEast();
             // returnToXY(obs, obs.shelves[shelf_index].position[0], obs.shelves[shelf_index].position[1]);
             return true;
         } else {
@@ -774,7 +833,7 @@ public class Agent extends SupermarketComponentImpl
             }
             else{
                 // System.out.println("holding food going to cart");
-                goSouth();
+                goWest();
                 // returnToXY(obs, drop_location[0], drop_location[1]);
                 return true;
             }
