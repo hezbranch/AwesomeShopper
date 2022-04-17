@@ -139,9 +139,7 @@ public class Agent extends SupermarketComponentImpl
     // Returns: Integer if collision imminent (user's current direction),
     // otherwise returns -1 if no collision detected.
     // Effect(s): External timing, no movement involved
-    // Complexity: Linear time complexity, constant space
-    // Notes: <Hezekiah> There's probably a FAR better way of 
-    //                   doing this but it is what it is
+    // Complexity: Linear time complexity, constant auxillary space
     // Author: Branch, H.
     protected int noCollision(Observation obs) {
         // Set boolean to pass test cases
