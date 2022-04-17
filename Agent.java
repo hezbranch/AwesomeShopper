@@ -137,7 +137,7 @@ public class Agent extends SupermarketComponentImpl
     //          Interactive Objects for movement
     // Input: An observation state (i.e. Observation)
     // Returns: Integer if collision imminent (Returns user's current direction),
-    // otherwise returns -1 if no collision detected.
+    // otherwise returns sentinel value of -1 if no collision detected.
     // Effect(s): External timing, no movement involved
     // Complexity: Linear time complexity, constant auxillary space
     // Author: Branch, H.
