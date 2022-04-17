@@ -292,15 +292,6 @@ public class Agent extends SupermarketComponentImpl
         final double x_lower_bound = 3.9;
         final double x_upper_bound = 15;
 
-        // Collision check to avoid collisions
-        // If about go collide, go in the opposite direction
-        int collision_check = noCollision(obs);
-        if (collision_check != -1) {
-            nop();
-            goNorth();
-            return false;
-        }
-
         // Check if agent has arrived at intended position
         // if (Math.abs(agent_current_x_coord - target_x) < relative_error
         // && Math.abs(agent_current_y_coord - target_y) < relative_error) {
@@ -309,6 +300,15 @@ public class Agent extends SupermarketComponentImpl
             System.out.println("Agent returned to target location (X, Y): " 
                               + "(" + target_x  + ", " + target_y + ").");
             return true;
+        }
+
+        // Collision check to avoid collisions
+        // If about go collide, go in the opposite direction
+        int collision_check = noCollision(obs);
+        if (collision_check != -1) {
+            nop();
+            goNorth();
+            return false;
         }
 
         // Otherwise, return agent to location
