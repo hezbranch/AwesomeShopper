@@ -150,12 +150,12 @@ public class Agent extends SupermarketComponentImpl
         for (int i = 0; i < obs.counters.length; i++) {
             if ( obs.players[0].collision(obs.counters[i], obs.counters[i].position[0], obs.counters[i].position[1] - tail) 
             || obs.players[0].collision(obs.counters[i], obs.counters[i].position[0], obs.counters[i].position[1] + lower)) {
-                System.out.println("COLLISION on Y AT COUNTER " + i + "!!!");
+                System.out.println("POSSIBLE COLLISION on Y AT COUNTER " + i + "!!!");
                 return obs.players[0].direction;
             }
             if ( obs.players[0].collision(obs.counters[i], obs.counters[i].position[0] - tail, obs.counters[i].position[1]) 
             || obs.players[0].collision(obs.counters[i], obs.counters[i].position[0] + lower, obs.counters[i].position[1])) {
-                System.out.println("COLLISION on X AT COUNTER " + i + "!!!");
+                System.out.println("POSSIBLE COLLISION on X AT COUNTER " + i + "!!!");
                 return obs.players[0].direction;
             }
         }
@@ -163,12 +163,12 @@ public class Agent extends SupermarketComponentImpl
         for (int i = 0; i < obs.registers.length; i++) {
             if ( obs.players[0].collision(obs.registers[i], obs.registers[i].position[0], obs.registers[i].position[1] - tail) 
             || obs.players[0].collision(obs.registers[i], obs.registers[i].position[0], obs.registers[i].position[1] + lower)) {
-                System.out.println("COLLISION on Y AT REGISTER " + i + "!!!");
+                System.out.println("POSSIBLE COLLISION on Y AT REGISTER " + i + "!!!");
                 return obs.players[0].direction;
             }
             if ( obs.players[0].collision(obs.registers[i], obs.registers[i].position[0] + lower, obs.registers[i].position[1]) 
             || obs.players[0].collision(obs.registers[i], obs.registers[i].position[0] - tail, obs.registers[i].position[1])) {
-                System.out.println("COLLISION on X AT REGISTER " + i + "!!!");
+                System.out.println("POSSIBLE COLLISION on X AT REGISTER " + i + "!!!");
                 return obs.players[0].direction;
             }
         }
@@ -176,12 +176,12 @@ public class Agent extends SupermarketComponentImpl
         for (int i = 0; i < obs.cartReturns.length; i++) {
             if ( obs.players[0].collision(obs.cartReturns[i], obs.cartReturns[i].position[0], obs.cartReturns[i].position[1] - tail) 
             || obs.players[0].collision(obs.cartReturns[i], obs.cartReturns[i].position[0], obs.cartReturns[i].position[1] + lower)) {
-                System.out.println("COLLISION on Y AT CART RETURN " + i + "!!!");
+                System.out.println("POSSIBLE COLLISION on Y AT CART RETURN " + i + "!!!");
                 return obs.players[0].direction;
             }
             if ( obs.players[0].collision(obs.cartReturns[i], obs.cartReturns[i].position[0] + lower, obs.cartReturns[i].position[1]) 
             || obs.players[0].collision(obs.cartReturns[i], obs.cartReturns[i].position[0] - tail, obs.cartReturns[i].position[1])) {
-                System.out.println("COLLISION on X AT CART RETURN " + i + "!!!");
+                System.out.println("POSSIBLE COLLISION on X AT CART RETURN " + i + "!!!");
                 return obs.players[0].direction;
             }
         }
@@ -189,12 +189,12 @@ public class Agent extends SupermarketComponentImpl
         for (int i = 0; i < obs.carts.length; i++) {
             if ( obs.players[0].collision(obs.carts[i], obs.carts[i].position[0], obs.carts[i].position[1] - tail) 
             || obs.players[0].collision(obs.carts[i], obs.shelves[i].position[0], obs.carts[i].position[1] + lower)) {
-                System.out.println("COLLISION on Y AT CART " + i + "!!!");
+                System.out.println("POSSIBLE COLLISION on Y AT CART " + i + "!!!");
                 return obs.players[0].direction;
             }
             if ( obs.players[0].collision(obs.carts[i], obs.carts[i].position[0] + lower, obs.carts[i].position[1]) 
             || obs.players[0].collision(obs.carts[i], obs.carts[i].position[0] - tail, obs.carts[i].position[1])) {
-                System.out.println("COLLISION on X AT CART " + i + "!!!");
+                System.out.println("POSSIBLE COLLISION on X AT CART " + i + "!!!");
                 return obs.players[0].direction;
             }
         }
@@ -202,12 +202,12 @@ public class Agent extends SupermarketComponentImpl
         for (int i = 0; i < obs.shelves.length; i++) {
             if ( obs.players[0].collision(obs.shelves[i], obs.shelves[i].position[0], obs.shelves[i].position[1] - 1) 
             || obs.players[0].collision(obs.shelves[i], obs.shelves[i].position[0], obs.shelves[i].position[1] + 1)) {
-                System.out.println("COLLISION on Y AT SHELF " + i + "!!!");
+                System.out.println("POSSIBLE COLLISION on Y AT SHELF " + i + "!!!");
                 return obs.players[0].direction;
             }
             if ( obs.players[0].collision(obs.shelves[i], obs.shelves[i].position[0] + 1, obs.shelves[i].position[1]) 
             || obs.players[0].collision(obs.shelves[i], obs.shelves[i].position[0] - 1, obs.shelves[i].position[1])) {
-                System.out.println("COLLISION on X AT SHELF " + i + "!!!");
+                System.out.println("POSSIBLE COLLISION on X AT SHELF " + i + "!!!");
                 return obs.players[0].direction;
             }
         }
