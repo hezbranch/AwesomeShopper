@@ -777,7 +777,7 @@ public class Agent extends SupermarketComponentImpl
         //     System.out.println("topgoal"+ goals.get(0).name);
         // }
         subsumption(obs);
-        System.out.println("COLLISION? " + noCollision(obs));
+        System.out.println("NO COLLISION? " + noCollision(obs));
     
 
         // interactWithShelf(obs);
