@@ -18,10 +18,10 @@ public class Goal implements Comparable<Goal>{
 
     @Override
     public int compareTo(Goal g){
-        System.out.println("Comparing this" + this.name 
-                            + " " + position[1]
-                            + " g " + g.name 
-                            + " " + g.position[1]);
+        // System.out.println("Comparing this" + this.name 
+        //                     + " " + position[1]
+        //                     + " g " + g.name 
+        //                     + " " + g.position[1]);
         if(name == "cart_return"){
             return -1;
         }
@@ -30,7 +30,7 @@ public class Goal implements Comparable<Goal>{
         }
 
         int y_diff = (int)(g.position[1] - position[1]);
-        System.out.println("y_diff" + y_diff + "  xs: " + position[0] + " , " + g.position[0]);
+        // System.out.println("y_diff" + y_diff + "  xs: " + position[0] + " , " + g.position[0]);
 
         // This done as a stopgap, ideally the notion of aisle could be considered
         // without it needing to be just written down. 
