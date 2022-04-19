@@ -313,10 +313,8 @@ public class Agent extends SupermarketComponentImpl
 
         // Otherwise, return agent to location
         if (agent_current_x_coord < x_lower_bound) {
-            System.out.println("In edgecase");
-            goEast(); 
-            //    goEast();
-            //    goNorth();
+            System.out.println("In edge case");
+            goEast();
             return false;
         }
 
