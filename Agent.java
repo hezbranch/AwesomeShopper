@@ -275,7 +275,7 @@ public class Agent extends SupermarketComponentImpl
         double x_offset = 1;
         double y_offset = 1;
 
-        if(obs.inAisleHub(0) && curr_x > 4.0 ){
+        if(curr_x < 3.5 && curr_x > 3.4 ){
             if(curr_y < goal_y + y_offset){
                 goSouth();
                 return true;
@@ -543,8 +543,10 @@ public class Agent extends SupermarketComponentImpl
             }
 
             // TESTING VERSION THE FOLLOWING LINE CAN BE UNCOMMENTED TO FORCE AGENT TO 
-            // PICKUP SOMETHING FOR A COUNTER FOR TESTING
+            // PICKUP SOMETHING From A COUNTER FOR TESTING: 
             // addGoal(obs.counters[0].food, obs.counters[0].position, "counter");
+            // Shelf testing:  
+            // addGoal(obs.shelves[0].food, obs.shelves[0].position, "shelf");
 
             // sort goals, comparison of goals for sorting handled by Goal.java comparison. 
             Collections.sort(goals);
@@ -725,6 +727,7 @@ public class Agent extends SupermarketComponentImpl
         }
         if(!has_paid){
             if(can_interact_with_register){
+                interactWithObject();
                 interactWithObject();
                 has_paid = true;
                 return true;
@@ -957,19 +960,7 @@ public class Agent extends SupermarketComponentImpl
 
         // move agent to specified goal
         System.out.println("Player currently at coordinate (X,Y): (" + obs.players[0].position[0] + ", "  + obs.players[0].position[1] + ").");
-        // grabCartGoNorth(obs)
-        // returnToXY(obs, 22.0, 6.0);
-        // if(firsttime){
-        //     planGoals(obs);
-        //     System.out.println(goals.get(1).name+" "+goals.get(1).position[0]+ " " + goals.get(1).position[1]);
-        // }
-        // if(firsttime){
-        //     goals.remove(0);
-        //     double[] shelf_test_pos = {5.5, 21.5};
-        //     Goal shelf_test = new Goal("avocado", shelf_test_pos, "shelf");
-        //     goals.add(shelf_test);
-        //     System.out.println("topgoal"+ goals.get(0).name);
-        // }
+
         subsumption(obs);
     
 
