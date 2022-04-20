@@ -1,3 +1,5 @@
+
+
 public class Goal implements Comparable<Goal>{
     public Goal(String nme, double[] pos, String typ){
         super();
