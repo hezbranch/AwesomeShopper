@@ -21,8 +21,11 @@ public class Agent extends SupermarketComponentImpl
     // Goal States
     static String PLAN = "plan";
     static double[] NOWHERE = {-1, -1};
+<<<<<<< Updated upstream
     Boolean has_paid = false;
 
+=======
+>>>>>>> Stashed changes
     double[] drop_location = NOWHERE;
     int drop_direction = -1;
     int my_cart_index = -1;
@@ -31,6 +34,60 @@ public class Agent extends SupermarketComponentImpl
     // Author-defined boolean variable
     boolean firsttime = true;
     ArrayList<Goal> goals = new ArrayList<Goal>();
+<<<<<<< Updated upstream
+=======
+
+    //Function PayForItems
+    //In its most basic form, the only thing you need to do after collecting all your items
+    //is [ interactWithObject() ].  As long as you have all the items inside of your 
+    //cart at the time, you can pay for all your itmes at once.
+    //Pre-Requisites: 
+        //Player must be facing the counter at the time
+        //Player must have previously dropped his cart
+        //Player needs  to have cart dropped off
+    //Notes;
+        //Player can pay for all items at once
+        //Player just needs to be at counter in order to pay
+        //Player will also end up paying for items that aren't on the shopping list
+        //How do I execute one program after another?  Should I have a global flag for checking if items are paidFor
+            //inList, atRegister, etc.(?)
+    
+    //first function --> Stop the player at specific (x,y) cooridate on map near register
+    //second function --> Check that we currently have everything on our shopping list
+    //Third function --> Record last known location (with shopping cart) and toggle shopping cart
+    //Fourth function --> Pay for items at register (InteractWithObject)
+    //Fifth function --> walk back down to cart and grab it.
+
+    //Do I have all of my items?  If so, go to the register.
+    public void GotAllItems(Observation obs) {
+        //compare the items on the shopping list to items on the arraylist
+        //check that alll items exist within the array --> for loop?  string contains?
+        //return a True statement if it does, return a false statement if it doesn't
+        //use a variable called AllIn
+    }
+
+    //Send Agent to the register with cart in hand
+    public void goToRegisters(Observation obs){    
+        //go to specific (xy) coordinate near register
+        //Use Michael's script for recording last known location
+            //toggle shopping cart
+        //GoNorth towardsregister 
+        //return cart last location (x, y)
+        //call payForItems()
+    }
+
+    public void payForItems(Observation obs){
+        //Agent interacts with register, pays for items 
+        //interactWithObject()
+    }
+    public void leaveWithCart (Observation obs){
+        //agent then returns to (xy) coordinate of cart
+        //agent grabs cart with toggleShoppingCart()
+        //agent leaves through exit
+    }
+    
+
+>>>>>>> Stashed changes
     // Function: grabCartGoNorth
     // Purpose: Move agent to cart area and bring
     //          it up back north to register area
@@ -182,6 +239,13 @@ public class Agent extends SupermarketComponentImpl
 
     protected boolean withinMarginOfLocation(double[] player_pos, double loc_x, double loc_y, double relative_error){
         // final double relative_error = 0.2;
+<<<<<<< Updated upstream
+
+        if (Math.abs(player_pos[0] - loc_x) < relative_error
+            && Math.abs(player_pos[1] - loc_y) < relative_error) {
+            System.out.println("Agent within margin of target location (X, Y): " 
+                              + "(" + loc_x  + ", " + loc_y + ").");
+=======
 
         if (Math.abs(player_pos[0] - loc_x) < relative_error
             && Math.abs(player_pos[1] - loc_y) < relative_error) {
@@ -240,6 +304,160 @@ public class Agent extends SupermarketComponentImpl
                 goEast();
                 return true;
             }
+        }
+    }
+
+    protected boolean moveToCounter(Observation obs, Goal goal){
+        double curr_x = obs.players[0].position[0];
+        double curr_y = obs.players[0].position[1];
+        double goal_x = goal.position[0];
+        double goal_y = goal.position[1];
+        double x_offset = 1;
+        double y_offset = 1;
+        // if(inAisle(obs, goal)){
+        //     if(curr_x < (goal_x - x_offset)){
+        //         goEast();
+        //         return true;
+        //     } else {
+        //         goWest();
+        //         return true;
+        //     }
+        // } else {// We are not in correct aisle
+            // If we are in a hub we can move to correct Y
+        if((obs.inAisleHub(0) && curr_x > 4.0 ) || obs.inRearAisleHub(0)){
+            if(curr_y < goal_y + y_offset){
+                goSouth();
+                return true;
+            } else {
+                goNorth();
+                return true;
+            }
+        } else {
+            // Not in an aisle hub and not in correct aisle just go east (towards the back hub)
+            goEast();
+            return true;
+        }
+        // }
+    }
+
+    // Function: moveToXY
+    // Purpose: Move Agent from current location to target location (target_x, target_y)
+    // Input: Current Observation, target x, target y
+    // Effects: chooses and moves in a direction (unless movement not possible/valid)
+    // Returns: if a movement option has been chosen
+    protected boolean moveToGoal(Observation obs, Goal goal){
+        double curr_x = obs.players[0].position[0];
+        double curr_y = obs.players[0].position[1];
+        double goal_x = goal.position[0];
+        double goal_y = goal.position[1];
+        double x_offset = 1;
+        double y_offset = 2;
+
+        System.out.println("Coords: " + curr_x + " " + curr_y + " " + goal_x + " " + goal_y);
+
+        //  TODO?
+        // Check if we in 'range' if so return false   This might not be needed if interact comes first?
+        if(goal.type.equals("shelf")){
+            return moveToShelf(obs, goal);
+        } else if (goal.type.equals("counter")){
+            return moveToCounter(obs, goal);
+        } else if (goal.type.equals("register")){
+            System.out.println("Move To Register");
+            return false;
+            // return moveToRegister(obs, goal);
+        }
+         // Check if are in correct aisle if so go east/west based on x
+       return false;
+    }
+
+    // Function: returnToXY
+    // Purpose: Move agent from current location to parametized target (X, Y)
+    // Input: An observation state (i.e. Observation)
+    //        Position X of intended coordinate (X, Y) as type double
+    //        Position Y of intended coordinate (X, Y) as type double
+    // Returns: Boolean
+    // Effect(s): External timing, assumes agent does NOT have a cart
+    // Author: Branch, H.
+    protected boolean returnToXY(Observation obs, double target_x, double target_y) 
+    {
+        // Initialze starter variables for movement
+        double agent_current_x_coord = obs.players[0].position[0]; 
+        double agent_current_y_coord = obs.players[0].position[1]; 
+        final double relative_error = 0.3;
+        final double x_lower_bound = 3.9;
+        final double x_upper_bound = 15;
+
+        // Check if agent has arrived at intended position
+        // if (Math.abs(agent_current_x_coord - target_x) < relative_error
+        // && Math.abs(agent_current_y_coord - target_y) < relative_error) {
+        if(withinMarginOfLocation(obs.players[0].position, target_x, target_y, relative_error)){
+            nop();
+            System.out.println("Agent returned to target location (X, Y): " 
+                              + "(" + target_x  + ", " + target_y + ").");
+>>>>>>> Stashed changes
+            return true;
+        }
+        return false;
+    }
+
+<<<<<<< Updated upstream
+    protected boolean inAisle(Observation obs, Goal goal){
+        double curr_x = obs.players[0].position[0];
+        double curr_y = obs.players[0].position[1];
+        double goal_x = goal.position[0];
+        double goal_y = goal.position[1];
+        double margin = .5;
+        double offset = 1.5;
+        double y_north_bound = goal_y + offset - margin;
+        double y_south_bound = goal_y + offset + margin;
+
+        if (curr_y > y_north_bound  &&  curr_y < y_south_bound){
+            System.out.println("in aisle");
+            return true;
+        } 
+        System.out.println("not in aisle");
+        return false;
+    }
+
+    protected boolean moveToShelf(Observation obs, Goal goal){
+        double curr_x = obs.players[0].position[0];
+        double curr_y = obs.players[0].position[1];
+        double goal_x = goal.position[0];
+        double goal_y = goal.position[1];
+        double x_offset = 1;
+        double y_offset = 2;
+        if(inAisle(obs, goal)){
+            if(curr_x < (goal_x + x_offset)){
+                goEast();
+                return true;
+            } else {
+                goWest();
+                return true;
+            }
+        } else {// We are not in correct aisle
+            // If we are in a hub we can move to correct Y
+            if((obs.inAisleHub(0) && curr_x > 4.0 ) || obs.inRearAisleHub(0)){
+                if(curr_y < goal_y + y_offset){
+                    goSouth();
+                    return true;
+                } else {
+                    goNorth();
+                    return true;
+                }
+            } else {
+                // Not in an aisle hub and not in correct aisle just go east (towards the back hub)
+                goEast();
+                return true;
+            }
+=======
+        // Otherwise, return agent to location
+        if (agent_current_x_coord < x_lower_bound) {
+            System.out.println("In edgecase");
+            goEast(); 
+            goEast();
+            goNorth();
+            return false;
+>>>>>>> Stashed changes
         }
     }
 
@@ -553,8 +771,11 @@ public class Agent extends SupermarketComponentImpl
             // choose a register default to first register
             Observation.Register chosenRegister = obs.registers[0];
             addGoal("register", chosenRegister.position, "register");
+<<<<<<< Updated upstream
             addGoal("leave", NOWHERE, "leave");
 
+=======
+>>>>>>> Stashed changes
         }
     }
 
@@ -662,6 +883,7 @@ public class Agent extends SupermarketComponentImpl
             curr_y < (goal_y + offset + margin)){
             System.out.println("inInteractCounter " );
             return true;
+<<<<<<< Updated upstream
         } else if(goal.type.equals("register") && 
             curr_y > (goal_y + offset - margin) && 
             curr_y < (goal_y + offset + margin)){
@@ -772,6 +994,37 @@ public class Agent extends SupermarketComponentImpl
         //     goEast();
         // }
         // return false;
+=======
+        }
+
+        System.out.println("not interactable " );
+        return false;
+    }
+
+
+    protected boolean interactWithGoal(Observation obs){
+        Goal goal = goals.get(0);
+        if(inInteractRange(obs, goal)){
+            // withinMarginOfLocation(obs.players[0].position, goal.position[0], goal.position[1], 0.4)){
+            System.out.println("Interacting with goal");
+            if(goal.type.equals("shelf")){
+                return interactWithShelf(obs);
+            }
+            if(goal.type.equals("counter")){
+                return interactWithCounter(obs);
+            }
+            if(goal.type.equals("register")){
+                return interactWithRegister(obs);
+            }
+        }
+        System.out.println("Not interacting with goal");
+        return false;
+    }
+
+    protected boolean interactWithRegister(Observation obs){
+        System.out.println("ready to interact with register");
+        return false;
+>>>>>>> Stashed changes
     }
 
     protected int findShelf(Observation obs){
