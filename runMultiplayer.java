@@ -20,9 +20,9 @@ int index, int numPlayers) {
         }
     }
     public static void main(String[] args) {
-        AgentThread a1 = new AgentThread(/*Your class name here*/.class, 1, 2);
-        AgentThread a2 = new AgentThread(/*Your class name here*/.class, 0, 2);
+        AgentThread a1 = new AgentThread(Agent.class, 1, 2);
+        //AgentThread a2 = new AgentThread(/*Your class name here*/.class, 0, 2);
         a1.start();
-        a2.start();
+        //a2.start();
     }
 }
