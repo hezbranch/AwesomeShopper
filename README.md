@@ -22,13 +22,13 @@ developed by Teah Markstone and Daniel Kasenberg
 
 # Running Multiple Agent
 
-How to run multiple agents in order to test shopping agent norms
+`How to run multiple agents in order to test shopping agent norms`
 
 ## Compiling for Multiple Agents
-javac -cp .:DIARC.jar runMultiplayer.java
+`javac -cp .:DIARC.jar runMultiplayer.java`
 
 ## Running Multiple Agent Packages At Once
-java -cp .:DIARC.jar Agent1 Agent2 Agent3
+`java -cp .:DIARC.jar Agent1 Agent2 Agent3`
 
 ### Running Game with Multiple Agents
-python3 socket_env.py --num_player=3
+`python3 socket_env.py --num_player=3`
