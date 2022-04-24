@@ -22,7 +22,7 @@ developed by Teah Markstone and Daniel Kasenberg
 
 # Running Multiple Agent
 
-`How to run multiple agents in order to test shopping agent norms`
+How to run multiple agents in order to test shopping agent norms
 
 ## Compiling for Multiple Agents
 `javac -cp .:DIARC.jar runMultiplayer.java`
