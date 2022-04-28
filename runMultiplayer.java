@@ -1,4 +1,5 @@
 /*Multi Agent Implementation*/
+/*In use for CheckoutAtRegister class*/
 
 import com.diarc.DiarcComponent;
 public class runMultiplayer {
