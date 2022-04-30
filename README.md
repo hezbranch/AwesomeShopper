@@ -24,14 +24,18 @@ developed by Teah Markstone and Daniel Kasenberg
 
 ## Matt's Notes for Running Test Agent Environment
 *how to create a new python game environment with multiple agents
-    `python3 socket_env.py --num_players 2` 
-*or
-    `python3 socket_env.py --num_player=2`
+
+`python3 socket_env.py --num_players 2` 
+    *or
+
+`python3 socket_env.py --num_player=2`
 
 *how to compile new version of code with multiple agents with Goal.java
     `javac -cp .:DIARC.jar AgentG4.java Goal.java runMultiplayer.java`
-*how to run multiple agents at once
-    `java -cp .:DIARC.jar runMultiplayer Agent1 Agent2`
+
+*how to run multiple agents at once 
+
+`java -cp .:DIARC.jar runMultiplayer Agent1 Agent2`
 
 
 ## List of documented changes 
