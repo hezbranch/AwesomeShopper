@@ -32,10 +32,15 @@ developed by Teah Markstone and Daniel Kasenberg
 
 *how to compile new version of code with multiple agents with Goal.java
     `javac -cp .:DIARC.jar AgentG4.java Goal.java runMultiplayer.java`
+**NOTE: After updating the files to the new environment provided by Matthias, it appears this compilation script no longer works.  Further investigation is needed.
 
 *how to run multiple agents at once 
 
 `java -cp .:DIARC.jar runMultiplayer Agent1 Agent2`
+**Note: After updating the files to the new environment provided by Matthias, you can no longer run this command.
+**NEW COMMANDS FOR USE WITH GOAL and AGENT
+    *Compile agent with: `javac -cp .:DIARC.jar runMultiplayer.java Goal.java Agent4.java`
+    *Run
 
 
 ## List of documented changes 
