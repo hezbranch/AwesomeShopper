@@ -22,7 +22,7 @@ https://github.com/teahmarkstone/Supermarket-Environment
 developed by Teah Markstone and Daniel Kasenberg
 
 
-## Matt's Notes for Running Test Agent
+## Matt's Notes for Running Test Agent Environment
 *how to create a new python game environment with multiple agents
 
 `python3 socket_env.py --num_players 2` 
@@ -38,9 +38,10 @@ developed by Teah Markstone and Daniel Kasenberg
 
 `java -cp .:DIARC.jar runMultiplayer Agent1 Agent2`
 
-*The new code that Matthias provided via messages (i.e. Inbox for )
+*The new code that Matthias provided via messages (new runMultiplayer-agent classes, new runMultiplayer.java and DIARC-5 are incompatible with the above code)
+*
 
-## List of documented changes
+## List of documented changes 
 HW: "Your goal is to make sure that the agent you submit will violateas few norms as possible
 1. Rename Agent.java to AgentG4.java
 2. Upload all relevant files (TestAgent.class, DIARC-5.jar, runMultiplayer.java, runMultiplayer-1.class, runMultiplayer-2.java, runMultiplayer-3.java, runMultiplayer-4.java,  runMultiplayer$AgentThread-1.class)
