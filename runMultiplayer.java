@@ -18,7 +18,7 @@ public class runMultiplayer {
 
         public void run() {
             DiarcComponent.createInstance(this.agentClass, new String[]{
-                    "-agentName", "agent" + index,
+                    "-agentName", "agent" + index, 
                     "-agentIndex", Integer.toString(index)});
 	    //                    "-numPlayers", Integer.toString(numPlayers)});
         }
