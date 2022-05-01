@@ -145,7 +145,7 @@ public class Agent extends SupermarketComponentImpl
     // Author: Branch, H.
     protected boolean agentCollision(Observation obs) {
         // Set boolean to pass test cases
-        boolean success = true;
+        boolean collision = false;
         // Set threshold for errors 
         double threshold = 0.5;
         // Check for collisions with other players
@@ -170,7 +170,7 @@ public class Agent extends SupermarketComponentImpl
                 if (neighbor_agent_x == main_agent_x 
                 && neighbor_agent_y < main_agent_y) {
                     if (main_agent_y - neighbor_agent_y < threshold) {
-                        success = false;
+                        collision = false;
                     }
                 }
             }
@@ -180,7 +180,7 @@ public class Agent extends SupermarketComponentImpl
                 if (neighbor_agent_x == main_agent_x 
                 && neighbor_agent_y > main_agent_y) {
                     if (neighbor_agent_y - main_agent_y < threshold) {
-                        success = false;
+                        collision = false;
                     }
                 }
             }
@@ -190,7 +190,7 @@ public class Agent extends SupermarketComponentImpl
                 if (neighbor_agent_y == main_agent_y
                 && neighbor_agent_x < main_agent_x) {
                     if (main_agent_x - neighbor_agent_x < threshold) {
-                        success = false;
+                        collision = false;
                     }
                 }
             }
@@ -200,12 +200,12 @@ public class Agent extends SupermarketComponentImpl
                 if (neighbor_agent_y == main_agent_y
                 && main_agent_x < neighbor_agent_x) {
                     if (neighbor_agent_x - main_agent_x < threshold) {
-                        success = false;
+                        collision = false;
                     }
                 }
             }
         }
-       return success;
+       return collision;
     }
 
     // Author: LoTurco, M., Branch, H.
