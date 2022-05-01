@@ -135,7 +135,7 @@ public class Agent extends SupermarketComponentImpl
     }
 
     // Function: agentCollision
-    // Purpose: Avoid colliding into others agents
+    // Purpose: Check for colliding into others agents
     //          during multiplayer mode
     // Input: An observation state (i.e. Observation)
     // Returns: Boolean
@@ -206,6 +206,96 @@ public class Agent extends SupermarketComponentImpl
             }
         }
        return collision;
+    }
+
+     // Function: agentCollisionAvoidance
+    // Purpose: Avoid colliding into others agents
+    //          during multiplayer mode
+    // Input: An observation state (i.e. Observation)
+    // Returns: Boolean
+    // Effect(s): External timing
+    // Complexity: Linear time complexity
+    //             Constant space complexity, no aux. space used
+    // Author: Branch, H.
+    protected void agentCollisionAvoidance(Observation obs) {
+        // Quad decision list
+        // 1 to indicate you can travel in a direction
+        // and -1 to indicate travel not accessible
+        int[] travel = new int[]{1, 1, 1, 1}; 
+        // Set threshold for errors 
+        double threshold = 0.5;
+        // Check for collisions with other players
+        for (int i = 0; i < obs.players.length; i++) {
+            // Specify current agent in program
+            int main_agent = 0;
+            double main_agent_x = obs.players[main_agent].position[0];
+            double main_agent_y = obs.players[main_agent].position[1];
+            // NORTH is 0, SOUTH is 1, EAST is 2, WEST is 3
+            int main_agent_direction = obs.players[main_agent].direction;
+            // Specify other agent(s) to check
+            int neighbor = -10000; 
+            if (i != main_agent) { 
+                neighbor = i;
+            }
+            // Grab the other agents (X, Y) coordinates
+            double neighbor_agent_x = obs.players[neighbor].position[0];
+            double neighbor_agent_y = obs.players[neighbor].position[1];
+            // Check for collision from above if within margin
+            // and agent heading North
+            if (main_agent_direction == 0) {
+                if (neighbor_agent_x == main_agent_x 
+                && neighbor_agent_y < main_agent_y) {
+                    if (main_agent_y - neighbor_agent_y < threshold) {
+                        travel[0] = -1;
+                    }
+                }
+            }
+            // Check for collision from below if within margin
+            // and agent heading South
+            if (main_agent_direction == 1) {
+                if (neighbor_agent_x == main_agent_x 
+                && neighbor_agent_y > main_agent_y) {
+                    if (neighbor_agent_y - main_agent_y < threshold) {
+                        travel[1] = -1;
+                    }
+                }
+            }
+            // Check for collision from side if within margin
+            // and agent heading East
+            if (main_agent_direction == 2) {
+                if (neighbor_agent_y == main_agent_y
+                && neighbor_agent_x < main_agent_x) {
+                    if (main_agent_x - neighbor_agent_x < threshold) {
+                        travel[2] = -1;
+                    }
+                }
+            }
+            // Check for collision from side if within margin
+            // and agent heading West
+            if (main_agent_direction == 3) {
+                if (neighbor_agent_y == main_agent_y
+                && main_agent_x < neighbor_agent_x) {
+                    if (neighbor_agent_x - main_agent_x < threshold) {
+                        travel[3] = -1;
+                    }
+                }
+            }
+        }
+       // Choose new available direction to try
+       for (int i = 0; i < travel.length; i++) {
+           if (travel[i] == 1) {
+               if (i == 0) {
+                   goNorth();
+               } else if (i == 1) {
+                   goSouth();
+               } else if (i == 2) {
+                   goEast();
+               } else if (i == 3) {
+                   goWest();
+               }
+            }
+        }
+        // End of object avoidance function
     }
 
     // Function: generalCollisionCheck
