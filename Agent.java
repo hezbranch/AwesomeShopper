@@ -208,6 +208,25 @@ public class Agent extends SupermarketComponentImpl
        return collision;
     }
 
+    // Function: generalCollisionCheck
+    // Purpose: Avoid colliding into others agents
+    //          during multiplayer mode and objects
+    // Input: An observation state (i.e. Observation)
+    // Returns: Boolean
+    // Effect(s): External timing
+    // Complexity: Linear time complexity O(m + n), m = # of agents
+    //                                              n = # of objects
+    //             Constant space complexity, no aux. space used
+    // Author: Branch, H.
+    protected boolean generalCollisionCheck(Observation obs) {
+        // No collision detected
+        if (noCollision(obs) && agentCollision(obs) == false) {
+            return false;
+        }
+        // Collision detected
+        return true;
+    }
+
     // Author: LoTurco, M., Branch, H.
     protected boolean withinMarginOfLocation(double[] player_pos, double loc_x, double loc_y, double relative_error){
         if (Math.abs(player_pos[0] - loc_x) < relative_error
