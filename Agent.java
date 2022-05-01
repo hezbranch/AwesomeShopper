@@ -280,20 +280,20 @@ public class Agent extends SupermarketComponentImpl
             }
             // Check for wall collisions
             // Top and Bottom Walls
-            if (obs.players[0].position[1]
+            if (obs.players[0].position[1] < 3
             && main_agent_direction == 0) {
                 travel[0] = -1;
             }
-            if (obs.players[0].position[1]
+            if (obs.players[0].position[1] > 23
             && main_agent_direction == 0) {
                 travel[1] = -1;
             }
             // Left and Right Walls
-            if (obs.players[0].position[0]
+            if (obs.players[0].position[0] < 3
             && main_agent_direction == 3) {
                 travel[2] = -1;
             }
-            if (obs.players[0].position[0]
+            if (obs.players[0].position[0] > 18
             && main_agent_direction == 3) {
                 travel[3] = -1;
             }
@@ -989,7 +989,7 @@ public class Agent extends SupermarketComponentImpl
         // grabCartGoNorth(obs);
 
         // move agent to specified goal
-        // System.out.println("Player currently at coordinate (X,Y): (" + obs.players[0].position[0] + ", "  + obs.players[0].position[1] + ").");
+        System.out.println("Player currently at coordinate (X,Y): (" + obs.players[0].position[0] + ", "  + obs.players[0].position[1] + ").");
 
         subsumption(obs);
     
