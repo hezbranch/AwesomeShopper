@@ -218,7 +218,7 @@ public class Agent extends SupermarketComponentImpl
     //             Constant space complexity, no aux. space used
     // Author: Branch, H.
     protected void agentCollisionAvoidance(Observation obs) {
-        // Quad decision list
+        // QuadTree decision list
         // 1 to indicate accessible travel in a direction
         // and -1 to indicate inaccessible path
         int[] travel = new int[]{1, 1, 1, 1}; 
