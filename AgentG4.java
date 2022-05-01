@@ -1,6 +1,5 @@
-
-
 // Edited by Hezekiah Branch, Matthew Ebisu, and Michael LoTurco
+// Multiplayer Agent Testing and Debugging by Matthew Ebisu
 
 import java.util.Arrays;
 import java.util.ArrayList;
