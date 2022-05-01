@@ -1,11 +1,12 @@
+
+
+// Edited by Hezekiah Branch, Matthew Ebisu, and Michael LoTurco
+
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.lang.Math;
 import com.supermarket.*;
-
-
-// Edited by Hezekiah Branch, Matthew Ebisu, and Michael LoTurco
 
 public class Agent extends SupermarketComponentImpl
 {
@@ -21,6 +22,8 @@ public class Agent extends SupermarketComponentImpl
     // Goal States
     static String PLAN = "plan";
     static double[] NOWHERE = {-1, -1};
+    Boolean has_paid = false;
+
     double[] drop_location = NOWHERE;
     int drop_direction = -1;
     int my_cart_index = -1;
@@ -29,133 +32,6 @@ public class Agent extends SupermarketComponentImpl
     // Author-defined boolean variable
     boolean firsttime = true;
     ArrayList<Goal> goals = new ArrayList<Goal>();
-
-    //Function PayForItems
-    //In its most basic form, the only thing you need to do after collecting all your items
-    //is [ interactWithObject() ].  As long as you have all the items inside of your 
-    //cart at the time, you can pay for all your itmes at once.
-    //Pre-Requisites: 
-        //Player must be facing the counter at the time
-        //Player must have previously dropped his cart
-        //Player needs  to have cart dropped off
-    //Notes;
-        //Player can pay for all items at once
-        //Player just needs to be at counter in order to pay
-        //Player will also end up paying for items that aren't on the shopping list
-        //How do I execute one program after another?  Should I have a global flag for checking if items are paidFor
-            //inList, atRegister, etc.(?)
-    
-<<<<<<< Updated upstream
-=======
-    //public static int compareCartToList(Observation obs){
-    //FORMAT Pre-Reqs as sequential statements, triggered by IF statement
-    //IF: total items in shopping cart match items in shopping list:
-        //1. Make player head to specific (x,y) cooridate on map near register
-        //2. Record last known location (with shopping cart) and toggle shopping cart
-        //3. Pay for items at register (InteractWithObject)
-        //4. Walk back down to cart and grab it.
-        //int x = 1;
-        //return x; 
-    //}
-    
-    public void cartTheftNorm (Observation obs){
-       //System.out.println(Arrays.toString(obs.carts[1].contents_quant));
-       if(obs.players[0].curr_cart == -1){
-        goSouth();
-        System.out.println("My current cart state is: " + obs.players[0].curr_cart);
-       }
-        //System.out.println(Obs.)
-      //System.out.println(Arrays.toString(obs.carts[0].capacity)101);
-    
-    }
-
-    public void ShopliftingNorm (Observation obs){
-    }
-
-    public void WrongShelfNorm(Observation obs){   
-    }
-
-    public void ObjectCollisionNorm(Observation obs){
-    }
-
-    public void WallCollisionNorm(Observation obs){
-    }
-
-    public void BlockingExitNorm (Observation obs){  
-    }
-
-    public void EntranceOnlyNorm (Observation obs){
-    }
-
-    public void UnattendedCarNorm(Observation obs){
-    }
-
-    public void OnlyOneCartNorm(Observation obs){
-    }
-
-    public void PersonalSpaceNorm(Observation obs){
-    }
-
-    public void InteractionCancellationNorm(Observation obs){
-    }
-    //public void payAtRegister(Observation obs){
-       //System.out.println(Arrays.toString(obs.players[0].shopping_list)); 
-       //System.out.println(Arrays.toString(obs.carts[0].contents));
-       //if (obs.players[0].shopping_list == obs.carts[0].contents){
-        //Make agent go to a specific location     
-       //}
-       //else {
-       //}
-    //}
-   //public void giveMeXY (Observation obs){
-   //     double x = obs.players[0].position[0];
-   //     double y = obs.players[0].position[1];
-    //    System.out.println ("Player is currrently at: " + x + ", " + y);
-   //}
-    
-/*    <--DELETE THIS
-=======
-=======
->>>>>>> parent of e907249 (Update Agent.java)
->>>>>>> Stashed changes
-    //first function --> Stop the player at specific (x,y) cooridate on map near register
-    //second function --> Check that we currently have everything on our shopping list
-    //Third function --> Record last known location (with shopping cart) and toggle shopping cart
-    //Fourth function --> Pay for items at register (InteractWithObject)
-    //Fifth function --> walk back down to cart and grab it.
-
-    //Do I have all of my items?  If so, go to the register.
-    public void GotAllItems(Observation obs) {
-        //compare the items on the shopping list to items on the arraylist
-        //check that alll items exist within the array --> for loop?  string contains?
-        //return a True statement if it does, return a false statement if it doesn't
-        //use a variable called AllIn
-    }
-
-    //Send Agent to the register with cart in hand
-    public void goToRegisters(Observation obs){    
-        //go to specific (xy) coordinate near register
-        //Use Michael's script for recording last known location
-            //toggle shopping cart
-        //GoNorth towardsregister 
-        //return cart last location (x, y)
-        //call payForItems()
-    }
-
-    public void payForItems(Observation obs){
-        //Agent interacts with register, pays for items 
-        //interactWithObject()
-    }
-    public void leaveWithCart (Observation obs){
-        //agent then returns to (xy) coordinate of cart
-        //agent grabs cart with toggleShoppingCart()
-        //agent leaves through exit
-    }
-    
-<<<<<<< Updated upstream
-
-=======
->>>>>>> Stashed changes
     // Function: grabCartGoNorth
     // Purpose: Move agent to cart area and bring
     //          it up back north to register area
@@ -258,63 +134,241 @@ public class Agent extends SupermarketComponentImpl
         return success;
     }
 
-    //Function PayForItems
-    protected boolean goalInteractable(Observation obs) {
+    // Function: agentCollision
+    // Purpose: Avoid colliding into others agents
+    //          during multiplayer mode
+    // Input: An observation state (i.e. Observation)
+    // Returns: Boolean
+    // Effect(s): External timing
+    // Complexity: Linear time complexity O(m), m = # of agents
+    //             Constant space complexity, no aux. space used
+    // Author: Branch, H.
+    protected boolean agentCollision(Observation obs) {
         // Set boolean to pass test cases
-        boolean success = false;
-        // Edge Case where above cart return
-        if (obs.atCartReturn(0)) {
-            success = true;
-            return success;
-        }
-        // Check for shelf collisions
-        for (int i = 0; i < obs.shelves.length; i++) {
-            if (obs.shelves[i].canInteract(obs.players[0]) && obs.shelves[i].food == goals.get(0).name) {
-                success = true;
-                return success;
+        boolean success = true;
+        // Set threshold for errors 
+        double threshold = 0.5;
+        // Check for collisions with other players
+        for (int i = 0; i < obs.players.length; i++) {
+            // Specify current agent in program
+            int main_agent = 0;
+            double main_agent_x = obs.players[main_agent].position[0];
+            double main_agent_y = obs.players[main_agent].position[1];
+            // NORTH is 0, SOUTH is 1, EAST is 2, WEST is 3
+            int main_agent_direction = obs.players[main_agent].direction;
+            // Specify other agent(s) to check
+            int neighbor = -10000; 
+            if (i != main_agent) { 
+                neighbor = i;
+            }
+            // Grab the other agents (X, Y) coordinates
+            double neighbor_agent_x = obs.players[neighbor].position[0];
+            double neighbor_agent_y = obs.players[neighbor].position[1];
+            // Check for collision from above if within margin
+            // and agent heading North
+            if (main_agent_direction == 0) {
+                if (neighbor_agent_x == main_agent_x 
+                && neighbor_agent_y < main_agent_y) {
+                    if (main_agent_y - neighbor_agent_y < threshold) {
+                        success = false;
+                    }
+                }
+            }
+            // Check for collision from below if within margin
+            // and agent heading South
+            if (main_agent_direction == 1) {
+                if (neighbor_agent_x == main_agent_x 
+                && neighbor_agent_y > main_agent_y) {
+                    if (neighbor_agent_y - main_agent_y < threshold) {
+                        success = false;
+                    }
+                }
+            }
+            // Check for collision from side if within margin
+            // and agent heading East
+            if (main_agent_direction == 2) {
+                if (neighbor_agent_y == main_agent_y
+                && neighbor_agent_x < main_agent_x) {
+                    if (main_agent_x - neighbor_agent_x < threshold) {
+                        success = false;
+                    }
+                }
+            }
+            // Check for collision from side if within margin
+            // and agent heading West
+            if (main_agent_direction == 3) {
+                if (neighbor_agent_y == main_agent_y
+                && main_agent_x < neighbor_agent_x) {
+                    if (neighbor_agent_x - main_agent_x < threshold) {
+                        success = false;
+                    }
+                }
             }
         }
-        // Check for counter collisions
-        for (int i = 0; i < obs.counters.length; i++) {
-            if (obs.counters[i].canInteract(obs.players[0]) && obs.counters[i].food ==  goals.get(0).name) {
-                success = true;
-                return success;
-            }
-        }
-        // Check for register collisions
-        for (int i = 0; i < obs.registers.length; i++) {
-            if (obs.registers[i].canInteract(obs.players[0]) && "register" == goals.get(0).name) {
-                success = true;
-                return success;
-            }
-        }
-        // Check for cart return collisions
-        for (int i = 0; i < obs.cartReturns.length; i++) {
-            if (obs.cartReturns[i].canInteract(obs.players[0]) && "cart_return" == goals.get(0).name) {
-                success = true;
-                return success;
-            }
-        }
-        // Check for cart collisions
-        // for (int i = 0; i < obs.carts.length; i++) {
-        //     if (obs.carts[i].canInteract(obs.players[0])) {
-        //         success = false;
-        //         return success;
-        //     }
-        // }
-        return success;
+       return success;
     }
 
-    protected boolean withinMarginOfLocation(double[] player_pos, double loc_x, double loc_y){
-        final double relative_error = 0.2;
-
+    // Author: LoTurco, M., Branch, H.
+    protected boolean withinMarginOfLocation(double[] player_pos, double loc_x, double loc_y, double relative_error){
         if (Math.abs(player_pos[0] - loc_x) < relative_error
             && Math.abs(player_pos[1] - loc_y) < relative_error) {
-            System.out.println("Agent within margin of target location (X, Y): " 
-                              + "(" + loc_x  + ", " + loc_y + ").");
             return true;
         }
         return false;
+    }
+
+    // Author: LoTurco, M.
+    protected boolean inAisle(Observation obs, Goal goal){
+        double curr_x = obs.players[0].position[0];
+        double curr_y = obs.players[0].position[1];
+        double goal_x = goal.position[0];
+        double goal_y = goal.position[1];
+        double margin = .5;
+        double offset = 1.5;
+        double y_north_bound = goal_y + offset - margin;
+        double y_south_bound = goal_y + offset + margin;
+
+        if (curr_y > y_north_bound  &&  curr_y < y_south_bound){
+            return true;
+        } 
+        return false;
+    }
+
+    // Author: LoTurco, M.
+    protected boolean moveToShelf(Observation obs, Goal goal){
+        double curr_x = obs.players[0].position[0];
+        double curr_y = obs.players[0].position[1];
+        double goal_x = goal.position[0];
+        double goal_y = goal.position[1];
+        double x_offset = 1;
+        double y_offset = 2;
+        if(inAisle(obs, goal)){
+            if(curr_x < (goal_x + x_offset)){
+                goEast();
+                return true;
+            } else {
+                goWest();
+                return true;
+            }
+        } else {// We are not in correct aisle
+            // If we are in a hub we can move to correct Y
+            if((obs.inAisleHub(0) && curr_x > 4.0 ) || obs.inRearAisleHub(0)){
+                if(curr_y < goal_y + y_offset){
+                    goSouth();
+                    return true;
+                } else {
+                    goNorth();
+                    return true;
+                }
+            } else {
+                // Not in an aisle hub and not in correct aisle just go east (towards the back hub)
+                goEast();
+                return true;
+            }
+        }
+    }
+
+    // Author: LoTurco, M.
+    protected boolean moveToCounter(Observation obs, Goal goal){
+        double curr_x = obs.players[0].position[0];
+        double curr_y = obs.players[0].position[1];
+        double goal_x = goal.position[0];
+        double goal_y = goal.position[1];
+        double x_offset = 1;
+        double y_offset = 1;
+
+        if((obs.inAisleHub(0) && curr_x > 4.0 ) || obs.inRearAisleHub(0)){
+            if(curr_y < goal_y + y_offset){
+                goSouth();
+                return true;
+            } else {
+                goNorth();
+                return true;
+            }
+        } else {
+            // Not in an aisle hub and not in correct aisle just go east (towards the back hub)
+            goEast();
+            return true;
+        }
+        // }
+    }
+
+    // Author: LoTurco, M.
+    protected boolean moveToRegister(Observation obs, Goal goal){
+        double curr_x = obs.players[0].position[0];
+        double curr_y = obs.players[0].position[1];
+        double goal_x = goal.position[0];
+        double goal_y = goal.position[1];
+        double x_offset = 1;
+        double y_offset = 1;
+
+        if(curr_x < 3.5 && curr_x > 3.4 ){
+            if(curr_y < goal_y + y_offset){
+                goSouth();
+                return true;
+            } else {
+                goNorth();
+                return true;
+            }
+        } else {
+            // Not in an aisle hub and not in correct aisle just go west (towards the front of store)
+            if(obs.inRearAisleHub(0) && !obs.aboveAisle(0, 1)){
+                goNorth();
+                return true;
+            }
+            goWest();
+            return true;
+        }
+        // }
+    }
+
+    // Author LoTurco, M
+    protected boolean moveToExit(Observation obs, Goal goal){
+        double curr_x = obs.players[0].position[0];
+        double curr_y = obs.players[0].position[1];
+        double goal_x = goal.position[0];
+        double goal_y = goal.position[1];
+        double x_offset = 1;
+        double y_offset = 1;
+
+        if(curr_y < 7.5){
+            goSouth();
+            return true;
+        } else {
+            // Not in an aisle hub and not in correct aisle just go west (towards the front of store)
+            goWest();
+            return true;
+        }
+        // }
+    }
+
+    // Function: moveToXY
+    // Purpose: Move Agent from current location to target location (target_x, target_y)
+    // Input: Current Observation, target x, target y
+    // Effects: chooses and moves in a direction (unless movement not possible/valid)
+    // Returns: if a movement option has been chosen
+    // Author: LoTurco, M., Branch, H.
+    protected boolean moveToGoal(Observation obs, Goal goal){
+        double curr_x = obs.players[0].position[0];
+        double curr_y = obs.players[0].position[1];
+        double goal_x = goal.position[0];
+        double goal_y = goal.position[1];
+        double x_offset = 1;
+        double y_offset = 2;
+
+        //  TODO?
+        // Check if we in 'range' if so return false   This might not be needed if interact comes first?
+        if(goal.type.equals("shelf")){
+            return moveToShelf(obs, goal);
+        } else if (goal.type.equals("counter")){
+            return moveToCounter(obs, goal);
+        } else if (goal.type.equals("register")){
+            return moveToRegister(obs, goal);
+        } else if(goal.type.equals("leave")){
+            return moveToExit(obs, goal);
+        }
+         // Check if are in correct aisle if so go east/west based on x
+       return false;
     }
 
     // Function: returnToXY
@@ -325,89 +379,89 @@ public class Agent extends SupermarketComponentImpl
     // Returns: Boolean
     // Effect(s): External timing, assumes agent does NOT have a cart
     // Author: Branch, H.
-    protected boolean returnToXY(Observation obs, double target_x, double target_y) 
-    {
-        // Initialze starter variables for movement
-        double agent_current_x_coord = obs.players[0].position[0]; 
-        double agent_current_y_coord = obs.players[0].position[1]; 
-        final double relative_error = 0.2;
-        final double x_lower_bound = 3.9;
-        final double x_upper_bound = 15;
+    // protected boolean returnToXY(Observation obs, double target_x, double target_y) 
+    // {
+    //     // Initialze starter variables for movement
+    //     double agent_current_x_coord = obs.players[0].position[0]; 
+    //     double agent_current_y_coord = obs.players[0].position[1]; 
+    //     final double relative_error = 0.3;
+    //     final double x_lower_bound = 3.9;
+    //     final double x_upper_bound = 15;
 
-        // Check if agent has arrived at intended position
-        // if (Math.abs(agent_current_x_coord - target_x) < relative_error
-        // && Math.abs(agent_current_y_coord - target_y) < relative_error) {
-        if(withinMarginOfLocation(obs.players[0].position, target_x, target_y)){
-            nop();
-            System.out.println("Agent returned to target location (X, Y): " 
-                              + "(" + target_x  + ", " + target_y + ").");
-            return true;
-        }
+    //     // Check if agent has arrived at intended position
+    //     // if (Math.abs(agent_current_x_coord - target_x) < relative_error
+    //     // && Math.abs(agent_current_y_coord - target_y) < relative_error) {
+    //     if(withinMarginOfLocation(obs.players[0].position, target_x, target_y, relative_error)){
+    //         nop();
+    //         System.out.println("Agent returned to target location (X, Y): " 
+    //                           + "(" + target_x  + ", " + target_y + ").");
+    //         return true;
+    //     }
 
-        // Otherwise, return agent to location
-        if (agent_current_x_coord < x_lower_bound) {
-            System.out.println("In edgecase");
-            goEast(); 
-            //    goEast();
-            //    goNorth();
-            return false;
-        }
+    //     // Otherwise, return agent to location
+    //     if (agent_current_x_coord < x_lower_bound) {
+    //         System.out.println("In edgecase");
+    //         goEast(); 
+    //         goEast();
+    //         goNorth();
+    //         return false;
+    //     }
 
-        // Move vertically toward target coordinate
-        // Check if any obstacles are blocking path on Y-axis
-        double y_stop = Math.abs(agent_current_y_coord - target_y);
+    //     // Move vertically toward target coordinate
+    //     // Check if any obstacles are blocking path on Y-axis
+    //     double y_stop = Math.abs(agent_current_y_coord - target_y);
 
-        // Orient agent to face the correct Y-axis direction before moving
-        if (agent_current_y_coord > target_y && obs.players[0].direction == 1) {
-            goNorth(); return false;
-        } else if (agent_current_y_coord < target_y && obs.players[0].direction == 0) {
-            goSouth(); return false;
-        }
+    //     // Orient agent to face the correct Y-axis direction before moving
+    //     if (agent_current_y_coord > target_y && obs.players[0].direction == 1) {
+    //         goNorth(); return false;
+    //     } else if (agent_current_y_coord < target_y && obs.players[0].direction == 0) {
+    //         goSouth(); return false;
+    //     }
 
-        // If no collision possible in the Y-axis, start returning to location
-        // Move vertically toward goal position (0: north, 1: south)
-        if (y_stop > relative_error && obs.players[0].direction == 3) {
-            // Ensure movement adjustment doesn't run endlessly
-            // by bringing agent to the outside LEFT of the aisle
-            if (agent_current_x_coord > x_lower_bound) {
-                goWest();
-            }
-        } else if (y_stop > relative_error && obs.players[0].direction == 4) {
-            // Ensure movement adjustment doesn't run endlessly
-            // by bringing agent to the outside RIGHT of the aisle
-            if (agent_current_x_coord < x_upper_bound) {
-                goEast();
-            }
-        } else if (y_stop > relative_error && obs.players[0].direction == 0){
-            // Send agent north toward goal if goal is in the north direction
-            goNorth();
-        } else if (y_stop > relative_error && obs.players[0].direction == 1) {
-            // Send agent south toward goal if goal is in the south direction
-            goSouth();
-        } else {
-            // If object between current position and vertical position of target,
-            // (e.g. aisle or cart blocking path to target coordinate)
-            // move to open area, move to Y target, and adjust on X
-            double x_stop = Math.abs(obs.players[0].position[0] - target_x);
+    //     // If no collision possible in the Y-axis, start returning to location
+    //     // Move vertically toward goal position (0: north, 1: south)
+    //     if (y_stop > relative_error && obs.players[0].direction == 3) {
+    //         // Ensure movement adjustment doesn't run endlessly
+    //         // by bringing agent to the outside LEFT of the aisle
+    //         if (agent_current_x_coord > x_lower_bound) {
+    //             goWest();
+    //         }
+    //     } else if (y_stop > relative_error && obs.players[0].direction == 4) {
+    //         // Ensure movement adjustment doesn't run endlessly
+    //         // by bringing agent to the outside RIGHT of the aisle
+    //         if (agent_current_x_coord < x_upper_bound) {
+    //             goEast();
+    //         }
+    //     } else if (y_stop > relative_error && obs.players[0].direction == 0){
+    //         // Send agent north toward goal if goal is in the north direction
+    //         goNorth();
+    //     } else if (y_stop > relative_error && obs.players[0].direction == 1) {
+    //         // Send agent south toward goal if goal is in the south direction
+    //         goSouth();
+    //     } else {
+    //         // If object between current position and vertical position of target,
+    //         // (e.g. aisle or cart blocking path to target coordinate)
+    //         // move to open area, move to Y target, and adjust on X
+    //         double x_stop = Math.abs(obs.players[0].position[0] - target_x);
 
-            // If no collision possible on the X-axis, start returning to location
-            if (x_stop > relative_error) {
-                // Move horiztonally toward goal position (2 : east, 3: west)
-                System.out.println("Distance Error: " + x_stop);
-                if (agent_current_x_coord < target_x) {
-                    goEast();
-                } else if (agent_current_x_coord > target_x) {
-                    goWest();
-                }
-            }
-        }
-        // Will return false if agent not currently at target location
-        // and 'return false' is at the end of the function call
-        // since this function is being called in a time loop
-        // and we want to return to multiple locations in a queue.
-        System.out.println("Agent still traveling to target location.");
-        return false;   
-    }
+    //         // If no collision possible on the X-axis, start returning to location
+    //         if (x_stop > relative_error) {
+    //             // Move horiztonally toward goal position (2 : east, 3: west)
+    //             System.out.println("Distance Error: " + x_stop);
+    //             if (agent_current_x_coord < target_x) {
+    //                 goEast();
+    //             } else if (agent_current_x_coord > target_x) {
+    //                 goWest();
+    //             }
+    //         }
+    //     }
+    //     // Will return false if agent not currently at target location
+    //     // and 'return false' is at the end of the function call
+    //     // since this function is being called in a time loop
+    //     // and we want to return to multiple locations in a queue.
+    //     System.out.println("Agent still traveling to target location.");
+    //     return false;   
+    // }
     
     // Function: agentInteraction
     // Purpose: Interaction Layer (Subsumption Architecture)
@@ -421,75 +475,68 @@ public class Agent extends SupermarketComponentImpl
     // Returns: None (i.e. void)
     // Effect(s): External timing, infinite looping, assumes agent has cart when called
     // Author: Branch, H.
-    protected void agentInteraction(Observation obs, double target_x, double target_y)
-    {
-        // Get the agent's currrent location so we can return
-        // back to that spot once we get what we need here
-        // and continue along intended path from movement layer
-        double agent_start_x = obs.players[0].position[0];
-        double agent_start_y = obs.players[0].position[1];
+    // protected void agentInteraction(Observation obs, double target_x, double target_y)
+    // {
+    //     // Get the agent's currrent location so we can return
+    //     // back to that spot once we get what we need here
+    //     // and continue along intended path from movement layer
+    //     double agent_start_x = obs.players[0].position[0];
+    //     double agent_start_y = obs.players[0].position[1];
 
-        // Handle interacting with cart for grocery shopping
-        if (obs.atCartReturn(0)) {
-            // Case where path is cart return and agent has NOT obtained a cart
-            // and needs to interact with cart return to get a cart
-            // to begin securing items from the shopping list.
-            grabCartGoNorth(obs);
-            goNorth();
-            return;
-        } else if (obs.players[0].curr_cart == 0 && obs.atCartReturn(0) == false) {
-            // Case where agent has shopping cart in-hand
-            // and needs to let it go to move to the shelf
-            // and interact to get items off shopping list.
+    //     // Handle interacting with cart for grocery shopping
+    //     if (obs.atCartReturn(0)) {
+    //         // Case where path is cart return and agent has NOT obtained a cart
+    //         // and needs to interact with cart return to get a cart
+    //         // to begin securing items from the shopping list.
+    //         grabCartGoNorth(obs);
+    //         goNorth();
+    //         return;
+    //     } else if (obs.players[0].curr_cart == 0 && obs.atCartReturn(0) == false) {
+    //         // Case where agent has shopping cart in-hand
+    //         // and needs to let it go to move to the shelf
+    //         // and interact to get items off shopping list.
 
-            // Get the agent's cart's currrent location so we can return
-            // back to that spot once we get what we need here
-            // and continue along intended path from movement layer
-            double agent_cart_start_x = obs.carts[obs.players[0].curr_cart].position[0];
-            double agent_cart_start_y = obs.carts[obs.players[0].curr_cart].position[1];
+    //         // Get the agent's cart's currrent location so we can return
+    //         // back to that spot once we get what we need here
+    //         // and continue along intended path from movement layer
+    //         double agent_cart_start_x = obs.carts[obs.players[0].curr_cart].position[0];
+    //         double agent_cart_start_y = obs.carts[obs.players[0].curr_cart].position[1];
 
-            // Unhand the shopping cart
-            toggleShoppingCart();
+    //         // Unhand the shopping cart
+    //         toggleShoppingCart();
 
-            // Assuming agent is now at the correct shelf/counter/location
-            // and facing the shelf, move forward toward the shelf
-            goNorth();
-            while (obs.players[0].position[1] < target_y) {
-                goNorth();
-            }
+    //         // Assuming agent is now at the correct shelf/counter/location
+    //         // and facing the shelf, move forward toward the shelf
+    //         goNorth();
+    //         while (obs.players[0].position[1] < target_y) {
+    //             goNorth();
+    //         }
 
-            interactWithObject(); // Now holding the item in hand.
+    //         interactWithObject(); // Now holding the item in hand.
 
-            goals.remove(0); // Remove goal from list
+    //         goals.remove(0); // Remove goal from list
 
-            // Return to cart location at Line 90 & 91 and place item in cart
-            returnToXY(obs, target_x, target_y);
-            interactWithObject(); // Put item from hand into cart
+    //         // Return to cart location at Line 90 & 91 and place item in cart
+    //         returnToXY(obs, target_x, target_y);
+    //         interactWithObject(); // Put item from hand into cart
 
-            // Return to original start position at Line 84 & 85
-            // to facilitate movement layer and resume A* path-finding
-            returnToXY(obs, agent_start_x, agent_start_y);
-            toggleShoppingCart(); //  Grab cart again for more item grabs
-        }
-    }
+    //         // Return to original start position at Line 84 & 85
+    //         // to facilitate movement layer and resume A* path-finding
+    //         returnToXY(obs, agent_start_x, agent_start_y);
+    //         toggleShoppingCart(); //  Grab cart again for more item grabs
+    //     }
+    // }
 
     protected void planGoals(Observation obs)
     {
         if(goals.size() > 0 && goals.get(0).name == PLAN){
-            System.out.println("consider goals");
-
             goals.remove(0); // Drop the initial Plan goal
 
-            // if(obs.players[0].shopping_list.length > 6)
-            // {
             addGoal("cart_return", obs.cartReturns[0].position, "cart_return");
-            // }
-            // consider basket vs cart
-            // pickup basket or cart
+ 
          
             // plan aisle items
             for(Observation.Shelf shelf: obs.shelves){
-                System.out.println("consider shelf: "+ shelf.food);
                 if(Arrays.asList(obs.players[0].shopping_list).contains(shelf.food)
                     && !inGoals(shelf.food)
                 ){
@@ -498,38 +545,32 @@ public class Agent extends SupermarketComponentImpl
             }
             // plan counter items
             for(Observation.Counter counter: obs.counters){
-                System.out.println("consider shelf: "+ counter.food);
                 if(Arrays.asList(obs.players[0].shopping_list).contains(counter.food)
                     && !inGoals(counter.food)){
                     addGoal(counter.food, counter.position, "counter");
                 }
             }
 
+            // sort goals, comparison of goals for sorting handled by Goal.java comparison. 
             Collections.sort(goals);
-            // sort these items
-            // sort goals by y,
-            // sort goals by x with inverting each aisle alternatingly
-
-            // choose a register
+           
+            // choose a register default to first register
             Observation.Register chosenRegister = obs.registers[0];
-            // add a register
             addGoal("register", chosenRegister.position, "register");
+            addGoal("leave", NOWHERE, "leave");
 
-            // nop();
         }
-        //  else {
-        //     // System.out.println("already planned goals");
-        //     nop();
-        // }
     }
 
     // Note, should only be used to sort goals when only food items (counters and shelves) are in goals
+    // Author: LoTurco, M.
     protected void addGoal(String name, double[] position, String type){
-        System.out.println("added Goal " + name);
         Goal newGoal = new Goal(name, position, type);
         goals.add(newGoal);
     }
 
+    // Checks if a goal has been added for a give shopping list item
+    // Author: LoTurco, M.
     protected boolean inGoals(String foodItem){
         for(Goal goal: goals){
             if(goal.name.equals(foodItem)){
@@ -538,31 +579,6 @@ public class Agent extends SupermarketComponentImpl
         }
         return false;
     }
-
-    // movement layer
-    protected boolean movement(Observation obs, String goal) 
-    {
-        // Subsumption layer for movement
-        // Stop for walls
-        if (obs.players[0].position[0] < 18 == false) {
-            goWest();
-            nop();
-            return false;
-        }
-        // Baskets: 5
-        // Check cart return (1)
-        if (obs.eastOf(obs.players[0], obs.cartReturns[0]) && goal != "cart return") {
-            goEast(); return true;
-        } else if (obs.westOf(obs.players[0], obs.cartReturns[0]) && goal != "cart return") {
-            goWest(); return true;
-        } else if (obs.northOf(obs.players[0], obs.cartReturns[0]) && goal != "cart return") {
-            goSouth(); return true;
-        }  else if (obs.northOf(obs.players[0], obs.cartReturns[0]) && goal != "cart return") {
-            goNorth(); return true;
-        }
-        return false;
-    }
-
     
 
     // Helper aisle function
@@ -571,8 +587,8 @@ public class Agent extends SupermarketComponentImpl
     protected int getCurrentAisle(Observation obs, int playerIndex) {
         int current = -1;
         for (int i = 0; i < obs.shelves.length; i++) {
-            System.out.println("Food at shelf: " + i + " " + obs.shelves[i].food);
-            System.out.println("At position: X: " + obs.shelves[i].position[0] + " , Y: " + obs.shelves[i].position[1]);
+            // System.out.println("Food at shelf: " + i + " " + obs.shelves[i].food);
+            // System.out.println("At position: X: " + obs.shelves[i].position[0] + " , Y: " + obs.shelves[i].position[1]);
             //if (obs.belowAisle(playerIndex, i) == obs.aboveAisle(playerIndex, i + 1)) {
                 //current = i;
             //}
@@ -582,30 +598,55 @@ public class Agent extends SupermarketComponentImpl
     }
 
     // subsumption architecture layer
+    // Author: LoTurco, M.
     protected void subsumption(Observation obs) 
     {
         Boolean actionChosen = false;
         // Inhibit and exhibit layers
         planGoals(obs);
-        System.out.println("Current Goal: " + goals.get(0).name + " " + goals.get(0).position[0] + " " + goals.get(0).position[1]);
-
 
         actionChosen = interactWithGoal(obs);
         if(!actionChosen){
-            System.out.println("Grabbing cart going north");
             actionChosen = grabCartGoNorth(obs);
         }
         if(!actionChosen){
-            System.out.println("Return to xy " + goals.get(0).name + " " + goals.get(0).position[0] + " " + goals.get(0).position[1]);
-            actionChosen = returnToXY(obs, goals.get(0).position[0], goals.get(0).position[1]);
+            actionChosen = moveToGoal(obs, goals.get(0));
         }
     }
 
+    // Purpose: returns true if in the correct location to begin interaction behavior with the goal.
+    // Author LoTurco, M
+    protected boolean inInteractRange(Observation obs, Goal goal){
+        double curr_x = obs.players[0].position[0];
+        double curr_y = obs.players[0].position[1];
+        double goal_x = goal.position[0];
+        double goal_y = goal.position[1];
+        double offset = 1;
+        double margin = .2;
 
+        if(goal.type.equals("shelf") && 
+            curr_x > (goal_x + offset - margin) && 
+            curr_x < (goal_x + offset + margin) && 
+            inAisle(obs, goal)){
+            return true;
+        } else if(goal.type.equals("counter") && 
+            curr_y > (goal_y + offset - margin) && 
+            curr_y < (goal_y + offset + margin)){
+            return true;
+        } else if(goal.type.equals("register") && 
+            curr_y > (goal_y + offset - margin) && 
+            curr_y < (goal_y + offset + margin)){
+            return true;
+        }
+        return false;
+    }
+
+    // Checks goal type and begins interaction.
+    // Author LoTurco, M
     protected boolean interactWithGoal(Observation obs){
         Goal goal = goals.get(0);
-        if(withinMarginOfLocation(obs.players[0].position, goal.position[0], goal.position[1])){
-            System.out.println("Interacting with goal");
+        if(inInteractRange(obs, goal)){
+            // withinMarginOfLocation(obs.players[0].position, goal.position[0], goal.position[1], 0.4)){
             if(goal.type.equals("shelf")){
                 return interactWithShelf(obs);
             }
@@ -616,140 +657,46 @@ public class Agent extends SupermarketComponentImpl
                 return interactWithRegister(obs);
             }
         }
-        System.out.println("Not interacting with goal");
         return false;
     }
 
+    // Author LoTurco, M. and Ebisu, M.
     protected boolean interactWithRegister(Observation obs){
-        System.out.println("ready to interact with register");
-        return false;
-    }
-
-    protected int findShelf(Observation obs){
-        for(int i = 0; i < obs.shelves.length; i++){
-            System.out.println("checking shelf i" + i + " " + obs.shelves[i].food.equals(goals.get(0).name));
-            // System.out.println(obs.shelves[i].position[0].equals(goals.get(0).position)+ " " 
-            //     + obs.shelves[i].position[0] + " " + obs.shelves[i].position[1]
-            //     + goals.get(0).position[0] + " " + goals.get(0).position[1]);
-            //+ " " + obs.shelves[i].position.equals(goals.get(0).position));
-            if(obs.shelves[i].food.equals(goals.get(0).name)
-                && obs.shelves[i].position[0] == goals.get(0).position[0]
-                && obs.shelves[i].position[1] == goals.get(0).position[1]){
-                    System.out.println("found i " + i);
-                    return i;
-            }
-        }
-        System.out.println("shelf not found");
-        return -1;
-    }
-
-    protected boolean interactWithShelf(Observation obs){
-        // System.out.println("starting IWS");
+        //System.out.println("ready to interact with register");
+        //System.out.pritnln(obs.registers.)
+        //In it's basic form, interactWithRegister needs do the following:
+        //1. toggleShoppingCart()  //Drop shopping cart 
+        //2. goNorth()             //Go up to where register is
+        //3. interactWithObject()  //interact with object is all that is needed in order to interact with register to pay for all items at once
+        //4. returnToXY()          //Return to cart location      
+        //5. toggleShoppingCart()  //Repick up Cart     
+        //The function assumes that the goals are 
+        // System.out.println("starting IWR");
+        //MOVEMENT: Agent and Cart need to be right next to counter in order to pay
         Boolean holding_cart = obs.players[0].curr_cart != -1;
-        Boolean holding_food = obs.players[0].holding_food != null;
-        int shelf_index = findShelf(obs);
-        Boolean can_interact_with_proper_shelf = obs.shelves[shelf_index].canInteract(obs.players[0]);
-  
-        // System.out.println("IWS cart: " + holding_cart + "  food: " + holding_food + "  can inter: "+ can_interact_with_proper_shelf);
+        Boolean can_interact_with_register = obs.registers[0].canInteract(obs.players[0]); //register's index is currently hardcoded 
+        // Boolean dropped_cart = false;
         if(holding_cart){
-            // System.out.println("toggle " + obs.players[0].curr_cart);
             my_cart_index = obs.players[0].curr_cart;
-            // Let go of cart
+            // Let go of cart and save location
             drop_location[0] = obs.players[0].position[0];
             drop_location[1] = obs.players[0].position[1];
-            drop_direction = obs.players[0].direction;
+            drop_direction = obs.players[0].direction;            
             toggleShoppingCart();
+            // dropped_cart = true;
             return true;
         }
-        // can interact with shelf and not holding food and 
-        if( can_interact_with_proper_shelf && !holding_food){
-            //  System.out.println("toggle");
-            //  interact with shelf and take food
-            interactWithObject();
-            return true;
-        } else if(!holding_food){
-            //   System.out.println("not holding food");
-              goNorth();
-            // returnToXY(obs, obs.shelves[shelf_index].position[0], obs.shelves[shelf_index].position[1]);
-            return true;
-        } else {
-            // System.out.println("holding food");
-            if(obs.players[0].position[0] == drop_location[0] 
-                && obs.players[0].position[1] == drop_location[1]){
-                if(drop_direction == 2){
-                    drop_direction = -1;
-                    goEast();
-                }
-                if(drop_direction == 3){
-                    drop_direction = -1;
-                    goWest();
-                }
-                // System.out.println("   interact");
+        if(!has_paid){
+            if(can_interact_with_register){
                 interactWithObject();
                 interactWithObject();
-                // System.out.println("   toggle");
-                toggleShoppingCart();
-                goals.remove(0);
+                has_paid = true;
                 return true;
-                
-            }
-            else{
-                // System.out.println("holding food going to cart");
-                goSouth();
+            } else {
+                goWest();
                 return true;
             }
-        }
-    }
-
-    protected int findCounter(Observation obs){
-        for(int i = 0; i < obs.counters.length; i++){
-            System.out.println("checking counter i" + i + " " + obs.shelves[i].food.equals(goals.get(0).name));
-            // System.out.println(obs.shelves[i].position[0].equals(goals.get(0).position)+ " " 
-            //     + obs.shelves[i].position[0] + " " + obs.shelves[i].position[1]
-            //     + goals.get(0).position[0] + " " + goals.get(0).position[1]);
-            //+ " " + obs.shelves[i].position.equals(goals.get(0).position));
-            if(obs.shelves[i].food.equals(goals.get(0).name)
-                && obs.shelves[i].position[0] == goals.get(0).position[0]
-                && obs.shelves[i].position[1] == goals.get(0).position[1]){
-                    System.out.println("found i " + i);
-                    return i;
-            }
-        }
-        System.out.println("didnt find");
-        return -1;
-    }
-
-    protected boolean interactWithCounter(Observation obs){
-        // System.out.println("starting IWS");
-        Boolean holding_cart = obs.players[0].curr_cart != -1;
-        Boolean holding_food = obs.players[0].holding_food != null;
-        int counter_index = findCounter(obs);
-        Boolean can_interact_with_proper_counter = obs.counters[counter_index].canInteract(obs.players[0]);
-  
-        // System.out.println("IWS cart: " + holding_cart + "  food: " + holding_food + "  can inter: "+ can_interact_with_proper_shelf);
-        if(holding_cart){
-            // System.out.println("toggle " + obs.players[0].curr_cart);
-            my_cart_index = obs.players[0].curr_cart;
-            // Let go of cart
-            drop_location[0] = obs.players[0].position[0];
-            drop_location[1] = obs.players[0].position[1];
-            drop_direction = obs.players[0].direction;
-            toggleShoppingCart();
-            return true;
-        }
-        // can interact with shelf and not holding food and 
-        if( can_interact_with_proper_counter && !holding_food){
-            //  System.out.println("toggle");
-            //  interact with shelf and take food
-            interactWithObject();
-            return true;
-        } else if(!holding_food){
-            //   System.out.println("not holding food");
-              goNorth();
-            // returnToXY(obs, obs.shelves[shelf_index].position[0], obs.shelves[shelf_index].position[1]);
-            return true;
         } else {
-            // System.out.println("holding food");
             if(obs.players[0].position[0] == drop_location[0] 
                 && obs.players[0].position[1] == drop_location[1]){
                 if(drop_direction == 0){
@@ -760,31 +707,140 @@ public class Agent extends SupermarketComponentImpl
                     drop_direction = -1;
                     goSouth();
                 }
-                // System.out.println("   interact");
+                toggleShoppingCart();
+                goals.remove(0);
+                return true;
+            } else {
+                goEast();
+                return true;
+            }
+        }
+    }
+
+    // Author LoTurco, M
+    protected int findShelf(Observation obs){
+        for(int i = 0; i < obs.shelves.length; i++){
+            if(obs.shelves[i].food.equals(goals.get(0).name)
+                && obs.shelves[i].position[0] == goals.get(0).position[0]
+                && obs.shelves[i].position[1] == goals.get(0).position[1]){
+                    return i;
+            }
+        }
+        return -1;
+    }
+
+    // Author LoTurco, M
+    protected boolean interactWithShelf(Observation obs){
+        Boolean holding_cart = obs.players[0].curr_cart != -1;
+        Boolean holding_food = obs.players[0].holding_food != null;
+        int shelf_index = findShelf(obs);
+        Boolean can_interact_with_proper_shelf = obs.shelves[shelf_index].canInteract(obs.players[0]);
+  
+        if(holding_cart){
+            my_cart_index = obs.players[0].curr_cart;
+            // Let go of cart
+            drop_location[0] = obs.players[0].position[0];
+            drop_location[1] = obs.players[0].position[1];
+            drop_direction = obs.players[0].direction;
+            toggleShoppingCart();
+            return true;
+        }
+        // can interact with shelf and not holding food and 
+        if( can_interact_with_proper_shelf && !holding_food){
+            //  interact with shelf and take food
+            interactWithObject();
+            return true;
+        } else if(!holding_food){
+              goNorth();
+            return true;
+        } else {
+            if(obs.players[0].position[0] == drop_location[0] 
+                && obs.players[0].position[1] == drop_location[1]){
+                if(drop_direction == 2){
+                    drop_direction = -1;
+                    goEast();
+                }
+                if(drop_direction == 3){
+                    drop_direction = -1;
+                    goWest();
+                }
                 interactWithObject();
                 interactWithObject();
-                // System.out.println("   toggle");
                 toggleShoppingCart();
                 goals.remove(0);
                 return true;
                 
             }
             else{
-                // System.out.println("holding food going to cart");
                 goSouth();
-                // returnToXY(obs, drop_location[0], drop_location[1]);
                 return true;
             }
         }
-        //      
-     
-        // if holding food 
-        //    if at cart
-        //        
-                // toggleShoppingCart()
-                // return true
-        //     else not at cart
-        //        returnToXY(drop location)
+    }
+
+    // Author LoTurco, M
+    protected int findCounter(Observation obs){
+        for(int i = 0; i < obs.counters.length; i++){
+            // System.out.println(obs.shelves[i].position[0].equals(goals.get(0).position)+ " " 
+            //     + obs.shelves[i].position[0] + " " + obs.shelves[i].position[1]
+            //     + goals.get(0).position[0] + " " + goals.get(0).position[1]);
+            //+ " " + obs.shelves[i].position.equals(goals.get(0).position));
+            if(obs.counters[i].food.equals(goals.get(0).name)
+                && obs.counters[i].position[0] == goals.get(0).position[0]
+                && obs.counters[i].position[1] == goals.get(0).position[1]){
+                    return i;
+            }
+        }
+        return -1;
+    }
+
+    // Author LoTurco, M
+    protected boolean interactWithCounter(Observation obs){
+        // System.out.println("starting IWS");
+        Boolean holding_cart = obs.players[0].curr_cart != -1;
+        Boolean holding_food = obs.players[0].holding_food != null;
+        int counter_index = findCounter(obs);
+        Boolean can_interact_with_proper_counter = obs.counters[counter_index].canInteract(obs.players[0]);
+        if(holding_cart){
+            my_cart_index = obs.players[0].curr_cart;
+            // Let go of cart
+            drop_location[0] = obs.players[0].position[0];
+            drop_location[1] = obs.players[0].position[1];
+            drop_direction = obs.players[0].direction;
+            toggleShoppingCart();
+            return true;
+        }
+        // can interact with counter and not holding food and 
+        if(can_interact_with_proper_counter && !holding_food){
+            //  interact with counter and take food
+            interactWithObject();
+            return true;
+        } else if(!holding_food){
+            goEast();
+            return true;
+        } else {
+            if(obs.players[0].position[0] == drop_location[0] 
+                && obs.players[0].position[1] == drop_location[1]){
+                if(drop_direction == 0){
+                    drop_direction = -1;
+                    goNorth();
+                }
+                if(drop_direction == 1){
+                    drop_direction = -1;
+                    goSouth();
+                }
+                interactWithObject();
+                interactWithObject();
+                toggleShoppingCart();
+                goals.remove(0);
+                return true;
+                
+            }
+            else{
+                goWest();
+                return true;
+            }
+        }
     }
     
     // Author-defined execution loop
@@ -807,37 +863,12 @@ public class Agent extends SupermarketComponentImpl
         // grabCartGoNorth(obs);
 
         // move agent to specified goal
-        System.out.println("Player currently at coordinate (X,Y): (" + obs.players[0].position[0] + ", "  + obs.players[0].position[1] + ").");
-        // grabCartGoNorth(obs)
-        // returnToXY(obs, 22.0, 6.0);
-        // if(firsttime){
-        //     planGoals(obs);
-        //     System.out.println(goals.get(1).name+" "+goals.get(1).position[0]+ " " + goals.get(1).position[1]);
-        // }
-        // if(firsttime){
-        //     goals.remove(0);
-        //     double[] shelf_test_pos = {5.5, 21.5};
-        //     Goal shelf_test = new Goal("avocado", shelf_test_pos);
-        //     goals.add(shelf_test);
-        //     System.out.println("topgoal"+ goals.get(0).name);
-        // }
+        // System.out.println("Player currently at coordinate (X,Y): (" + obs.players[0].position[0] + ", "  + obs.players[0].position[1] + ").");
+
         subsumption(obs);
     
 
-<<<<<<< Updated upstream
         // interactWithShelf(obs);
         firsttime = false;
-=======
-        //giveMeXY(obs);
-
-       //payAtRegister(obs);
-       cartTheftNorm(obs);
-
-        //System.out.println("Player currently at coordinate (X,Y): (" + obs.players[0].position[0] + ", "  + obs.players[0].position[1] + ").");
-
-
-        //System.out.println("Player currently at coordinate (X,Y): (" + obs.players[0].position[0] + ", "  + obs.players[0].position[1] + ").");
-
->>>>>>> Stashed changes
     }
 }
