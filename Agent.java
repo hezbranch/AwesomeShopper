@@ -208,7 +208,7 @@ public class Agent extends SupermarketComponentImpl
        return collision;
     }
 
-     // Function: agentCollisionAvoidance
+    // Function: agentCollisionAvoidance
     // Purpose: Avoid colliding into others agents
     //          during multiplayer mode
     // Input: An observation state (i.e. Observation)
