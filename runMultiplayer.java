@@ -26,11 +26,13 @@ public class runMultiplayer {
 
 
     public static void main(String[] args) {
-        AgentThread a1 = new AgentThread(AgentG4.class, 0, 2); //For Some reason our current agent works the best in multiplayer mode if it can be the first agent in the list order
-        AgentThread a2 = new AgentThread(TestAgent.class, 1, 2);
-        //AgentThread a3 = new AgentThread(TestAgent.class, 1, 2);
+        // AgentThread a1 = new AgentThread(AgentG4.class, 0, 2); //For Some reason our current agent works the best in multiplayer mode if it can be the first agent in the list order
+        // AgentThread a2 = new AgentThread(TestAgent.class, 1, 2);
+        
+        AgentThread a1 = new AgentThread(TestAgent.class, 0, 2);
+        AgentThread a2 = new AgentThread(AgentG4.class, 1, 2);
     a1.start();
-        System.out.println("G4's Agent is starting!");
+        System.out.println("G4's Agent is starting! yay");
     a2.start();
     //a3.start();
     }

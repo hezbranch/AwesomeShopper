@@ -49,23 +49,25 @@ public class AgentG4 extends SupermarketComponentImpl
         if(!goals.get(0).name.equals("cart_return")){
             return false;
         }
-        if (obs.cartReturns[0].canInteract(obs.players[0]) && obs.players[0].curr_cart != 0) {
+        if ((obs.cartReturns[0].canInteract(obs.players[this.playerIndex])
+            || obs.cartReturns[1].canInteract(obs.players[this.playerIndex]))
+            && obs.players[this.playerIndex].curr_cart != 0) {
             // nop();
             // toggleShoppingCart();   
             interactWithObject();    //changed from interactWithObject()
             goals.remove(0);
-            my_cart_index = obs.players[0].curr_cart;
+            my_cart_index = obs.players[this.playerIndex].curr_cart;
 
             // nop();
             return true;
             // Case where agent has obtained a cart
             // and needs to go north
-        // } else if (obs.players[0].curr_cart != -1) {
+        // } else if (obs.players[this.playerIndex].curr_cart != -1) {
         //     // Prevent endless collisions with an
         //     // infinite loop of no movement here
         //     // * Feels unethical to stop agent
         //     //  movement infinitely like this :( *
-        //     // if (obs.players[0].position[1] < 13) {
+        //     // if (obs.players[this.playerIndex].position[1] < 13) {
         //     //     while (true) {
         //     //         nop(); // Stop agent movement
         //     //     }
@@ -95,35 +97,35 @@ public class AgentG4 extends SupermarketComponentImpl
         boolean success = true;
         // Check for shelf collisions
         for (int i = 0; i < obs.shelves.length; i++) {
-            if (obs.shelves[i].canInteract(obs.players[0])) {
+            if (obs.shelves[i].canInteract(obs.players[this.playerIndex])) {
                 success = false;
                 return success;
             }
         }
         // Check for counter collisions
         for (int i = 0; i < obs.counters.length; i++) {
-            if (obs.counters[i].canInteract(obs.players[0])) {
+            if (obs.counters[i].canInteract(obs.players[this.playerIndex])) {
                 success = false;
                 return success;
             }
         }
         // Check for register collisions
         for (int i = 0; i < obs.registers.length; i++) {
-            if (obs.registers[i].canInteract(obs.players[0])) {
+            if (obs.registers[i].canInteract(obs.players[this.playerIndex])) {
                 success = false;
                 return success;
             }
         }
         // Check for cart return collisions
         for (int i = 0; i < obs.cartReturns.length; i++) {
-            if (obs.cartReturns[i].canInteract(obs.players[0])) {
+            if (obs.cartReturns[i].canInteract(obs.players[this.playerIndex])) {
                 success = false;
                 return success;
             }
         }
         // Check for cart collisions
         for (int i = 0; i < obs.carts.length; i++) {
-            if (obs.carts[i].canInteract(obs.players[0])) {
+            if (obs.carts[i].canInteract(obs.players[this.playerIndex])) {
                 success = false;
                 return success;
             }
@@ -279,20 +281,20 @@ public class AgentG4 extends SupermarketComponentImpl
             }
             // Check for wall collisions
             // Top and Bottom Walls
-            if (obs.players[0].position[1] < 3
+            if (obs.players[this.playerIndex].position[1] < 3
             && main_agent_direction == 0) {
                 travel[0] = -1;
             }
-            if (obs.players[0].position[1] > 23
+            if (obs.players[this.playerIndex].position[1] > 23
             && main_agent_direction == 0) {
                 travel[1] = -1;
             }
             // Left and Right Walls
-            if (obs.players[0].position[0] < 3
+            if (obs.players[this.playerIndex].position[0] < 3
             && main_agent_direction == 3) {
                 travel[2] = -1;
             }
-            if (obs.players[0].position[0] > 18
+            if (obs.players[this.playerIndex].position[0] > 18
             && main_agent_direction == 3) {
                 travel[3] = -1;
             }
@@ -344,8 +346,8 @@ public class AgentG4 extends SupermarketComponentImpl
 
     // Author: LoTurco, M.
     protected boolean inAisle(Observation obs, Goal goal){
-        double curr_x = obs.players[0].position[0];
-        double curr_y = obs.players[0].position[1];
+        double curr_x = obs.players[this.playerIndex].position[0];
+        double curr_y = obs.players[this.playerIndex].position[1];
         double goal_x = goal.position[0];
         double goal_y = goal.position[1];
         double margin = .5;
@@ -361,8 +363,8 @@ public class AgentG4 extends SupermarketComponentImpl
 
     // Author: LoTurco, M.
     protected boolean moveToShelf(Observation obs, Goal goal){
-        double curr_x = obs.players[0].position[0];
-        double curr_y = obs.players[0].position[1];
+        double curr_x = obs.players[this.playerIndex].position[0];
+        double curr_y = obs.players[this.playerIndex].position[1];
         double goal_x = goal.position[0];
         double goal_y = goal.position[1];
         double x_offset = 1;
@@ -377,7 +379,8 @@ public class AgentG4 extends SupermarketComponentImpl
             }
         } else {// We are not in correct aisle
             // If we are in a hub we can move to correct Y
-            if((obs.inAisleHub(0) && curr_x > 4.0 ) || obs.inRearAisleHub(0)){
+            // System.out.println("moving to shelf " + curr_x + " in hub" + )
+            if((obs.inAisleHub(this.playerIndex) && curr_x > 3.8 ) || obs.inRearAisleHub(this.playerIndex)){
                 if(curr_y < goal_y + y_offset){
                     goSouth();
                     return true;
@@ -395,14 +398,14 @@ public class AgentG4 extends SupermarketComponentImpl
 
     // Author: LoTurco, M.
     protected boolean moveToCounter(Observation obs, Goal goal){
-        double curr_x = obs.players[0].position[0];
-        double curr_y = obs.players[0].position[1];
+        double curr_x = obs.players[this.playerIndex].position[0];
+        double curr_y = obs.players[this.playerIndex].position[1];
         double goal_x = goal.position[0];
         double goal_y = goal.position[1];
         double x_offset = 1;
         double y_offset = 1;
 
-        if((obs.inAisleHub(0) && curr_x > 4.0 ) || obs.inRearAisleHub(0)){
+        if((obs.inAisleHub(this.playerIndex) && curr_x > 4.0 ) || obs.inRearAisleHub(this.playerIndex)){
             if(curr_y < goal_y + y_offset){
                 goSouth();
                 return true;
@@ -420,14 +423,14 @@ public class AgentG4 extends SupermarketComponentImpl
 
     // Author: LoTurco, M.
     protected boolean moveToRegister(Observation obs, Goal goal){
-        double curr_x = obs.players[0].position[0];
-        double curr_y = obs.players[0].position[1];
+        double curr_x = obs.players[this.playerIndex].position[0];
+        double curr_y = obs.players[this.playerIndex].position[1];
         double goal_x = goal.position[0];
         double goal_y = goal.position[1];
         double x_offset = 1;
         double y_offset = 1;
 
-        if(curr_x < 3.5 && curr_x > 3.4 ){
+        if(curr_x < 3.5 && curr_x > 3.39 ){
             if(curr_y < goal_y + y_offset){
                 goSouth();
                 return true;
@@ -437,7 +440,7 @@ public class AgentG4 extends SupermarketComponentImpl
             }
         } else {
             // Not in an aisle hub and not in correct aisle just go west (towards the front of store)
-            if(obs.inRearAisleHub(0) && !obs.aboveAisle(0, 1)){
+            if(obs.inRearAisleHub(this.playerIndex) && !obs.aboveAisle(this.playerIndex, 1)){
                 goNorth();
                 return true;
             }
@@ -449,8 +452,8 @@ public class AgentG4 extends SupermarketComponentImpl
 
     // Author LoTurco, M
     protected boolean moveToExit(Observation obs, Goal goal){
-        double curr_x = obs.players[0].position[0];
-        double curr_y = obs.players[0].position[1];
+        double curr_x = obs.players[this.playerIndex].position[0];
+        double curr_y = obs.players[this.playerIndex].position[1];
         double goal_x = goal.position[0];
         double goal_y = goal.position[1];
         double x_offset = 1;
@@ -474,14 +477,15 @@ public class AgentG4 extends SupermarketComponentImpl
     // Returns: if a movement option has been chosen
     // Author: LoTurco, M., Branch, H.
     protected boolean moveToGoal(Observation obs, Goal goal){
-        double curr_x = obs.players[0].position[0];
-        double curr_y = obs.players[0].position[1];
+        double curr_x = obs.players[this.playerIndex].position[0];
+        double curr_y = obs.players[this.playerIndex].position[1];
         double goal_x = goal.position[0];
         double goal_y = goal.position[1];
         double x_offset = 1;
         double y_offset = 2;
 
         //  TODO?
+        System.out.println("trying to get to goal"+ goal.name);
         // Check if we in 'range' if so return false   This might not be needed if interact comes first?
         if(goal.type.equals("shelf")){
             return moveToShelf(obs, goal);
@@ -507,8 +511,8 @@ public class AgentG4 extends SupermarketComponentImpl
     // protected boolean returnToXY(Observation obs, double target_x, double target_y) 
     // {
     //     // Initialze starter variables for movement
-    //     double agent_current_x_coord = obs.players[0].position[0]; 
-    //     double agent_current_y_coord = obs.players[0].position[1]; 
+    //     double agent_current_x_coord = obs.players[this.playerIndex].position[0]; 
+    //     double agent_current_y_coord = obs.players[this.playerIndex].position[1]; 
     //     final double relative_error = 0.3;
     //     final double x_lower_bound = 3.9;
     //     final double x_upper_bound = 15;
@@ -516,7 +520,7 @@ public class AgentG4 extends SupermarketComponentImpl
     //     // Check if agent has arrived at intended position
     //     // if (Math.abs(agent_current_x_coord - target_x) < relative_error
     //     // && Math.abs(agent_current_y_coord - target_y) < relative_error) {
-    //     if(withinMarginOfLocation(obs.players[0].position, target_x, target_y, relative_error)){
+    //     if(withinMarginOfLocation(obs.players[this.playerIndex].position, target_x, target_y, relative_error)){
     //         nop();
     //         System.out.println("Agent returned to target location (X, Y): " 
     //                           + "(" + target_x  + ", " + target_y + ").");
@@ -537,37 +541,37 @@ public class AgentG4 extends SupermarketComponentImpl
     //     double y_stop = Math.abs(agent_current_y_coord - target_y);
 
     //     // Orient agent to face the correct Y-axis direction before moving
-    //     if (agent_current_y_coord > target_y && obs.players[0].direction == 1) {
+    //     if (agent_current_y_coord > target_y && obs.players[this.playerIndex].direction == 1) {
     //         goNorth(); return false;
-    //     } else if (agent_current_y_coord < target_y && obs.players[0].direction == 0) {
+    //     } else if (agent_current_y_coord < target_y && obs.players[this.playerIndex].direction == 0) {
     //         goSouth(); return false;
     //     }
 
     //     // If no collision possible in the Y-axis, start returning to location
     //     // Move vertically toward goal position (0: north, 1: south)
-    //     if (y_stop > relative_error && obs.players[0].direction == 3) {
+    //     if (y_stop > relative_error && obs.players[this.playerIndex].direction == 3) {
     //         // Ensure movement adjustment doesn't run endlessly
     //         // by bringing agent to the outside LEFT of the aisle
     //         if (agent_current_x_coord > x_lower_bound) {
     //             goWest();
     //         }
-    //     } else if (y_stop > relative_error && obs.players[0].direction == 4) {
+    //     } else if (y_stop > relative_error && obs.players[this.playerIndex].direction == 4) {
     //         // Ensure movement adjustment doesn't run endlessly
     //         // by bringing agent to the outside RIGHT of the aisle
     //         if (agent_current_x_coord < x_upper_bound) {
     //             goEast();
     //         }
-    //     } else if (y_stop > relative_error && obs.players[0].direction == 0){
+    //     } else if (y_stop > relative_error && obs.players[this.playerIndex].direction == 0){
     //         // Send agent north toward goal if goal is in the north direction
     //         goNorth();
-    //     } else if (y_stop > relative_error && obs.players[0].direction == 1) {
+    //     } else if (y_stop > relative_error && obs.players[this.playerIndex].direction == 1) {
     //         // Send agent south toward goal if goal is in the south direction
     //         goSouth();
     //     } else {
     //         // If object between current position and vertical position of target,
     //         // (e.g. aisle or cart blocking path to target coordinate)
     //         // move to open area, move to Y target, and adjust on X
-    //         double x_stop = Math.abs(obs.players[0].position[0] - target_x);
+    //         double x_stop = Math.abs(obs.players[this.playerIndex].position[0] - target_x);
 
     //         // If no collision possible on the X-axis, start returning to location
     //         if (x_stop > relative_error) {
@@ -605,8 +609,8 @@ public class AgentG4 extends SupermarketComponentImpl
     //     // Get the agent's currrent location so we can return
     //     // back to that spot once we get what we need here
     //     // and continue along intended path from movement layer
-    //     double agent_start_x = obs.players[0].position[0];
-    //     double agent_start_y = obs.players[0].position[1];
+    //     double agent_start_x = obs.players[this.playerIndex].position[0];
+    //     double agent_start_y = obs.players[this.playerIndex].position[1];
 
     //     // Handle interacting with cart for grocery shopping
     //     if (obs.atCartReturn(0)) {
@@ -616,7 +620,7 @@ public class AgentG4 extends SupermarketComponentImpl
     //         grabCartGoNorth(obs);
     //         goNorth();
     //         return;
-    //     } else if (obs.players[0].curr_cart == 0 && obs.atCartReturn(0) == false) {
+    //     } else if (obs.players[this.playerIndex].curr_cart == 0 && obs.atCartReturn(0) == false) {
     //         // Case where agent has shopping cart in-hand
     //         // and needs to let it go to move to the shelf
     //         // and interact to get items off shopping list.
@@ -624,8 +628,8 @@ public class AgentG4 extends SupermarketComponentImpl
     //         // Get the agent's cart's currrent location so we can return
     //         // back to that spot once we get what we need here
     //         // and continue along intended path from movement layer
-    //         double agent_cart_start_x = obs.carts[obs.players[0].curr_cart].position[0];
-    //         double agent_cart_start_y = obs.carts[obs.players[0].curr_cart].position[1];
+    //         double agent_cart_start_x = obs.carts[obs.players[this.playerIndex].curr_cart].position[0];
+    //         double agent_cart_start_y = obs.carts[obs.players[this.playerIndex].curr_cart].position[1];
 
     //         // Unhand the shopping cart
     //         toggleShoppingCart();
@@ -633,7 +637,7 @@ public class AgentG4 extends SupermarketComponentImpl
     //         // Assuming agent is now at the correct shelf/counter/location
     //         // and facing the shelf, move forward toward the shelf
     //         goNorth();
-    //         while (obs.players[0].position[1] < target_y) {
+    //         while (obs.players[this.playerIndex].position[1] < target_y) {
     //             goNorth();
     //         }
 
@@ -662,7 +666,7 @@ public class AgentG4 extends SupermarketComponentImpl
          
             // plan aisle items
             for(Observation.Shelf shelf: obs.shelves){
-                if(Arrays.asList(obs.players[0].shopping_list).contains(shelf.food)
+                if(Arrays.asList(obs.players[this.playerIndex].shopping_list).contains(shelf.food)
                     && !inGoals(shelf.food)
                 ){
                     addGoal(shelf.food, shelf.position, "shelf");
@@ -670,7 +674,7 @@ public class AgentG4 extends SupermarketComponentImpl
             }
             // plan counter items
             for(Observation.Counter counter: obs.counters){
-                if(Arrays.asList(obs.players[0].shopping_list).contains(counter.food)
+                if(Arrays.asList(obs.players[this.playerIndex].shopping_list).contains(counter.food)
                     && !inGoals(counter.food)){
                     addGoal(counter.food, counter.position, "counter");
                 }
@@ -742,8 +746,8 @@ public class AgentG4 extends SupermarketComponentImpl
     // Purpose: returns true if in the correct location to begin interaction behavior with the goal.
     // Author LoTurco, M
     protected boolean inInteractRange(Observation obs, Goal goal){
-        double curr_x = obs.players[0].position[0];
-        double curr_y = obs.players[0].position[1];
+        double curr_x = obs.players[this.playerIndex].position[0];
+        double curr_y = obs.players[this.playerIndex].position[1];
         double goal_x = goal.position[0];
         double goal_y = goal.position[1];
         double offset = 1;
@@ -770,8 +774,10 @@ public class AgentG4 extends SupermarketComponentImpl
     // Author LoTurco, M
     protected boolean interactWithGoal(Observation obs){
         Goal goal = goals.get(0);
+        System.out.println("Checking interaction with " + goal.name);
         if(inInteractRange(obs, goal)){
-            // withinMarginOfLocation(obs.players[0].position, goal.position[0], goal.position[1], 0.4)){
+            System.out.println("IN INTERACT RANGE " + goal.name);
+            // withinMarginOfLocation(obs.players[this.playerIndex].position, goal.position[0], goal.position[1], 0.4)){
             if(goal.type.equals("shelf")){
                 return interactWithShelf(obs);
             }
@@ -798,15 +804,15 @@ public class AgentG4 extends SupermarketComponentImpl
         //The function assumes that the goals are 
         // System.out.println("starting IWR");
         //MOVEMENT: Agent and Cart need to be right next to counter in order to pay
-        Boolean holding_cart = obs.players[0].curr_cart != -1;
-        Boolean can_interact_with_register = obs.registers[0].canInteract(obs.players[0]); //register's index is currently hardcoded 
+        Boolean holding_cart = obs.players[this.playerIndex].curr_cart != -1;
+        Boolean can_interact_with_register = obs.registers[0].canInteract(obs.players[this.playerIndex]); //register's index is currently hardcoded 
         // Boolean dropped_cart = false;
         if(holding_cart){
-            my_cart_index = obs.players[0].curr_cart;
+            my_cart_index = obs.players[this.playerIndex].curr_cart;
             // Let go of cart and save location
-            drop_location[0] = obs.players[0].position[0];
-            drop_location[1] = obs.players[0].position[1];
-            drop_direction = obs.players[0].direction;            
+            drop_location[0] = obs.players[this.playerIndex].position[0];
+            drop_location[1] = obs.players[this.playerIndex].position[1];
+            drop_direction = obs.players[this.playerIndex].direction;            
             toggleShoppingCart();
             // dropped_cart = true;
             return true;
@@ -822,8 +828,8 @@ public class AgentG4 extends SupermarketComponentImpl
                 return true;
             }
         } else {
-            if(obs.players[0].position[0] == drop_location[0] 
-                && obs.players[0].position[1] == drop_location[1]){
+            if(obs.players[this.playerIndex].position[0] == drop_location[0] 
+                && obs.players[this.playerIndex].position[1] == drop_location[1]){
                 if(drop_direction == 0){
                     drop_direction = -1;
                     goNorth();
@@ -856,17 +862,17 @@ public class AgentG4 extends SupermarketComponentImpl
 
     // Author LoTurco, M
     protected boolean interactWithShelf(Observation obs){
-        Boolean holding_cart = obs.players[0].curr_cart != -1;
-        Boolean holding_food = obs.players[0].holding_food != null;
+        Boolean holding_cart = obs.players[this.playerIndex].curr_cart != -1;
+        Boolean holding_food = obs.players[this.playerIndex].holding_food != null;
         int shelf_index = findShelf(obs);
-        Boolean can_interact_with_proper_shelf = obs.shelves[shelf_index].canInteract(obs.players[0]);
+        Boolean can_interact_with_proper_shelf = obs.shelves[shelf_index].canInteract(obs.players[this.playerIndex]);
   
         if(holding_cart){
-            my_cart_index = obs.players[0].curr_cart;
+            my_cart_index = obs.players[this.playerIndex].curr_cart;
             // Let go of cart
-            drop_location[0] = obs.players[0].position[0];
-            drop_location[1] = obs.players[0].position[1];
-            drop_direction = obs.players[0].direction;
+            drop_location[0] = obs.players[this.playerIndex].position[0];
+            drop_location[1] = obs.players[this.playerIndex].position[1];
+            drop_direction = obs.players[this.playerIndex].direction;
             toggleShoppingCart();
             return true;
         }
@@ -879,8 +885,8 @@ public class AgentG4 extends SupermarketComponentImpl
               goNorth();
             return true;
         } else {
-            if(obs.players[0].position[0] == drop_location[0] 
-                && obs.players[0].position[1] == drop_location[1]){
+            if(obs.players[this.playerIndex].position[0] == drop_location[0] 
+                && obs.players[this.playerIndex].position[1] == drop_location[1]){
                 if(drop_direction == 2){
                     drop_direction = -1;
                     goEast();
@@ -922,16 +928,16 @@ public class AgentG4 extends SupermarketComponentImpl
     // Author LoTurco, M
     protected boolean interactWithCounter(Observation obs){
         // System.out.println("starting IWS");
-        Boolean holding_cart = obs.players[0].curr_cart != -1;
-        Boolean holding_food = obs.players[0].holding_food != null;
+        Boolean holding_cart = obs.players[this.playerIndex].curr_cart != -1;
+        Boolean holding_food = obs.players[this.playerIndex].holding_food != null;
         int counter_index = findCounter(obs);
-        Boolean can_interact_with_proper_counter = obs.counters[counter_index].canInteract(obs.players[0]);
+        Boolean can_interact_with_proper_counter = obs.counters[counter_index].canInteract(obs.players[this.playerIndex]);
         if(holding_cart){
-            my_cart_index = obs.players[0].curr_cart;
+            my_cart_index = obs.players[this.playerIndex].curr_cart;
             // Let go of cart
-            drop_location[0] = obs.players[0].position[0];
-            drop_location[1] = obs.players[0].position[1];
-            drop_direction = obs.players[0].direction;
+            drop_location[0] = obs.players[this.playerIndex].position[0];
+            drop_location[1] = obs.players[this.playerIndex].position[1];
+            drop_direction = obs.players[this.playerIndex].direction;
             toggleShoppingCart();
             return true;
         }
@@ -944,8 +950,8 @@ public class AgentG4 extends SupermarketComponentImpl
             goEast();
             return true;
         } else {
-            if(obs.players[0].position[0] == drop_location[0] 
-                && obs.players[0].position[1] == drop_location[1]){
+            if(obs.players[this.playerIndex].position[0] == drop_location[0] 
+                && obs.players[this.playerIndex].position[1] == drop_location[1]){
                 if(drop_direction == 0){
                     drop_direction = -1;
                     goNorth();
@@ -983,12 +989,12 @@ public class AgentG4 extends SupermarketComponentImpl
         // System.out.println(obs.registers.length + " registers");
         // System.out.println(obs.cartReturns.length + " cartReturns");
         // print out the shopping list
-        // System.out.println("Shoppping list: " + Arrays.toString(obs.players[0].shopping_list));
+        // System.out.println("Shoppping list: " + Arrays.toString(obs.players[this.playerIndex].shopping_list));
         // call function to grab cart and go north
         // grabCartGoNorth(obs);
 
         // move agent to specified goal
-        System.out.println("Player currently at coordinate (X,Y): (" + obs.players[0].position[0] + ", "  + obs.players[0].position[1] + ").");
+        System.out.println("Player " + this.playerIndex + "currently at coordinate (X,Y): (" + obs.players[this.playerIndex].position[0] + ", "  + obs.players[this.playerIndex].position[1] + ").");
 
         subsumption(obs);
     
