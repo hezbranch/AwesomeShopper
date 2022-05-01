@@ -146,7 +146,7 @@ public class AgentG4 extends SupermarketComponentImpl
         // Set boolean to pass test cases
         boolean collision = false;
         // Set threshold for errors 
-        double threshold = 1.1;
+        double threshold = 1.5;
         double similarity_threshold = .2;
         // Check for collisions with other players
         for (int i = 0; i < obs.players.length; i++) {
@@ -189,7 +189,7 @@ public class AgentG4 extends SupermarketComponentImpl
                 if (main_agent_direction == "East") {
                     if ((main_agent_y < neighbor_agent_y + similarity_threshold &&  main_agent_y > neighbor_agent_y - similarity_threshold)
                     &&  main_agent_x < neighbor_agent_x) {
-                        if (main_agent_x - neighbor_agent_x < threshold) {
+                        if (neighbor_agent_x - main_agent_x  < threshold) {
                             collision = true;
                         }
                     }
@@ -199,7 +199,7 @@ public class AgentG4 extends SupermarketComponentImpl
                 if (main_agent_direction == "West") {
                     if ((main_agent_y < neighbor_agent_y + similarity_threshold &&  main_agent_y > neighbor_agent_y - similarity_threshold)
                     &&  main_agent_x > neighbor_agent_x) {
-                        if (neighbor_agent_x - main_agent_x < threshold) {
+                        if (main_agent_x - neighbor_agent_x < threshold) {
                             collision = true;
                         }
                     }
@@ -222,7 +222,7 @@ public class AgentG4 extends SupermarketComponentImpl
         // Set boolean to pass test cases
         boolean collision = false;
         // collision threshold as how close counts as about to collide
-        double collision_threshold = 0.5;
+        double collision_threshold = 2;
         // similarity threshold used for checking if we are on the 'same' x or y coord (the direction not being collided on)
         double similarity_threshold = .1;
         // Check for collisions with other carts
@@ -234,19 +234,22 @@ public class AgentG4 extends SupermarketComponentImpl
             // NORTH is 0, SOUTH is 1, EAST is 2, WEST is 3
             // int main_agent_direction = obs.players[main_agent].direction;
             // Specify other agent(s) to check
-            int cartindex = -1; 
-            if (i != my_cart_index) { 
-                cartindex = i;
+            int cartindex = i; 
+            int my_cart  = obs.players[main_agent].curr_cart;
+            if (i != my_cart) { 
+
+                // cartindex = i;
                 
                 // Grab the other agents (X, Y) coordinates
-                double neighbor_cart_x = obs.players[cartindex].position[0];
-                double neighbor_cart_y = obs.players[cartindex].position[1];
+                double neighbor_cart_x = obs.carts[cartindex].position[0];
+                double neighbor_cart_y = obs.carts[cartindex].position[1];
                 // Check for collision from above if within margin
                 // and agent heading North
                 if (main_agent_direction == "North") {
                     if (
                         (main_agent_x  <  neighbor_cart_x + similarity_threshold &&  main_agent_x  > neighbor_cart_x - similarity_threshold)
                         && neighbor_cart_y < main_agent_y) {
+                        
                         if (main_agent_y - neighbor_cart_y < collision_threshold) {
                             collision = true;
                         }
@@ -268,7 +271,6 @@ public class AgentG4 extends SupermarketComponentImpl
                     if ((main_agent_y < neighbor_cart_y + similarity_threshold &&  main_agent_y > neighbor_cart_y - similarity_threshold)
                     && neighbor_cart_x > main_agent_x) {
                          if (neighbor_cart_x - main_agent_x < collision_threshold) {
-                            System.out.println("cart collision noted");
                             collision = true;
                         }
                     }
