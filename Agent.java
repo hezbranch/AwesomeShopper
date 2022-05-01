@@ -170,7 +170,7 @@ public class Agent extends SupermarketComponentImpl
                 if (neighbor_agent_x == main_agent_x 
                 && neighbor_agent_y < main_agent_y) {
                     if (main_agent_y - neighbor_agent_y < threshold) {
-                        collision = false;
+                        collision = true;
                     }
                 }
             }
@@ -180,7 +180,7 @@ public class Agent extends SupermarketComponentImpl
                 if (neighbor_agent_x == main_agent_x 
                 && neighbor_agent_y > main_agent_y) {
                     if (neighbor_agent_y - main_agent_y < threshold) {
-                        collision = false;
+                        collision = true;
                     }
                 }
             }
@@ -190,7 +190,7 @@ public class Agent extends SupermarketComponentImpl
                 if (neighbor_agent_y == main_agent_y
                 && neighbor_agent_x < main_agent_x) {
                     if (main_agent_x - neighbor_agent_x < threshold) {
-                        collision = false;
+                        collision = true;
                     }
                 }
             }
@@ -200,7 +200,7 @@ public class Agent extends SupermarketComponentImpl
                 if (neighbor_agent_y == main_agent_y
                 && main_agent_x < neighbor_agent_x) {
                     if (neighbor_agent_x - main_agent_x < threshold) {
-                        collision = false;
+                        collision = true;
                     }
                 }
             }
