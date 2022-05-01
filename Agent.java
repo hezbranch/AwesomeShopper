@@ -90,8 +90,6 @@ public class Agent extends SupermarketComponentImpl
     // Returns: Boolean
     // Effect(s): External timing
     // Complexity: Linear time complexity, constant space
-    // Notes: <Hezekiah> There's probably a FAR better way of 
-    //                   doing this but it is what it is
     // Author: Branch, H.
     protected boolean noCollision(Observation obs) {
         // Set boolean to pass test cases
@@ -280,19 +278,38 @@ public class Agent extends SupermarketComponentImpl
                     }
                 }
             }
+            // Check for wall collisions
+            // Top and Bottom Walls
+            if (obs.players[0].position[1]
+            && main_agent_direction == 0) {
+                travel[0] = -1;
+            }
+            if (obs.players[0].position[1]
+            && main_agent_direction == 0) {
+                travel[1] = -1;
+            }
+            // Left and Right Walls
+            if (obs.players[0].position[0]
+            && main_agent_direction == 3) {
+                travel[2] = -1;
+            }
+            if (obs.players[0].position[0]
+            && main_agent_direction == 3) {
+                travel[3] = -1;
+            }
         }
-       // Choose new available direction to try
-       for (int i = 0; i < travel.length; i++) {
-           if (travel[i] == 1) {
-               if (i == 0) {
+        // Choose new available direction to try
+        for (int i = 0; i < travel.length; i++) {
+            if (travel[i] == 1) {
+                if (i == 0) {
                    goNorth();
-               } else if (i == 1) {
-                   goSouth();
-               } else if (i == 2) {
-                   goEast();
-               } else if (i == 3) {
-                   goWest();
-               }
+                } else if (i == 1) {
+                    goSouth();
+                } else if (i == 2) {
+                    goEast();
+                } else if (i == 3) {
+                    goWest();
+                }
             }
         }
         // End of object avoidance function
