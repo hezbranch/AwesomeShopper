@@ -30,6 +30,7 @@ public class runMultiplayer {
         AgentThread a2 = new AgentThread(TestAgent.class, 1, 2);
         //AgentThread a3 = new AgentThread(TestAgent.class, 1, 2);
     a1.start();
+        System.out.println("G4's Agent is starting!");
     a2.start();
     //a3.start();
     }

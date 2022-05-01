@@ -1,13 +1,12 @@
-/*Code for CheckoutAtRegister*/
+
+
+// Edited by Hezekiah Branch, Matthew Ebisu, and Michael LoTurco
 
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.lang.Math;
 import com.supermarket.*;
-
-
-// Edited by Hezekiah Branch, Matthew Ebisu, and Michael LoTurco
 
 public class AgentG4 extends SupermarketComponentImpl
 {
@@ -91,8 +90,6 @@ public class AgentG4 extends SupermarketComponentImpl
     // Returns: Boolean
     // Effect(s): External timing
     // Complexity: Linear time complexity, constant space
-    // Notes: <Hezekiah> There's probably a FAR better way of 
-    //                   doing this but it is what it is
     // Author: Branch, H.
     protected boolean noCollision(Observation obs) {
         // Set boolean to pass test cases
@@ -133,6 +130,208 @@ public class AgentG4 extends SupermarketComponentImpl
             }
         }
         return success;
+    }
+
+    // Function: agentCollision
+    // Purpose: Check for colliding into others agents
+    //          during multiplayer mode
+    // Input: An observation state (i.e. Observation)
+    // Returns: Boolean
+    // Effect(s): External timing
+    // Complexity: Linear time complexity O(m), m = # of agents
+    //             Constant space complexity, no aux. space used
+    // Author: Branch, H.
+    protected boolean agentCollision(Observation obs) {
+        // Set boolean to pass test cases
+        boolean collision = false;
+        // Set threshold for errors 
+        double threshold = 0.5;
+        // Check for collisions with other players
+        for (int i = 0; i < obs.players.length; i++) {
+            // Specify current agent in program
+            int main_agent = 0;
+            double main_agent_x = obs.players[main_agent].position[0];
+            double main_agent_y = obs.players[main_agent].position[1];
+            // NORTH is 0, SOUTH is 1, EAST is 2, WEST is 3
+            int main_agent_direction = obs.players[main_agent].direction;
+            // Specify other agent(s) to check
+            int neighbor = -10000; 
+            if (i != main_agent) { 
+                neighbor = i;
+            }
+            // Grab the other agents (X, Y) coordinates
+            double neighbor_agent_x = obs.players[neighbor].position[0];
+            double neighbor_agent_y = obs.players[neighbor].position[1];
+            // Check for collision from above if within margin
+            // and agent heading North
+            if (main_agent_direction == 0) {
+                if (neighbor_agent_x == main_agent_x 
+                && neighbor_agent_y < main_agent_y) {
+                    if (main_agent_y - neighbor_agent_y < threshold) {
+                        collision = true;
+                    }
+                }
+            }
+            // Check for collision from below if within margin
+            // and agent heading South
+            if (main_agent_direction == 1) {
+                if (neighbor_agent_x == main_agent_x 
+                && neighbor_agent_y > main_agent_y) {
+                    if (neighbor_agent_y - main_agent_y < threshold) {
+                        collision = true;
+                    }
+                }
+            }
+            // Check for collision from side if within margin
+            // and agent heading East
+            if (main_agent_direction == 2) {
+                if (neighbor_agent_y == main_agent_y
+                && neighbor_agent_x < main_agent_x) {
+                    if (main_agent_x - neighbor_agent_x < threshold) {
+                        collision = true;
+                    }
+                }
+            }
+            // Check for collision from side if within margin
+            // and agent heading West
+            if (main_agent_direction == 3) {
+                if (neighbor_agent_y == main_agent_y
+                && main_agent_x < neighbor_agent_x) {
+                    if (neighbor_agent_x - main_agent_x < threshold) {
+                        collision = true;
+                    }
+                }
+            }
+        }
+       return collision;
+    }
+
+    // Function: agentCollisionAvoidance
+    // Purpose: Avoid colliding into others agents
+    //          during multiplayer mode
+    // Input: An observation state (i.e. Observation)
+    // Returns: Boolean
+    // Effect(s): External timing
+    // Complexity: Linear time complexity
+    //             Constant space complexity, no aux. space used
+    // Author: Branch, H.
+    protected void agentCollisionAvoidance(Observation obs) {
+        // QuadTree decision list
+        // 1 to indicate accessible travel in a direction
+        // and -1 to indicate inaccessible path
+        int[] travel = new int[]{1, 1, 1, 1}; 
+        // Set threshold for errors 
+        double threshold = 0.5;
+        // Check for collisions with other players
+        for (int i = 0; i < obs.players.length; i++) {
+            // Specify current agent in program
+            int main_agent = 0;
+            double main_agent_x = obs.players[main_agent].position[0];
+            double main_agent_y = obs.players[main_agent].position[1];
+            // NORTH is 0, SOUTH is 1, EAST is 2, WEST is 3
+            int main_agent_direction = obs.players[main_agent].direction;
+            // Specify other agent(s) to check
+            int neighbor = -10000; 
+            if (i != main_agent) { 
+                neighbor = i;
+            }
+            // Grab the other agents (X, Y) coordinates
+            double neighbor_agent_x = obs.players[neighbor].position[0];
+            double neighbor_agent_y = obs.players[neighbor].position[1];
+            // Check for collision from above if within margin
+            // and agent heading North
+            if (main_agent_direction == 0) {
+                if (neighbor_agent_x == main_agent_x 
+                && neighbor_agent_y < main_agent_y) {
+                    if (main_agent_y - neighbor_agent_y < threshold) {
+                        travel[0] = -1;
+                    }
+                }
+            }
+            // Check for collision from below if within margin
+            // and agent heading South
+            if (main_agent_direction == 1) {
+                if (neighbor_agent_x == main_agent_x 
+                && neighbor_agent_y > main_agent_y) {
+                    if (neighbor_agent_y - main_agent_y < threshold) {
+                        travel[1] = -1;
+                    }
+                }
+            }
+            // Check for collision from side if within margin
+            // and agent heading East
+            if (main_agent_direction == 2) {
+                if (neighbor_agent_y == main_agent_y
+                && neighbor_agent_x < main_agent_x) {
+                    if (main_agent_x - neighbor_agent_x < threshold) {
+                        travel[2] = -1;
+                    }
+                }
+            }
+            // Check for collision from side if within margin
+            // and agent heading West
+            if (main_agent_direction == 3) {
+                if (neighbor_agent_y == main_agent_y
+                && main_agent_x < neighbor_agent_x) {
+                    if (neighbor_agent_x - main_agent_x < threshold) {
+                        travel[3] = -1;
+                    }
+                }
+            }
+            // Check for wall collisions
+            // Top and Bottom Walls
+            if (obs.players[0].position[1] < 3
+            && main_agent_direction == 0) {
+                travel[0] = -1;
+            }
+            if (obs.players[0].position[1] > 23
+            && main_agent_direction == 0) {
+                travel[1] = -1;
+            }
+            // Left and Right Walls
+            if (obs.players[0].position[0] < 3
+            && main_agent_direction == 3) {
+                travel[2] = -1;
+            }
+            if (obs.players[0].position[0] > 18
+            && main_agent_direction == 3) {
+                travel[3] = -1;
+            }
+        }
+        // Choose new available direction to try
+        for (int i = 0; i < travel.length; i++) {
+            if (travel[i] == 1) {
+                if (i == 0) {
+                   goNorth();
+                } else if (i == 1) {
+                    goSouth();
+                } else if (i == 2) {
+                    goEast();
+                } else if (i == 3) {
+                    goWest();
+                }
+            }
+        }
+        // End of object avoidance function
+    }
+
+    // Function: generalCollisionCheck
+    // Purpose: Avoid colliding into others agents
+    //          during multiplayer mode and objects
+    // Input: An observation state (i.e. Observation)
+    // Returns: Boolean
+    // Effect(s): External timing
+    // Complexity: Linear time complexity O(m + n), m = # of agents
+    //                                              n = # of objects
+    //             Constant space complexity, no aux. space used
+    // Author: Branch, H.
+    protected boolean generalCollisionCheck(Observation obs) {
+        // No collision detected
+        if (noCollision(obs) && agentCollision(obs) == false) {
+            return false;
+        }
+        // Collision detected
+        return true;
     }
 
     // Author: LoTurco, M., Branch, H.
@@ -790,7 +989,7 @@ public class AgentG4 extends SupermarketComponentImpl
         // grabCartGoNorth(obs);
 
         // move agent to specified goal
-        // System.out.println("Player currently at coordinate (X,Y): (" + obs.players[0].position[0] + ", "  + obs.players[0].position[1] + ").");
+        System.out.println("Player currently at coordinate (X,Y): (" + obs.players[0].position[0] + ", "  + obs.players[0].position[1] + ").");
 
         subsumption(obs);
     
