@@ -40,15 +40,16 @@ developed by Teah Markstone and Daniel Kasenberg
 **Note: After updating the files to the new environment provided by Matthias, you can no longer run this command.
 **NEW COMMANDS FOR USE WITH GOAL and AGENT
     *Compile agent with: `javac -cp .:DIARC.jar runMultiplayer.java Goal.java Agent4.java`
-    *Run
+    *Run Game: `python3 socket_env.py --num_players 2`
+    *Run Multiple Agent Simulation: `java -cp .:DIARC.jar runMultiplayer AgentG4 TestAgent`
 
+*Given that we only have two agents (our agent and the TestAgent), our agent works the best if it can be given index 0. 
 
-## List of documented changes 
+## List of Document changes 
 HW: "Your goal is to make sure that the agent you submit will violateas few norms as possible
 1. Rename Agent.java to AgentG4.java
 2. Upload all relevant files (TestAgent.class, DIARC-5.jar, runMultiplayer.java, runMultiplayer-1.class, runMultiplayer-2.java, runMultiplayer-3.java, runMultiplayer-4.java,  runMultiplayer$AgentThread-1.class)
 3. Rename public class in AgentG4.java file from Agent to AgentG4
 4. Rename constructor from Agent to AgentG4
 5. Download the DIARC-5 and rename it DIARC.jar file
-6. 
 

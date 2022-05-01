@@ -9,10 +9,10 @@ import com.supermarket.*;
 
 // Edited by Hezekiah Branch, Matthew Ebisu, and Michael LoTurco
 
-public class Agent4 extends SupermarketComponentImpl
+public class AgentG4 extends SupermarketComponentImpl
 {
     // Class constructor
-    public Agent4()
+    public AgentG4()
     {
         super();
         shouldRunExecutionLoop = true;
