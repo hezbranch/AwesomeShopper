@@ -219,8 +219,8 @@ public class Agent extends SupermarketComponentImpl
     // Author: Branch, H.
     protected void agentCollisionAvoidance(Observation obs) {
         // Quad decision list
-        // 1 to indicate you can travel in a direction
-        // and -1 to indicate travel not accessible
+        // 1 to indicate accessible travel in a direction
+        // and -1 to indicate inaccessible path
         int[] travel = new int[]{1, 1, 1, 1}; 
         // Set threshold for errors 
         double threshold = 0.5;
